@@ -1,22 +1,24 @@
 <template>
-  <div class="card-like">
-    <div class="surah-wrapper flex-sb">
-      <h3 class="surah-name nfont">{{ surat }}</h3>
-      <p class="name-short-arabic">{{ surat }}</p>
-    </div>
-    <div class="more-info">
-      <p class="arti nfont">({{ arti }})</p>
-      <div>
-        <div class="flex-start">
-          <p class="revelation-arabic">{{ revelation }}</p>
-          <p class="verses nfont">{{ verses }} ayat</p>
-          <!-- <p class="number-sr nfont">
+  <router-link :to="'/read/' + ke" custom v-slot="{ navigate }">
+    <div @click="navigate" role="link" class="card-like itemlist">
+      <div class="surah-wrapper flex-sb">
+        <h3 class="surah-name nfont">{{ surat }}</h3>
+        <p class="name-short-arabic">{{ arabic }}</p>
+      </div>
+      <div class="more-info">
+        <p class="arti nfont">({{ arti }})</p>
+        <div>
+          <div class="flex-start">
+            <p class="revelation-arabic">{{ revelation }}</p>
+            <p class="verses nfont">{{ verses }} ayat</p>
+            <!-- <p class="number-sr nfont">
           {{ke}}
         </p>-->
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
@@ -29,6 +31,7 @@ export default {
     revelation: String, //diturunkan di
     verses: Number, //berapa ayat
     ke: Number, //surat ke...
+    // route: String,
   },
 };
 </script>
@@ -44,7 +47,7 @@ export default {
   );
   padding: 25px;
   border-radius: 25px;
-  margin: 5%;
+  margin: 10px;
   width: 230px;
   height: 170px;
 }
