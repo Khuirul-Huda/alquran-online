@@ -38,7 +38,7 @@ export default {
     };
   },
   mounted() {
-    const url = "https://alquran-online-api.vercel.app";
+    const url = "https://alquran-online-api.vercel.app/surah";
     axios
       .get(url)
       .then((res) => {
