@@ -59,9 +59,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: auto;
-  align-content: start;
+  justify-content: center;
 }
 .itemlist {
   flex: 0 0 auto;
