@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div>Under Development... Come back soon...</div>
 </template>
 
 <script>
