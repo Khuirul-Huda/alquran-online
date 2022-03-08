@@ -13,6 +13,14 @@
     </p>
   </div>
   <router-view />
+  <footer>
+    <p>
+      Designed by
+      <a class="footer-khrl" href="https://instagram.com/khuirul_huda"
+        >Khuirul Huda</a
+      >
+    </p>
+  </footer>
 </template>
 
 <style>
@@ -35,5 +43,9 @@
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+
+.footer-khrl {
+  color: green;
 }
 </style>
