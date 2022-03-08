@@ -1,7 +1,16 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+    <router-link to="/">Al-Quran Online</router-link>
+    <!--<router-link to="/about">About</router-link>-->
+    <p>
+      اَفَلَا يَتَدَبَّرُوْنَ الْقُرْاٰنَ ۗ وَلَوْ كَانَ مِنْ عِنْدِ غَيْرِ
+      اللّٰهِ لَوَجَدُوْا فِيْهِ اخْتِلَافًا كَثِيْرًا
+    </p>
+    <p>
+      “Maka tidakkah mereka menghayati (mendalami) Al-Qur'an? Sekiranya
+      (Al-Qur'an) itu bukan dari Allah, pastilah mereka menemukan banyak hal
+      yang bertentangan di dalamnya. (Q.S An-Nisa':82)"
+    </p>
   </div>
   <router-view />
 </template>
