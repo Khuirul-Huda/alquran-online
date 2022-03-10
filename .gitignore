@@ -3,6 +3,7 @@ node_modules
 /dist
 .firebaserc
 .firebase
+firebase-debug.log
 
 # local env files
 .env.local
