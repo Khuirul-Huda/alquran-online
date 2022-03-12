@@ -16,7 +16,7 @@
          <ul>{{suratt.name.long}}</ul>
      </li>-->
     </div>
-    <div v-if="loading">loading</div>
+    <div v-if="loading">Loading...</div>
     <div v-if="error">Error!</div>
   </div>
 </template>
