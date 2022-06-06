@@ -3,13 +3,13 @@
   <div v-if="loaded">
     <div @click="shortDetails()">{{ surahdata.name.transliteration.id }}</div>
     <div id="name-translation-id">({{ surahdata.name.translation.id }})</div>
-    <div v-if="!(surahdata.preBismillah == null)" class="margintopnormal">
+    <div v-if="!(surahdata.preBismillah == null)" class="margintopnormal title">
       بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
     </div>
     <div>
       <!--kotak all-->
       <div v-for="verse in verses" v-bind:key="verse.number.inSurah">
-        <div>
+        <div class="containerverses">
           <!--kotak setiap v-->
           <div :id="verse.number.inSurah" class="teksutama">
             <!--teks utama-->
@@ -81,5 +81,29 @@ export default {
 <style scoped>
 .margintopnormal {
   margin-top: 25px;
+}
+
+.teksutama {
+  text-align: right;
+  font-size: 24px;
+}
+
+.title {
+  font-size: 24px;
+}
+
+.terjemah {
+  text-align: left;
+}
+
+.containerverses {
+  margin-top: 20px;
+  margin-bottom: 5px;
+  background-color: white;
+  border-radius: 25px;
+  padding: 25px;
+  border-width: 2px;
+  border-color: grey;
+  border-style: solid;
 }
 </style>
