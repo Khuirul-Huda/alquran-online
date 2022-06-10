@@ -38,7 +38,8 @@ export default {
     };
   },
   mounted() {
-    const url = "https://alquran-online-api.vercel.app/surah";
+    const url = process.env.VUE_APP_MAIN_API_URL + "/surah";
+    console.log(process.env.VUE_APP_MAIN_API_URL); //
     axios
       .get(url)
       .then((res) => {

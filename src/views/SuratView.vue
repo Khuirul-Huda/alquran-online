@@ -50,7 +50,7 @@ export default {
   mounted() {
     const axios = require("axios").default;
     const params = this.$route.params.surat;
-    const apiURL = "https://alquran-online-api.vercel.app/surah/";
+    const apiURL = process.env.VUE_APP_MAIN_API_URL + "/surah/";
 
     if (isNaN(params)) {
       this.$router.push({ name: "Main" });
