@@ -16,17 +16,33 @@
          <ul>{{suratt.name.long}}</ul>
      </li>-->
     </div>
-    <div v-if="loading">Loading...</div>
+    <div v-if="loading" class="containerlist">
+      <!--cl-->
+      <div v-for="h in 8" v-bind:key="h">
+        <div class="itemlist fplaceholder">
+          <content-loader
+            viewBox="0 0 230 170"
+            :speed="1.5"
+            primaryColor="#f3f3f3"
+            secondaryColor="#ecebeb"
+          >
+            <rect x="0" y="2" rx="25" ry="25" width="230" height="170" />
+          </content-loader>
+        </div>
+      </div>
+    </div>
     <div v-if="error">Error!</div>
   </div>
 </template>
 
 <script>
 import Surat from "../components/Surat.vue";
+import { ContentLoader } from "vue-content-loader";
+
 const axios = require("axios").default;
 
 export default {
-  components: { Surat },
+  components: { Surat, ContentLoader },
   name: "DaftarSurat",
   data() {
     return {
@@ -64,5 +80,11 @@ export default {
 .itemlist {
   flex: 0 0 auto;
   margin: 9px;
+}
+.fplaceholder {
+  padding: 25px;
+  margin: 10px;
+  width: 230px;
+  height: 170px;
 }
 </style>
