@@ -39,7 +39,6 @@ export default {
   },
   mounted() {
     const url = process.env.VUE_APP_MAIN_API_URL + "/surah";
-    console.log(process.env.VUE_APP_MAIN_API_URL); //
     axios
       .get(url)
       .then((res) => {
