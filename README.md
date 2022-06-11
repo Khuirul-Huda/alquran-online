@@ -5,7 +5,7 @@
 
 Alquran Online (Open Source) with PWA, using VueJS.
 
-This software used API from [gadingnst/quran-api](https://github.com/gadingnst/quran-api). You can deploy your own(please use the same source) and [TODO] change the api url.
+This software used API from [gadingnst/quran-api](https://github.com/gadingnst/quran-api). You can deploy your own(please use the same source/repo) and  change the api url.
 
 
 
@@ -13,6 +13,8 @@ This software used API from [gadingnst/quran-api](https://github.com/gadingnst/q
 ```
 npm install
 ```
+
+> **Rename `sample.env` to `.env` (IMPORTANT)**
 
 ### Compiles and hot-reloads for development
 ```
@@ -28,3 +30,6 @@ npm run build
 ```
 npm run lint
 ```
+
+
+**Found a mistake or something else? Feel free to open issues** ☺️
