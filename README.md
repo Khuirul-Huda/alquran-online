@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/user/fdca2cf4-f557-42d2-b067-d750228c6013/project/699fdca6-fdba-4b87-876e-f678180feed1.svg?style=for-the-badge)](https://wakatime.com/badge/user/fdca2cf4-f557-42d2-b067-d750228c6013/project/699fdca6-fdba-4b87-876e-f678180feed1)
+
 # alquran-online 
 *under development
 
