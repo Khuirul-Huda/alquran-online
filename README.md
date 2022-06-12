@@ -14,7 +14,7 @@ This software used API from [gadingnst/quran-api](https://github.com/gadingnst/q
 npm install
 ```
 
-> **Rename `sample.env` to `.env` (IMPORTANT)**
+> **Rename `.env.example` to `.env` (IMPORTANT)**
 
 ### Compiles and hot-reloads for development
 ```
