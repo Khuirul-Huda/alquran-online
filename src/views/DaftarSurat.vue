@@ -16,8 +16,11 @@
          <ul>{{suratt.name.long}}</ul>
      </li>-->
     </div>
-    <div v-if="loading" class="containerlist">
+    <div v-if="loading || error" class="containerlist">
       <!--cl-->
+      <div v-if="error">
+        {{ errMsg }}
+      </div>
       <div v-for="h in 8" v-bind:key="h">
         <div class="itemlist fplaceholder">
           <content-loader
@@ -31,7 +34,6 @@
         </div>
       </div>
     </div>
-    <div v-if="error">Error!</div>
   </div>
 </template>
 
@@ -63,7 +65,9 @@ export default {
       })
       .catch((err) => {
         console.log(err);
+        this.errMsg = err;
         this.loading = false;
+        this.error = true;
       })
       .finally(() => (this.loading = false));
   },
