@@ -1,5 +1,18 @@
 <template>
-  <div v-if="!loaded">Loading...</div>
+  <div v-if="!loaded">
+    <div>
+      <content-loader
+        viewBox="0 0 400 150"
+        :speed="1.5"
+        primaryColor="#f3f3f3"
+        secondaryColor="#ecebeb"
+      >
+        <rect x="25" y="20" rx="5" ry="5" width="220" height="20" />
+        <rect x="25" y="62" rx="5" ry="5" width="220" height="20" />
+        <rect x="25" y="105" rx="5" ry="5" width="220" height="20" />
+      </content-loader>
+    </div>
+  </div>
   <div v-if="loaded">
     <div @click="shortDetails()">{{ surahdata.name.transliteration.id }}</div>
     <div id="name-translation-id">({{ surahdata.name.translation.id }})</div>
@@ -27,9 +40,11 @@
 
 <script>
 import Swal from "sweetalert2";
+import { ContentLoader } from "vue-content-loader";
 
 export default {
   name: "SuratView",
+  components: { ContentLoader },
   data() {
     return {
       surahnumber: 0,
