@@ -14,14 +14,14 @@
     "sweetalert2": "^11.4.17",
     "vue": "^3.0.0",
     "vue-content-loader": "^2.0.1",
-    "vue-router": "^4.0.0-0"
+    "vue-router": "^4.0.0-0",
+    "yorkie": "^2.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.4",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-plugin-pwa": "~4.5.0",
+    "@vue/cli-plugin-pwa": "~5.0.4",
     "@vue/cli-plugin-router": "~5.0.4",
-    "@vue/cli-service": "~4.5.0",
+    "@vue/cli-service": "~5.0.4",
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
