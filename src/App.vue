@@ -1,4 +1,5 @@
 <template>
+<div class="main-content">
   <div id="nav">
     <router-link to="/">Al-Quran Online</router-link>
     <!--<router-link to="/about">About</router-link>-->
@@ -13,6 +14,7 @@
     </p>
   </div>
   <router-view />
+  </div>
   <footer>
     <p>
       Designed by
@@ -48,4 +50,17 @@
 .footer-khrl {
   color: green;
 }
+
+.main-content {
+  color: black;
+  padding: 0px;
+}
 </style>
+
+<script>
+
+export default {
+  name: "App",
+}
+</script>
+

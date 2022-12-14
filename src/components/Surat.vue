@@ -50,6 +50,8 @@ export default {
   margin: 10px;
   width: 230px;
   height: 170px;
+  cursor: pointer;
+  
 }
 
 .nfont {

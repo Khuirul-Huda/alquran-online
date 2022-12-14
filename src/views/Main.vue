@@ -1,7 +1,6 @@
 <template>
   <div>
     <p></p>
-
     <DaftarSurat />
   </div>
 </template>
