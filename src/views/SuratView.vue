@@ -14,7 +14,9 @@
     </div>
   </div>
   <div v-if="loaded">
-    <div @click="shortDetails()">{{ surahdata.name.transliteration.id }}</div>
+    <div @click="shortDetails()" ><span class="pointer">
+      {{ surahdata.name.transliteration.id }}
+    </span></div>
     <div id="name-translation-id">({{ surahdata.name.translation.id }})</div>
     <div v-if="!(surahdata.preBismillah == null)" class="margintopnormal title">
       بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
@@ -121,4 +123,8 @@ export default {
   border-color: grey;
   border-style: solid;
 }
+ .pointer {
+  cursor: pointer;
+ }
+
 </style>
