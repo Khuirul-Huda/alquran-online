@@ -124,17 +124,43 @@ export const quranApi = {
 
   /**
    * Fetch Shalat (Prayer) Times by City.
-   * Intentionally NOT cached — always fetches fresh data from Aladhan.
+   * Cached inside localStorage for 1 day (standard YYYY-MM-DD).
    *
    * @param {string} city
    */
   async fetchPrayerTimes(city) {
+    const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD format
+    const cacheKey = `sholat_times_${city}`;
+
+    // Read from localStorage cache if matching today's date
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.date === today && parsed.timings) {
+          return parsed.timings;
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to read shalat cache:", e);
+    }
+
     try {
       const response = await aladhanClient.get(
         `/timingsByCity?city=${encodeURIComponent(city)}&country=Indonesia`
       );
       if (response.data && response.data.data && response.data.data.timings) {
-        return response.data.data.timings;
+        const timings = response.data.data.timings;
+        // Save to cache
+        try {
+          localStorage.setItem(
+            cacheKey,
+            JSON.stringify({ date: today, timings })
+          );
+        } catch (e) {
+          console.warn("Failed to save shalat cache:", e);
+        }
+        return timings;
       }
       throw new Error("Format respons API tidak valid.");
     } catch (error) {
