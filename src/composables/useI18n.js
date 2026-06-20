@@ -153,9 +153,17 @@ export const translations = {
 export function useI18n() {
   const preferencesStore = usePreferencesStore();
 
-  const t = (key) => {
+  const t = (key, params = {}) => {
     const lang = preferencesStore.language || "id";
-    return translations[lang]?.[key] || translations["id"]?.[key] || key;
+    let text = translations[lang]?.[key] || translations["id"]?.[key] || key;
+
+    if (params && typeof params === "object") {
+      Object.keys(params).forEach((paramKey) => {
+        text = text.replace(new RegExp(`{${paramKey}}`, "g"), params[paramKey]);
+      });
+    }
+
+    return text;
   };
 
   return {
