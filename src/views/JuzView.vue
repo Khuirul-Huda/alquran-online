@@ -221,10 +221,11 @@
         @close="closeModal"
       />
 
-      <!-- Floating Audio Player Bar -->
+      <!-- Floating Audio Player Bar with GSAP spring -->
+      <Transition :css="false" @enter="onAudioBarEnter" @leave="onAudioBarLeave">
       <div
         v-if="audioPlayer.activeVerse.value !== null && getSurahInfo(audioPlayer.activeVerseNumber.value)"
-        class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-md rounded-2xl shadow-xl border p-4 flex items-center justify-between gap-4 transition-all duration-300 animate-slide-up"
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-md rounded-2xl shadow-xl border p-4 flex items-center justify-between gap-4"
         :class="[
           preferencesStore.theme === 'dark'
             ? 'bg-slate-900/90 border-slate-750 text-slate-100 backdrop-blur-md'
@@ -288,6 +289,7 @@
           </button>
         </div>
       </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -295,13 +297,18 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { quranApi } from "../services/quranApi";
 import { usePreferencesStore } from "../stores/preferences";
 import { useBookmarksStore } from "../stores/bookmarks";
 import { useAudioPlayer } from "../composables/useAudioPlayer";
+import { staggerReveal, audioBarEnter, audioBarLeave } from "../composables/useGsap";
 import TafsirModal from "../components/TafsirModal.vue";
 import ReadingToolbar from "../components/ReadingToolbar.vue";
 import VerseCard from "../components/VerseCard.vue";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const route = useRoute();
 const router = useRouter();
@@ -453,6 +460,11 @@ const fetchJuzDetails = async () => {
     }
 
     nextTick(() => {
+      // Stagger verse cards
+      const cards = document.querySelectorAll("[id^='verse-']");
+      if (cards.length) {
+        staggerReveal(cards, { stagger: 0.04, y: 24, duration: 0.5, useScrollTrigger: true });
+      }
       const queryAyah = route.query.ayah;
       if (queryAyah) {
         const num = parseInt(queryAyah);
@@ -558,6 +570,15 @@ watch(
   }
 );
 
+// ── Audio bar GSAP spring hooks ────────────────────────────────────────────
+const onAudioBarEnter = (el, done) => {
+  audioBarEnter(el);
+  gsap.delayedCall(0.52, done);
+};
+const onAudioBarLeave = (el, done) => {
+  audioBarLeave(el, done);
+};
+
 onMounted(() => {
   const params = route.params.juz;
   if (isNaN(params) || params < 1 || params > 30) {
@@ -570,33 +591,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   audioPlayer.stopAudio();
+  ScrollTrigger.getAll().forEach((t) => t.kill());
 });
 </script>
 
 <style scoped>
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-out forwards;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-.animate-slide-up {
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+/* Animations handled by GSAP */
 </style>

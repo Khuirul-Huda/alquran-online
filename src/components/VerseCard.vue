@@ -1,15 +1,17 @@
 <template>
   <div
     :id="isJuzView ? 'verse-' + verse.number.inQuran : 'verse-' + verse.number.inSurah"
-    class="themed-card rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
+    ref="cardRef"
+    class="themed-card rounded-2xl p-6 md:p-8 transition-colors duration-300 relative group flex flex-col"
     :class="{
       'active-verse': isActiveAudio,
       'pulse-highlight-verse': isHighlighted,
     }"
   >
-    <!-- Highlight bar left (only for active playing verse) -->
+    <!-- Highlight bar left (expands when active audio) -->
     <div
-      class="absolute left-0 top-0 h-full w-1 bg-quran-light opacity-30 rounded-l-2xl transition-all"
+      ref="barRef"
+      class="absolute left-0 top-0 h-full w-1 bg-quran-light opacity-30 rounded-l-2xl"
       :class="{ '!bg-quran-gold !opacity-100 !w-1.5': isActiveAudio }"
     ></div>
 
@@ -39,8 +41,9 @@
       <div class="flex gap-2">
         <!-- Bookmark Button -->
         <button
-          @click="$emit('toggle-bookmark', verse)"
-          class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-all cursor-pointer"
+          ref="bookmarkBtnRef"
+          @click="handleBookmark"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-colors duration-200 cursor-pointer"
           :class="[
             isBookmarked
               ? 'bg-quran-gold text-quran-deep border-quran-gold shadow-sm'
@@ -50,13 +53,17 @@
           ]"
           :title="isBookmarked ? 'Hapus Bookmark' : 'Tambah Bookmark'"
         >
-          <i :class="isBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
+          <i
+            ref="bookmarkIconRef"
+            :class="isBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"
+          ></i>
         </button>
 
         <!-- Play Audio Button -->
         <button
-          @click="$emit('toggle-audio', verse)"
-          class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-all cursor-pointer"
+          ref="audioBtnRef"
+          @click="handleAudio"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-colors duration-200 cursor-pointer"
           :class="[
             isActiveAudio
               ? 'bg-quran-gold text-quran-deep border-quran-gold shadow-sm'
@@ -66,13 +73,17 @@
           ]"
           :title="isActiveAudio ? 'Pause' : 'Putar Audio'"
         >
-          <i :class="isActiveAudio ? 'fa-solid fa-pause' : 'fa-solid fa-play'"></i>
+          <i
+            ref="audioIconRef"
+            :class="isActiveAudio ? 'fa-solid fa-pause' : 'fa-solid fa-play'"
+          ></i>
         </button>
 
         <!-- Tafsir Ayat Button -->
         <button
-          @click="$emit('show-tafsir', verse)"
-          class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-all cursor-pointer"
+          ref="tafsirBtnRef"
+          @click="handleTafsir"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-colors duration-200 cursor-pointer"
           :class="
             preferencesStore.theme === 'dark'
               ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
@@ -80,7 +91,7 @@
           "
           title="Tafsir Ayat"
         >
-          <i class="fa-solid fa-book"></i>
+          <i ref="tafsirIconRef" class="fa-solid fa-book"></i>
         </button>
       </div>
     </div>
@@ -137,9 +148,12 @@
 </template>
 
 <script setup>
+import { ref, watch } from "vue";
+import { gsap } from "gsap";
 import { usePreferencesStore } from "../stores/preferences";
+import { buttonPop, wiggle, spinPop } from "../composables/useGsap";
 
-defineProps({
+const props = defineProps({
   verse: {
     type: Object,
     required: true,
@@ -166,9 +180,74 @@ defineProps({
   },
 });
 
-defineEmits(["toggle-bookmark", "toggle-audio", "show-tafsir"]);
+const emit = defineEmits(["toggle-bookmark", "toggle-audio", "show-tafsir"]);
 
 const preferencesStore = usePreferencesStore();
+
+// Template refs
+const cardRef = ref(null);
+const bookmarkBtnRef = ref(null);
+const bookmarkIconRef = ref(null);
+const audioBtnRef = ref(null);
+const audioIconRef = ref(null);
+const tafsirBtnRef = ref(null);
+const tafsirIconRef = ref(null);
+
+// ── Button handlers with GSAP micro-animations ─────────────────────────────
+const handleBookmark = () => {
+  emit("toggle-bookmark", props.verse);
+  if (bookmarkIconRef.value) {
+    if (!props.isBookmarked) {
+      // Adding — elastic pop
+      buttonPop(bookmarkIconRef.value);
+    } else {
+      // Removing — wiggle
+      wiggle(bookmarkIconRef.value);
+    }
+  }
+};
+
+const handleAudio = () => {
+  emit("toggle-audio", props.verse);
+  if (audioIconRef.value) {
+    buttonPop(audioIconRef.value);
+  }
+};
+
+const handleTafsir = () => {
+  emit("show-tafsir", props.verse);
+  if (tafsirIconRef.value) {
+    spinPop(tafsirIconRef.value);
+  }
+};
+
+// ── Watch isHighlighted — flash the card background ───────────────────────
+watch(
+  () => props.isHighlighted,
+  (highlighted) => {
+    if (highlighted && cardRef.value) {
+      gsap
+        .timeline()
+        .to(cardRef.value, {
+          backgroundColor: "rgba(212, 175, 55, 0.18)",
+          duration: 0.3,
+          ease: "power2.out",
+        })
+        .to(cardRef.value, {
+          backgroundColor: "rgba(212, 175, 55, 0.06)",
+          duration: 0.4,
+          repeat: 2,
+          yoyo: true,
+          ease: "power1.inOut",
+        })
+        .to(cardRef.value, {
+          backgroundColor: "",
+          duration: 0.5,
+          clearProps: "backgroundColor",
+        });
+    }
+  }
+);
 </script>
 
 <style scoped>

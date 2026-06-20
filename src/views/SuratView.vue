@@ -216,10 +216,12 @@
         @close="closeModal"
       />
 
-      <!-- Floating Audio Player Bar -->
+      <!-- Floating Audio Player Bar with GSAP spring -->
+      <Transition :css="false" @enter="onAudioBarEnter" @leave="onAudioBarLeave">
       <div
         v-if="audioPlayer.activeVerse.value !== null"
-        class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-md rounded-2xl shadow-xl border p-4 flex items-center justify-between gap-4 transition-all duration-300 animate-slide-up"
+        ref="audioBarRef"
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-md rounded-2xl shadow-xl border p-4 flex items-center justify-between gap-4"
         :class="[
           preferencesStore.theme === 'dark'
             ? 'bg-slate-900/90 border-slate-750 text-slate-100 backdrop-blur-md'
@@ -246,7 +248,7 @@
               {{ audioPlayer.activeVerseInSurah.value }}
             </h5>
             <p
-              class="text-xs text-quran-medium font-semibold"
+              class="text-xs font-semibold"
               :class="preferencesStore.theme === 'dark' ? 'text-quran-gold-light' : 'text-quran-medium'"
             >
               {{ audioPlayer.activeQariName.value }}
@@ -256,7 +258,6 @@
 
         <!-- Controls -->
         <div class="flex items-center gap-2">
-          <!-- Pause/Play button -->
           <button
             @click="audioPlayer.toggleActiveAudio()"
             class="w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm text-white border-none"
@@ -271,8 +272,6 @@
           >
             <i class="fa-solid" :class="audioPlayer.isAudioPlaying.value ? 'fa-pause' : 'fa-play'"></i>
           </button>
-
-          <!-- Stop Button -->
           <button
             @click="audioPlayer.stopAudio()"
             class="w-9 h-9 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-sm text-red-500 hover:bg-red-500/10 border-none"
@@ -283,6 +282,7 @@
           </button>
         </div>
       </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -290,13 +290,18 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { quranApi } from "../services/quranApi";
 import { usePreferencesStore } from "../stores/preferences";
 import { useBookmarksStore } from "../stores/bookmarks";
 import { useAudioPlayer } from "../composables/useAudioPlayer";
+import { staggerReveal, audioBarEnter, audioBarLeave } from "../composables/useGsap";
 import TafsirModal from "../components/TafsirModal.vue";
 import ReadingToolbar from "../components/ReadingToolbar.vue";
 import VerseCard from "../components/VerseCard.vue";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const route = useRoute();
 const router = useRouter();
@@ -311,7 +316,7 @@ const errMsg = ref("");
 const surahdata = ref({});
 const verses = ref([]);
 
-// Sidebar lists
+// Sidebar
 const surahList = ref([]);
 const sidebarSearch = ref("");
 
@@ -350,12 +355,7 @@ const scrollToVerse = (ayahNumber) => {
     const elementRect = el.getBoundingClientRect().top;
     const elementPosition = elementRect - bodyRect;
     const offsetPosition = elementPosition - offset;
-
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: "smooth",
-    });
-
+    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     preferencesStore.saveProgress({
       number: surahnumber.value,
       name: surahdata.value.name.transliteration.id,
@@ -366,6 +366,30 @@ const scrollToVerse = (ayahNumber) => {
   }
 };
 
+// ── GSAP: stagger verse cards after data loads ─────────────────────────────
+const animateVerseCards = () => {
+  nextTick(() => {
+    const cards = document.querySelectorAll("[id^='verse-']");
+    if (cards.length) {
+      staggerReveal(cards, { stagger: 0.04, y: 24, duration: 0.5, useScrollTrigger: true });
+    }
+  });
+};
+
+// ── GSAP: stagger sidebar links after list loads ───────────────────────────
+const animateSidebarLinks = () => {
+  nextTick(() => {
+    const links = document.querySelectorAll("aside .router-link-sidebar");
+    if (links.length) {
+      gsap.fromTo(
+        links,
+        { x: -16, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.3, stagger: 0.018, ease: "power2.out" }
+      );
+    }
+  });
+};
+
 const fetchSurahDetails = async () => {
   loaded.value = false;
   error.value = false;
@@ -374,7 +398,6 @@ const fetchSurahDetails = async () => {
     surahdata.value = data;
     verses.value = data.verses;
 
-    // Save initial landing progress
     preferencesStore.saveProgress({
       number: surahnumber.value,
       name: data.name.transliteration.id,
@@ -383,8 +406,8 @@ const fetchSurahDetails = async () => {
       verseCount: data.numberOfVerses,
     });
 
-    // Check query params for link-jump
     nextTick(() => {
+      animateVerseCards();
       const queryAyah = route.query.ayah;
       if (queryAyah) {
         const ayahNum = parseInt(queryAyah);
@@ -410,6 +433,7 @@ const fetchSurahList = async () => {
   try {
     const data = await quranApi.fetchSurahList();
     surahList.value = data;
+    animateSidebarLinks();
   } catch (err) {
     console.error("Failed to load sidebar surah list:", err);
   }
@@ -425,12 +449,9 @@ const openSurahTafsir = () => {
 const openVerseTafsir = (verse) => {
   isVerseTafsirModal.value = true;
   modalTitle.value = `Tafsir Ayat ${verse.number.inSurah}`;
-  modalTafsirWajiz.value =
-    verse.tafsir?.id?.short || "Tidak ada detail tafsir wajiz.";
-  modalTafsirTahlili.value =
-    verse.tafsir?.id?.long || "Tidak ada detail tafsir tahlili.";
+  modalTafsirWajiz.value = verse.tafsir?.id?.short || "Tidak ada detail tafsir wajiz.";
+  modalTafsirTahlili.value = verse.tafsir?.id?.long || "Tidak ada detail tafsir tahlili.";
   showModal.value = true;
-
   preferencesStore.saveProgress({
     number: surahnumber.value,
     name: surahdata.value.name.transliteration.id,
@@ -440,9 +461,7 @@ const openVerseTafsir = (verse) => {
   });
 };
 
-const closeModal = () => {
-  showModal.value = false;
-};
+const closeModal = () => { showModal.value = false; };
 
 const toggleBookmark = (verse) => {
   bookmarksStore.toggleBookmark({
@@ -459,7 +478,16 @@ const toggleAudio = (verse) => {
   });
 };
 
-// Route watcher for sidebar selection/route changes
+// ── Audio bar GSAP spring hooks ────────────────────────────────────────────
+const onAudioBarEnter = (el, done) => {
+  audioBarEnter(el);
+  gsap.delayedCall(0.52, done);
+};
+const onAudioBarLeave = (el, done) => {
+  audioBarLeave(el, done);
+};
+
+// Route watcher
 watch(
   () => route.params.surat,
   (newSurat) => {
@@ -487,35 +515,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   audioPlayer.stopAudio();
+  ScrollTrigger.getAll().forEach((t) => t.kill());
 });
 </script>
 
 <style scoped>
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.animate-fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-.animate-slide-up {
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+/* Animations handled by GSAP */
 </style>

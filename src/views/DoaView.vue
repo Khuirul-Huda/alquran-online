@@ -127,7 +127,7 @@
         <div
           v-for="doa in filteredDoas"
           :key="doa.id"
-          class="themed-card rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
+          class="doa-card themed-card rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
         >
           <!-- Category and Actions -->
           <div class="flex justify-between items-start gap-4 mb-4">
@@ -231,9 +231,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { quranApi } from "../services/quranApi";
 import { usePreferencesStore } from "../stores/preferences";
+import { staggerReveal } from "../composables/useGsap";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const preferencesStore = usePreferencesStore();
 
@@ -280,6 +285,13 @@ const fetchDoas = async () => {
     const liveDoas = await quranApi.fetchDoas();
     doas.value = liveDoas;
     extractGroups();
+    // Stagger cards as they enter viewport
+    nextTick(() => {
+      const cards = document.querySelectorAll(".doa-card");
+      if (cards.length) {
+        staggerReveal(cards, { stagger: 0.045, y: 22, duration: 0.5, useScrollTrigger: true });
+      }
+    });
   } catch (err) {
     console.error("Failed to fetch doas:", err);
     errMsg.value = err.message || "Gagal mengambil data dari server.";
@@ -310,34 +322,12 @@ const copyDoa = (doa) => {
 onMounted(() => {
   fetchDoas();
 });
+
+onUnmounted(() => {
+  ScrollTrigger.getAll().forEach((t) => t.kill());
+});
 </script>
 
 <style scoped>
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+/* Animations handled by GSAP */
 </style>

@@ -29,9 +29,10 @@
         </select>
       </div>
 
-      <!-- Settings Toggle Button (Gear Icon) -->
+      <!-- Settings Toggle Button -->
       <button
-        @click="showCustomSettings = !showCustomSettings"
+        ref="gearBtnRef"
+        @click="toggleSettings"
         class="w-8 h-8 rounded-lg flex items-center justify-center border transition-all cursor-pointer shadow-sm hover:scale-105"
         :class="
           showCustomSettings
@@ -43,16 +44,17 @@
         title="Pengaturan Tampilan"
       >
         <i
-          class="fa-solid fa-gear text-sm transition-transform duration-300"
-          :class="{ 'rotate-45': showCustomSettings }"
+          ref="gearIconRef"
+          class="fa-solid fa-gear text-sm"
         ></i>
       </button>
     </div>
 
-    <!-- Customization Settings Container (Expandable, hidden by default) -->
+    <!-- Customization Settings Container (Expandable) -->
     <div
-      v-if="showCustomSettings"
-      class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-dashed transition-all duration-300 animate-slide-down"
+      v-show="showCustomSettings"
+      ref="settingsPanelRef"
+      class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-dashed"
       :class="
         preferencesStore.theme === 'dark'
           ? 'border-slate-800'
@@ -66,6 +68,7 @@
         >
         <div class="flex items-center gap-1">
           <button
+            ref="minusBtnRef"
             @click="decreaseFontSize"
             class="w-7 h-7 bg-quran-bg hover:bg-quran-accent/20 border border-gray-200 text-quran-deep rounded-lg flex items-center justify-center font-bold text-xs transition-all cursor-pointer"
           >
@@ -82,6 +85,7 @@
             {{ Math.round((preferencesStore.fontSizeFactor - 1.4) * 50) + 50 }}%
           </span>
           <button
+            ref="plusBtnRef"
             @click="increaseFontSize"
             class="w-7 h-7 bg-quran-bg hover:bg-quran-accent/20 border border-gray-200 text-quran-deep rounded-lg flex items-center justify-center font-bold text-xs transition-all cursor-pointer"
           >
@@ -122,7 +126,7 @@
         >
         <div class="flex gap-1.5">
           <button
-            @click="preferencesStore.setTheme('light')"
+            @click="setTheme('light', $event)"
             class="w-6 h-6 rounded-full bg-white border border-gray-300 hover:scale-110 transition-transform cursor-pointer"
             :class="{
               'ring-2 ring-quran-medium ring-offset-1':
@@ -131,7 +135,7 @@
             title="Mode Terang"
           ></button>
           <button
-            @click="preferencesStore.setTheme('sepia')"
+            @click="setTheme('sepia', $event)"
             class="w-6 h-6 rounded-full bg-[#fffdf0] border border-amber-300 hover:scale-110 transition-transform cursor-pointer"
             :class="{
               'ring-2 ring-quran-medium ring-offset-1':
@@ -140,7 +144,7 @@
             title="Mode Sepia"
           ></button>
           <button
-            @click="preferencesStore.setTheme('dark')"
+            @click="setTheme('dark', $event)"
             class="w-6 h-6 rounded-full bg-slate-900 border border-slate-950 hover:scale-110 transition-transform cursor-pointer"
             :class="{
               'ring-2 ring-quran-medium ring-offset-1':
@@ -155,8 +159,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
+import { gsap } from "gsap";
 import { usePreferencesStore } from "../stores/preferences";
+import { buttonPop } from "../composables/useGsap";
 
 defineProps({
   verses: {
@@ -178,6 +184,68 @@ const emit = defineEmits(["jump"]);
 const preferencesStore = usePreferencesStore();
 const showCustomSettings = ref(false);
 
+// Template refs
+const gearIconRef = ref(null);
+const settingsPanelRef = ref(null);
+const minusBtnRef = ref(null);
+const plusBtnRef = ref(null);
+
+// ── Settings panel expand / collapse ──────────────────────────────────────
+const toggleSettings = () => {
+  if (!showCustomSettings.value) {
+    showCustomSettings.value = true;
+    nextTick(() => {
+      if (settingsPanelRef.value) {
+        gsap.fromTo(
+          settingsPanelRef.value,
+          { opacity: 0, y: -10 },
+          { opacity: 1, y: 0, duration: 0.26, ease: "power2.out" }
+        );
+      }
+    });
+    // Spin gear icon on open
+    if (gearIconRef.value) {
+      gsap.to(gearIconRef.value, { rotation: 90, duration: 0.3, ease: "power2.out" });
+    }
+  } else {
+    if (settingsPanelRef.value) {
+      gsap.to(settingsPanelRef.value, {
+        opacity: 0,
+        y: -8,
+        duration: 0.18,
+        ease: "power2.in",
+        onComplete: () => {
+          showCustomSettings.value = false;
+        },
+      });
+    } else {
+      showCustomSettings.value = false;
+    }
+    // Return gear icon
+    if (gearIconRef.value) {
+      gsap.to(gearIconRef.value, { rotation: 0, duration: 0.3, ease: "power2.out" });
+    }
+  }
+};
+
+// ── Font size with button pop feedback ────────────────────────────────────
+const decreaseFontSize = () => {
+  preferencesStore.setFontSizeFactor(preferencesStore.fontSizeFactor - 0.2);
+  if (minusBtnRef.value) buttonPop(minusBtnRef.value);
+};
+
+const increaseFontSize = () => {
+  preferencesStore.setFontSizeFactor(preferencesStore.fontSizeFactor + 0.2);
+  if (plusBtnRef.value) buttonPop(plusBtnRef.value);
+};
+
+// ── Theme swatches with button pop ────────────────────────────────────────
+const setTheme = (theme, event) => {
+  preferencesStore.setTheme(theme);
+  if (event?.currentTarget) buttonPop(event.currentTarget);
+};
+
+// ── Computed two-way bindings ─────────────────────────────────────────────
 const showTranslation = computed({
   get: () => preferencesStore.showTranslation,
   set: (val) => preferencesStore.setShowTranslation(val),
@@ -188,31 +256,11 @@ const showTransliteration = computed({
   set: (val) => preferencesStore.setShowTransliteration(val),
 });
 
-const decreaseFontSize = () => {
-  preferencesStore.setFontSizeFactor(preferencesStore.fontSizeFactor - 0.2);
-};
-
-const increaseFontSize = () => {
-  preferencesStore.setFontSizeFactor(preferencesStore.fontSizeFactor + 0.2);
-};
-
 const onJumpSelect = (val) => {
   emit("jump", val);
 };
 </script>
 
 <style scoped>
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.animate-slide-down {
-  animation: slideDown 0.2s ease-out forwards;
-}
+/* Styles via Tailwind — no custom @keyframes needed */
 </style>
