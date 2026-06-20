@@ -331,6 +331,15 @@ const verses = ref([]);
 // Sidebar
 const surahList = ref([]);
 const sidebarSearch = ref("");
+// Debounced sidebar search — avoids recomputing the 114-item filter on every keystroke
+const debouncedSidebarSearch = ref("");
+let sidebarSearchTimer = null;
+watch(sidebarSearch, (val) => {
+  clearTimeout(sidebarSearchTimer);
+  sidebarSearchTimer = setTimeout(() => {
+    debouncedSidebarSearch.value = val;
+  }, 180);
+});
 
 // Highlighted verse
 const highlightedVerseNumber = ref(null);
@@ -373,8 +382,8 @@ const modalTafsirWajiz = ref("");
 const modalTafsirTahlili = ref("");
 
 const filteredSidebarSurahs = computed(() => {
-  if (!sidebarSearch.value) return surahList.value;
-  const query = sidebarSearch.value.toLowerCase().trim();
+  if (!debouncedSidebarSearch.value) return surahList.value;
+  const query = debouncedSidebarSearch.value.toLowerCase().trim();
   const lang = preferencesStore.language || "id";
   return surahList.value.filter((s) => {
     const nameId = s.name.transliteration[lang]?.toLowerCase() || "";
@@ -422,7 +431,8 @@ const animateVerseCards = () => {
 // ── GSAP: stagger sidebar links after list loads ───────────────────────────
 const animateSidebarLinks = () => {
   nextTick(() => {
-    const links = document.querySelectorAll("aside .router-link-sidebar");
+    // Note: template uses class "sidebar-link" on router-link elements
+    const links = document.querySelectorAll("aside .sidebar-link");
     if (links.length) {
       gsap.fromTo(
         links,
@@ -608,6 +618,7 @@ onUnmounted(() => {
   ScrollTrigger.getAll().forEach((t) => t.kill());
   window.removeEventListener("wheel", handleManualScroll);
   window.removeEventListener("touchmove", handleManualScroll);
+  clearTimeout(sidebarSearchTimer);
 });
 </script>
 

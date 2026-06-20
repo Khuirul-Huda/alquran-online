@@ -592,7 +592,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import Surat from "../components/Surat.vue";
 import { quranApi } from "../services/quranApi";
 import { usePreferencesStore } from "../stores/preferences";
@@ -608,6 +608,16 @@ const loading = ref(true);
 const error = ref(false);
 const errMsg = ref("Terjadi kesalahan saat mengambil data.");
 const searchQuery = ref("");
+// Debounced version of searchQuery — only updates 180ms after user stops typing.
+// This prevents filteredSurah from re-running on every single keystroke.
+const debouncedSearchQuery = ref("");
+let searchDebounceTimer = null;
+watch(searchQuery, (val) => {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    debouncedSearchQuery.value = val;
+  }, 180);
+});
 const activeTab = ref("surah");
 
 const randomVerse = ref(null);
@@ -760,8 +770,8 @@ const selectedCityComputed = computed({
 });
 
 const filteredSurah = computed(() => {
-  if (!searchQuery.value) return surat.value;
-  const query = searchQuery.value.toLowerCase().trim();
+  if (!debouncedSearchQuery.value) return surat.value;
+  const query = debouncedSearchQuery.value.toLowerCase().trim();
   return surat.value.filter((s) => {
     const nameId = s.name.transliteration.id.toLowerCase();
     const translation = s.name.translation.id.toLowerCase();
