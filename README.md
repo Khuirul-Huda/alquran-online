@@ -6,7 +6,6 @@
 
 **A modern, open-source Progressive Web App for reading the Holy Quran**  
 Built with Vue 3 · Pinia · GSAP · Vite · PWA
-
 </div>
 
 ---
@@ -177,5 +176,5 @@ This project is open source. See [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-  <sub>Made with ❤️ · Barakallahu fiikum</sub>
+  <sub>This is a continuation of a legacy project started in 2022. Made with ❤️ · Barakallahu fiikum</sub>
 </div>
