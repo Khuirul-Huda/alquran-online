@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto px-4 py-6 flex gap-8">
       <!-- Left Sidebar: List of 114 Surahs (hidden on mobile, visible on desktop) -->
       <aside
-        class="hidden lg:block w-80 rounded-2xl h-[calc(100vh-130px)] sticky top-[95px] flex-shrink-0 flex flex-col transition-all duration-300 themed-card"
+        class="hidden lg:block w-80 rounded-2xl h-[calc(100vh-130px)] sticky top-[95px] flex-shrink-0 flex flex-col transition-all duration-300 themed-card overflow-hidden self-start"
       >
         <!-- Search Input in Sidebar -->
         <div
