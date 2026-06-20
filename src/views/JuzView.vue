@@ -2,48 +2,40 @@
   <div class="min-h-screen transition-colors duration-300 pb-16" :class="activeTheme === 'dark' ? 'bg-slate-950 text-slate-100' : (activeTheme === 'sepia' ? 'bg-amber-50/20 text-amber-950' : 'bg-quran-bg text-quran-deep')">
     <div class="max-w-6xl mx-auto px-4 py-6 flex gap-8">
       
-      <!-- Left Sidebar: List of 114 Surahs (hidden on mobile, visible on desktop) -->
+      <!-- Left Sidebar: List of 30 Juz (hidden on mobile, visible on desktop) -->
       <aside 
         class="hidden lg:block w-80 border rounded-2xl h-[calc(100vh-130px)] sticky top-[90px] flex-shrink-0 flex flex-col shadow-sm transition-colors duration-300"
         :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800' : (activeTheme === 'sepia' ? 'bg-amber-50 border-amber-200/60' : 'bg-white border-quran-medium/10')"
       >
-        <!-- Search Input in Sidebar -->
         <div class="p-4 border-b flex-shrink-0" :class="activeTheme === 'dark' ? 'border-slate-800' : 'border-gray-100'">
-          <div class="relative shadow-sm">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input 
-              v-model="sidebarSearch" 
-              type="text" 
-              placeholder="Cari surah di sini..." 
-              class="w-full pl-8 pr-3 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light transition-all"
-              :class="activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-100' : 'bg-gray-50 border-gray-200 text-quran-deep'"
-            />
-          </div>
+          <h3 class="font-bold text-xs uppercase tracking-wider text-gray-400">Pilih Juz</h3>
         </div>
         
-        <!-- Scrollable List of Surahs -->
+        <!-- Juz 1-30 List -->
         <div class="flex-grow overflow-y-auto p-2 space-y-1">
           <router-link 
-            v-for="s in filteredSidebarSurahs" 
-            :key="s.number" 
-            :to="'/read/' + s.number"
+            v-for="j in 30" 
+            :key="j" 
+            :to="'/juz/' + j"
             class="flex items-center justify-between p-3 rounded-xl transition-all duration-150 text-xs font-semibold group"
-            :class="s.number == surahnumber 
+            :class="j == juzNumber 
               ? (activeTheme === 'dark' ? 'bg-slate-800 text-quran-gold shadow-sm border-l-4 border-quran-gold' : 'bg-quran-accent/15 text-quran-deep border-l-4 border-quran-medium shadow-sm') 
               : (activeTheme === 'dark' ? 'text-slate-300 hover:bg-slate-800 hover:text-white' : 'text-gray-600 hover:bg-quran-bg hover:text-quran-medium')"
           >
             <div class="flex items-center gap-2.5">
               <span 
-                class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] transition-colors border"
-                :class="s.number == surahnumber 
+                class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors"
+                :class="j == juzNumber 
                   ? 'bg-quran-gold-light text-quran-deep font-bold border-quran-gold/40' 
                   : (activeTheme === 'dark' ? 'bg-slate-800 border-slate-700' : 'bg-gray-100 border-gray-200 group-hover:bg-quran-gold-light')"
               >
-                {{ s.number }}
+                {{ j }}
               </span>
-              <span class="group-hover:translate-x-0.5 transition-transform duration-200">{{ s.name.transliteration.id }}</span>
+              <span>Juz {{ j }}</span>
             </div>
-            <span class="font-arabic text-base text-quran-medium group-hover:text-quran-deep transition-colors">{{ s.name.short }}</span>
+            <span class="text-[9.5px] text-gray-400 group-hover:text-quran-medium transition-colors">
+              {{ getJuzLabel(j) }}
+            </span>
           </router-link>
         </div>
       </aside>
@@ -59,7 +51,7 @@
 
         <!-- Skeleton Loading State -->
         <div v-if="!loaded" class="flex flex-col gap-6">
-          <div class="animate-shimmer h-40 rounded-2xl"></div>
+          <div class="animate-shimmer h-24 rounded-2xl"></div>
           <div class="animate-shimmer h-14 rounded-2xl"></div>
           <div v-for="h in 5" :key="h" class="border rounded-2xl p-6 h-48 flex flex-col justify-between" :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'">
             <div class="flex justify-between items-center">
@@ -75,7 +67,7 @@
         <div v-else-if="error" class="flex justify-center items-center py-16">
           <div class="bg-white border border-red-100 rounded-2xl p-8 text-center max-w-sm shadow-sm">
             <i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-            <h3 class="font-bold text-lg text-gray-900 mb-2">Gagal Memuat Surah</h3>
+            <h3 class="font-bold text-lg text-gray-900 mb-2">Gagal Memuat Juz</h3>
             <p class="text-sm text-gray-500 mb-6">{{ errMsg }}</p>
             <router-link to="/" class="bg-quran-medium hover:bg-quran-deep text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm">
               Kembali ke Beranda
@@ -86,32 +78,17 @@
         <!-- Main Reading Content -->
         <div v-else class="space-y-6">
           
-          <!-- Surah Header Banner Card -->
+          <!-- Juz Header Card -->
           <div class="relative overflow-hidden bg-gradient-to-br from-quran-deep to-quran-medium text-white rounded-2xl p-6 md:p-8 shadow-md border border-quran-gold/20">
             <div class="flex justify-between items-center relative z-10">
               <div>
-                <h1 class="text-3xl font-bold tracking-tight text-white">{{ surahdata.name.transliteration.id }}</h1>
-                <p class="text-sm font-medium text-quran-gold-light mt-1 italic">"{{ surahdata.name.translation.id }}"</p>
+                <h1 class="text-3xl font-bold tracking-tight text-white">Juz {{ juzNumber }}</h1>
+                <p class="text-xs font-semibold text-quran-gold-light mt-1.5 flex items-center gap-1.5">
+                  <i class="fa-solid fa-location-arrow"></i>
+                  <span>Rentang: {{ juzData.start }} s/d {{ juzData.end }}</span>
+                </p>
               </div>
-              <div class="font-arabic text-4xl text-quran-gold">{{ surahdata.name.short }}</div>
-            </div>
-            
-            <div class="h-px bg-white/10 my-4 md:my-5 relative z-10"></div>
-            
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
-              <div class="flex gap-2">
-                <span class="bg-white/10 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5">
-                  <i class="fa-solid fa-location-dot text-quran-gold"></i>
-                  <span>{{ formatRevelation(surahdata.revelation.id) }}</span>
-                </span>
-                <span class="bg-white/10 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5">
-                  <i class="fa-solid fa-book-open text-quran-gold"></i>
-                  <span>{{ surahdata.numberOfVerses }} Ayat</span>
-                </span>
-              </div>
-              <button @click="openSurahTafsir" class="bg-quran-gold hover:bg-white text-quran-deep font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm">
-                <i class="fa-solid fa-circle-info"></i> Info & Tafsir Surah
-              </button>
+              <div class="font-arabic text-3xl text-quran-gold">الجزء {{ convertToArabicNumber(juzNumber) }}</div>
             </div>
           </div>
 
@@ -167,7 +144,7 @@
               </div>
             </div>
 
-            <!-- Jump To Ayat Dropdown -->
+            <!-- Jump To Verse Dropdown -->
             <div class="flex items-center gap-2">
               <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Lompat Ke:</span>
               <select 
@@ -175,112 +152,134 @@
                 class="bg-quran-bg border border-gray-200 rounded-lg text-xs font-bold p-1.5 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer text-quran-deep"
               >
                 <option value="" disabled selected>Ayat...</option>
-                <option v-for="v in verses" :key="v.number.inSurah" :value="v.number.inSurah">
-                  Ayat {{ v.number.inSurah }}
+                <option v-for="(v, index) in verses" :key="v.number.inQuran" :value="v.number.inQuran">
+                  Ayat {{ index + 1 }} ({{ getVerseLabel(v.number.inQuran) }})
                 </option>
               </select>
             </div>
           </div>
 
-          <!-- Bismillah Banner -->
-          <div 
-            v-if="surahdata.preBismillah" 
-            class="font-arabic text-3xl md:text-4xl text-center py-8 px-4 border shadow-sm leading-relaxed transition-colors"
-            :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-200/50 text-amber-950' : 'bg-white border-quran-medium/5 text-quran-deep')"
-          >
-            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-          </div>
-
-          <!-- Verses Cards Container -->
-          <div class="flex flex-col gap-5">
-            <div 
-              v-for="verse in verses" 
-              :key="verse.number.inSurah"
-              :id="'verse-' + verse.number.inSurah"
-              class="border rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
-              :class="[
-                activeTheme === 'light' 
-                  ? (activeVerseNumber === verse.number.inSurah ? 'bg-gradient-to-r from-quran-accent/5 to-white border-quran-gold shadow-md' : 'bg-white border-quran-medium/10 shadow-sm hover:shadow-md') 
-                  : '',
-                activeTheme === 'sepia' 
-                  ? (activeVerseNumber === verse.number.inSurah ? 'bg-amber-100/60 border-quran-gold shadow-md' : 'bg-[#fffdf0] border-amber-200/50 shadow-sm hover:shadow-md') 
-                  : '',
-                activeTheme === 'dark' 
-                  ? (activeVerseNumber === verse.number.inSurah ? 'bg-slate-800 border-quran-gold shadow-md' : 'bg-slate-900 border-slate-800/80 shadow-sm hover:shadow-md') 
-                  : ''
-              ]"
-            >
-              <!-- Highlight bar left (only for active playing verse) -->
+          <!-- Verses Cards with dynamic Surah dividers -->
+          <div class="flex flex-col gap-6">
+            <template v-for="(verse, idx) in verses" :key="verse.number.inQuran">
+              <!-- Surah Boundary Banner -->
               <div 
-                class="absolute left-0 top-0 h-full w-1 bg-quran-light opacity-30 rounded-l-2xl transition-all"
-                :class="{ '!bg-quran-gold !opacity-100 !w-1.5': activeVerseNumber === verse.number.inSurah }"
-              ></div>
-
-              <!-- Verse Top Controls -->
-              <div class="flex justify-between items-center mb-6">
-                <span 
-                  class="w-8 h-8 rounded-full font-bold flex items-center justify-center text-xs border transition-all"
-                  :class="activeVerseNumber === verse.number.inSurah 
-                    ? 'bg-quran-gold-light border-quran-gold text-quran-deep' 
-                    : (activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-quran-bg border-quran-gold-light text-quran-deep')"
-                >
-                  {{ verse.number.inSurah }}
-                </span>
-
-                <div class="flex gap-2">
-                  <!-- Play Audio Button -->
-                  <button 
-                    @click="toggleAudio(verse)" 
-                    class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-all cursor-pointer"
-                    :class="[
-                      activeVerseNumber === verse.number.inSurah 
-                        ? 'bg-quran-gold text-quran-deep border-quran-gold shadow-sm' 
-                        : (activeTheme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100')
-                    ]"
-                    :title="activeVerseNumber === verse.number.inSurah ? 'Pause' : 'Putar Audio'"
-                  >
-                    <i :class="activeVerseNumber === verse.number.inSurah ? 'fa-solid fa-pause' : 'fa-solid fa-play'"></i>
-                  </button>
-                  <!-- Tafsir Ayat Button -->
-                  <button 
-                    @click="openVerseTafsir(verse)" 
-                    class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-all cursor-pointer"
-                    :class="activeTheme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100'"
-                    title="Tafsir Ayat"
-                  >
-                    <i class="fa-solid fa-book"></i>
-                  </button>
+                v-if="idx === 0 || isNewSurah(verse, verses[idx-1])" 
+                class="border rounded-2xl p-5 text-center transition-all duration-300"
+                :class="[
+                  activeTheme === 'dark' 
+                    ? 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-slate-800' 
+                    : (activeTheme === 'sepia' ? 'bg-[#fdf8e6] border-amber-200/50 text-amber-950' : 'bg-gradient-to-r from-quran-deep to-quran-medium border-quran-gold/20 text-white')
+                ]"
+              >
+                <div class="flex justify-between items-center px-4">
+                  <div class="text-left">
+                    <h2 class="font-bold text-lg" :class="activeTheme === 'dark' || activeTheme === 'sepia' ? '' : 'text-white'">
+                      Surah {{ getSurahInfo(verse.number.inQuran).name }}
+                    </h2>
+                    <p class="text-[10.5px] opacity-80 font-medium italic mt-0.5">
+                      "{{ getSurahInfo(verse.number.inQuran).translation }}"
+                    </p>
+                  </div>
+                  <span class="font-arabic text-3xl" :class="activeTheme === 'dark' || activeTheme === 'sepia' ? 'text-quran-medium' : 'text-quran-gold'">
+                    {{ getSurahInfo(verse.number.inQuran).arabic }}
+                  </span>
                 </div>
               </div>
 
-              <!-- Arabic script of the verse -->
+              <!-- Verse Card -->
               <div 
-                class="font-arabic text-right mb-5 leading-loose font-medium selection:bg-quran-accent/30"
-                :class="activeTheme === 'dark' ? 'text-slate-100' : (activeTheme === 'sepia' ? 'text-amber-950' : 'text-quran-deep')"
-                :style="{ fontSize: arabicFontSizeFactor + 'rem', lineHeight: (arabicFontSizeFactor * 0.9 + 1) }"
-                dir="rtl"
+                :id="'verse-' + verse.number.inQuran"
+                class="border rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
+                :class="[
+                  activeTheme === 'light' 
+                    ? (activeVerseNumber === verse.number.inQuran ? 'bg-gradient-to-r from-quran-accent/5 to-white border-quran-gold shadow-md' : 'bg-white border-quran-medium/10 shadow-sm hover:shadow-md') 
+                    : '',
+                  activeTheme === 'sepia' 
+                    ? (activeVerseNumber === verse.number.inQuran ? 'bg-amber-100/60 border-quran-gold shadow-md' : 'bg-[#fffdf0] border-amber-200/50 shadow-sm hover:shadow-md') 
+                    : '',
+                  activeTheme === 'dark' 
+                    ? (activeVerseNumber === verse.number.inQuran ? 'bg-slate-800 border-quran-gold shadow-md' : 'bg-slate-900 border-slate-800/80 shadow-sm hover:shadow-md') 
+                    : ''
+                ]"
               >
-                {{ verse.text.arab }}
+                <!-- Highlight bar left -->
+                <div 
+                  class="absolute left-0 top-0 h-full w-1 bg-quran-light opacity-30 rounded-l-2xl transition-all"
+                  :class="{ '!bg-quran-gold !opacity-100 !w-1.5': activeVerseNumber === verse.number.inQuran }"
+                ></div>
+
+                <!-- Verse Top Row -->
+                <div class="flex justify-between items-center mb-6">
+                  <div class="flex items-center gap-2">
+                    <span 
+                      class="w-8 h-8 rounded-full font-bold flex items-center justify-center text-xs border transition-all"
+                      :class="activeVerseNumber === verse.number.inQuran 
+                        ? 'bg-quran-gold-light border-quran-gold text-quran-deep' 
+                        : (activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-quran-bg border-quran-gold-light text-quran-deep')"
+                    >
+                      {{ verse.number.inSurah }}
+                    </span>
+                    <span class="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest">
+                      {{ getSurahInfo(verse.number.inQuran).name }}
+                    </span>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <!-- Play Audio Button -->
+                    <button 
+                      @click="toggleAudio(verse)" 
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-all cursor-pointer"
+                      :class="[
+                        activeVerseNumber === verse.number.inQuran 
+                          ? 'bg-quran-gold text-quran-deep border-quran-gold shadow-sm' 
+                          : (activeTheme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100')
+                      ]"
+                      :title="activeVerseNumber === verse.number.inQuran ? 'Pause' : 'Putar Audio'"
+                    >
+                      <i :class="activeVerseNumber === verse.number.inQuran ? 'fa-solid fa-pause' : 'fa-solid fa-play'"></i>
+                    </button>
+                    <!-- Tafsir Ayat Button -->
+                    <button 
+                      @click="openVerseTafsir(verse)" 
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-all cursor-pointer"
+                      :class="activeTheme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100'"
+                      title="Tafsir Ayat"
+                    >
+                      <i class="fa-solid fa-book"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Arabic text -->
+                <div 
+                  class="font-arabic text-right mb-5 leading-loose font-medium"
+                  :class="activeTheme === 'dark' ? 'text-slate-100' : (activeTheme === 'sepia' ? 'text-amber-950' : 'text-quran-deep')"
+                  :style="{ fontSize: arabicFontSizeFactor + 'rem', lineHeight: (arabicFontSizeFactor * 0.9 + 1) }"
+                  dir="rtl"
+                >
+                  {{ verse.text.arab }}
+                </div>
+
+                <!-- Latin Transliteration -->
+                <p 
+                  v-if="showTransliteration" 
+                  class="text-sm font-medium italic mb-3 leading-relaxed"
+                  :class="activeTheme === 'dark' ? 'text-slate-300' : (activeTheme === 'sepia' ? 'text-amber-900/90' : 'text-quran-medium/95')"
+                >
+                  {{ verse.text.transliteration.en }}
+                </p>
+
+                <!-- Translation -->
+                <p 
+                  v-if="showTranslation" 
+                  class="text-sm font-normal leading-relaxed border-t pt-3"
+                  :class="activeTheme === 'dark' ? 'text-slate-400 border-slate-800' : (activeTheme === 'sepia' ? 'text-amber-900/75 border-amber-200/30' : 'text-gray-600 border-gray-50')"
+                >
+                  {{ verse.translation.id }}
+                </p>
               </div>
-
-              <!-- Latin Transliteration of the verse -->
-              <p 
-                v-if="showTransliteration" 
-                class="text-sm font-medium italic mb-3 leading-relaxed"
-                :class="activeTheme === 'dark' ? 'text-slate-300' : (activeTheme === 'sepia' ? 'text-amber-900/90' : 'text-quran-medium/95')"
-              >
-                {{ verse.text.transliteration.en }}
-              </p>
-
-              <!-- Translation of the verse -->
-              <p 
-                v-if="showTranslation" 
-                class="text-sm font-normal leading-relaxed border-t pt-3"
-                :class="activeTheme === 'dark' ? 'text-slate-400 border-slate-800' : (activeTheme === 'sepia' ? 'text-amber-900/75 border-amber-200/30' : 'text-gray-600 border-gray-50')"
-              >
-                {{ verse.translation.id }}
-              </p>
-            </div>
+            </template>
           </div>
 
         </div>
@@ -318,19 +317,18 @@
 import axios from "axios";
 
 export default {
-  name: "SuratView",
+  name: "JuzView",
   data() {
     return {
-      surahnumber: 0,
+      juzNumber: 1,
       loaded: false,
       error: false,
       errMsg: "",
-      surahdata: {},
+      juzData: {},
       verses: [],
       
-      // Full list of surahs for the left sidebar
+      // Full list of surahs from API to help compute verse mapping
       surahList: [],
-      sidebarSearch: "",
 
       // Preferences (persisted)
       arabicFontSizeFactor: 2.2,
@@ -348,28 +346,33 @@ export default {
       modalText: "",
     };
   },
-  computed: {
-    filteredSidebarSurahs() {
-      if (!this.sidebarSearch) return this.surahList;
-      const query = this.sidebarSearch.toLowerCase().trim();
-      return this.surahList.filter((s) => {
-        const nameId = s.name.transliteration.id.toLowerCase();
-        const num = String(s.number);
-        return nameId.includes(query) || num.includes(query);
-      });
+  watch: {
+    // Watch route params
+    "$route.params.juz"(newVal) {
+      if (newVal) {
+        this.juzNumber = parseInt(newVal);
+        this.stopAudio();
+        this.fetchJuzDetails();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    },
+    showTranslation(newVal) {
+      this.savePreference("quran_pref_show_translation", newVal);
+    },
+    showTransliteration(newVal) {
+      this.savePreference("quran_pref_show_transliteration", newVal);
     },
   },
   mounted() {
-    const params = this.$route.params.surat;
-    if (isNaN(params) || params < 1 || params > 114) {
+    const params = this.$route.params.juz;
+    if (isNaN(params) || params < 1 || params > 30) {
       this.$router.push({ name: "Main" });
       return;
     }
     
-    this.surahnumber = parseInt(params);
+    this.juzNumber = parseInt(params);
     this.loadPreferences();
-    this.fetchSurahDetails();
-    this.fetchSurahList();
+    this.fetchSurahList(); // Load surah list first to establish mapping, then load details
   },
   unmounted() {
     this.stopAudio();
@@ -407,20 +410,92 @@ export default {
         this.savePreference("quran_pref_font_factor", this.arabicFontSizeFactor);
       }
     },
-    saveProgress(ayahNum) {
-      localStorage.setItem(
-        "lastReadSurah",
-        JSON.stringify({
-          number: this.surahnumber,
-          name: this.surahdata.name.transliteration.id,
-          arabic: this.surahdata.name.short,
-          verseCount: this.surahdata.numberOfVerses,
-          lastAyah: ayahNum,
-          timestamp: Date.now(),
-        })
-      );
+    saveProgress(verseInQuran) {
+      const info = this.getSurahInfo(verseInQuran);
+      if (info) {
+        localStorage.setItem(
+          "lastReadSurah",
+          JSON.stringify({
+            number: info.number,
+            name: info.name,
+            arabic: info.arabic,
+            lastAyah: info.verseInSurah,
+            timestamp: Date.now(),
+          })
+        );
+      }
     },
-    fetchSurahDetails() {
+    getJuzLabel(j) {
+      const labels = [
+        "Al-Fatihah 1 - Al-Baqarah 141",
+        "Al-Baqarah 142 - Al-Baqarah 252",
+        "Al-Baqarah 253 - Ali 'Imran 92",
+        "Ali 'Imran 93 - An-Nisa' 23",
+        "An-Nisa' 24 - An-Nisa' 147",
+        "An-Nisa' 148 - Al-Ma'idah 81",
+        "Al-Ma'idah 82 - Al-An'am 110",
+        "Al-An'am 111 - Al-A'raf 87",
+        "Al-A'raf 88 - Al-Anfal 40",
+        "Al-Anfal 41 - At-Taubah 92",
+        "At-Taubah 93 - Hud 5",
+        "Hud 6 - Yusuf 52",
+        "Yusuf 53 - Ibrahim 52",
+        "Al-Hijr 1 - An-Nahl 128",
+        "Al-Isra' 1 - Al-Kahf 74",
+        "Al-Kahf 75 - Ta Ha 135",
+        "Al-Anbiya' 1 - Al-Hajj 78",
+        "Al-Mu'minun 1 - Al-Furqan 20",
+        "Al-Furqan 21 - An-Naml 55",
+        "An-Naml 56 - Al-'Ankabut 45",
+        "Al-'Ankabut 46 - Al-Ahzab 30",
+        "Al-Ahzab 31 - Yasin 27",
+        "Yasin 28 - Az-Zumar 31",
+        "Az-Zumar 32 - Fussilat 46",
+        "Fussilat 47 - Al-Jathiyah 37",
+        "Al-Ahqaf 1 - Adz-Dzariyat 30",
+        "Adz-Dzariyat 31 - Al-Hadid 29",
+        "Al-Mujadilah 1 - At-Tahrim 12",
+        "Al-Mulk 1 - Al-Mursalat 50",
+        "An-Naba' 1 - An-Nas 6"
+      ];
+      return labels[j - 1] || "";
+    },
+    convertToArabicNumber(num) {
+      const arabicNumerals = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+      return String(num)
+        .split("")
+        .map((char) => arabicNumerals[parseInt(char)] || char)
+        .join("");
+    },
+    // Map absolute verse number in Quran (1-6236) to specific Surah details
+    getSurahInfo(inQuranValue) {
+      if (this.surahList.length === 0) return { number: 1, name: "Loading...", arabic: "", translation: "", verseInSurah: 1 };
+      let count = 0;
+      for (const s of this.surahList) {
+        if (inQuranValue > count && inQuranValue <= count + s.numberOfVerses) {
+          return {
+            number: s.number,
+            name: s.name.transliteration.id,
+            arabic: s.name.short,
+            translation: s.name.translation.id,
+            verseInSurah: inQuranValue - count
+          };
+        }
+        count += s.numberOfVerses;
+      }
+      return { number: 1, name: "", arabic: "", translation: "", verseInSurah: 1 };
+    },
+    getVerseLabel(inQuranValue) {
+      const info = this.getSurahInfo(inQuranValue);
+      return info ? `${info.name} - ${info.verseInSurah}` : "";
+    },
+    isNewSurah(curr, prev) {
+      if (!prev) return true;
+      const currInfo = this.getSurahInfo(curr.number.inQuran);
+      const prevInfo = this.getSurahInfo(prev.number.inQuran);
+      return currInfo && prevInfo && currInfo.number !== prevInfo.number;
+    },
+    fetchJuzDetails() {
       this.loaded = false;
       this.error = false;
       
@@ -429,22 +504,24 @@ export default {
         import.meta.env.VUE_APP_MAIN_API_URL ||
         "https://aqa.khuirulhuda.me.eu.org";
         
-      const url = `${baseApiUrl}/surah/${this.surahnumber}`;
+      const url = `${baseApiUrl}/juz/${this.juzNumber}`;
 
       axios
         .get(url)
         .then((res) => {
           if (res.data && res.data.data) {
-            this.surahdata = res.data.data;
-            this.verses = this.surahdata.verses;
-            this.saveProgress(1); // Save reading progress for landing page
+            this.juzData = res.data.data;
+            this.verses = this.juzData.verses;
+            if (this.verses.length > 0) {
+              this.saveProgress(this.verses[0].number.inQuran);
+            }
           } else {
             throw new Error("Respon data tidak sesuai.");
           }
         })
         .catch((err) => {
           console.error(err);
-          this.errMsg = err.message || "Gagal mengambil data dari server.";
+          this.errMsg = err.message || "Gagal mengambil data Juz.";
           this.error = true;
         })
         .finally(() => {
@@ -464,19 +541,17 @@ export default {
         .then((res) => {
           if (res.data && res.data.data) {
             this.surahList = res.data.data;
+            this.fetchJuzDetails(); // Fetch details after mapping is ready
           }
         })
         .catch((err) => {
-          console.error("Failed to load sidebar surah list:", err);
+          console.error("Failed to load surah list for Juz mapping:", err);
+          this.fetchJuzDetails();
         });
     },
-    formatRevelation(val) {
-      if (!val) return "";
-      return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
-    },
-    scrollToVerse(ayahNumber) {
-      if (!ayahNumber) return;
-      const el = document.getElementById(`verse-${ayahNumber}`);
+    scrollToVerse(inQuranValue) {
+      if (!inQuranValue) return;
+      const el = document.getElementById(`verse-${inQuranValue}`);
       if (el) {
         const offset = 160;
         const bodyRect = document.body.getBoundingClientRect().top;
@@ -489,23 +564,19 @@ export default {
           behavior: "smooth"
         });
         
-        this.saveProgress(parseInt(ayahNumber));
+        this.saveProgress(parseInt(inQuranValue));
       }
     },
     
     // Custom Modal Methods
-    openSurahTafsir() {
-      this.modalTitle = `Detail & Tafsir Surah ${this.surahdata.name.transliteration.id}`;
-      this.modalText = this.surahdata.tafsir ? this.surahdata.tafsir.id : "Tidak ada detail tafsir untuk surah ini.";
-      this.showModal = true;
-    },
     openVerseTafsir(verse) {
-      this.modalTitle = `Tafsir Ayat ${verse.number.inSurah}`;
+      const info = this.getSurahInfo(verse.number.inQuran);
+      this.modalTitle = `Tafsir ${info.name} Ayat ${verse.number.inSurah}`;
       this.modalText = verse.tafsir && verse.tafsir.id && verse.tafsir.id.short 
         ? verse.tafsir.id.short 
         : "Tidak ada detail tafsir untuk ayat ini.";
       this.showModal = true;
-      this.saveProgress(verse.number.inSurah);
+      this.saveProgress(verse.number.inQuran);
     },
     closeModal() {
       this.showModal = false;
@@ -513,7 +584,7 @@ export default {
 
     // Audio Methods
     toggleAudio(verse) {
-      if (this.activeVerseNumber === verse.number.inSurah) {
+      if (this.activeVerseNumber === verse.number.inQuran) {
         this.stopAudio();
         return;
       }
@@ -522,7 +593,7 @@ export default {
 
       const audioUrl = verse.audio.primary;
       if (audioUrl) {
-        this.activeVerseNumber = verse.number.inSurah;
+        this.activeVerseNumber = verse.number.inQuran;
         this.audioPlayer = new Audio(audioUrl);
         
         this.audioPlayer.play().catch((err) => {
@@ -534,7 +605,7 @@ export default {
           this.stopAudio();
         });
 
-        this.saveProgress(verse.number.inSurah);
+        this.saveProgress(verse.number.inQuran);
       }
     },
     stopAudio() {
@@ -545,22 +616,6 @@ export default {
       this.activeVerseNumber = null;
     },
   },
-  watch: {
-    showTranslation(newVal) {
-      this.savePreference("quran_pref_show_translation", newVal);
-    },
-    showTransliteration(newVal) {
-      this.savePreference("quran_pref_show_transliteration", newVal);
-    },
-    "$route.params.surat"(newVal) {
-      if (newVal) {
-        this.surahnumber = parseInt(newVal);
-        this.stopAudio();
-        this.fetchSurahDetails();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    },
-  }
 };
 </script>
 
