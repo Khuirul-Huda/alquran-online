@@ -4,7 +4,7 @@
       <div class="rounded-3xl overflow-hidden transition-all duration-300 themed-card">
         
         <!-- About Header -->
-        <div class="bg-gradient-to-br from-quran-deep to-quran-medium text-white p-6 md:p-8 flex items-center gap-4 border-b-2 border-quran-gold">
+        <div class="bg-quran-deep text-white p-6 md:p-8 flex items-center gap-4 border-b-2 border-quran-gold">
           <i class="fa-solid fa-circle-info text-4xl text-quran-gold"></i>
           <div>
             <h1 class="text-2xl font-bold tracking-tight text-white">Tentang Aplikasi</h1>

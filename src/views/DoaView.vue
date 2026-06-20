@@ -10,7 +10,7 @@
       </div>
 
       <!-- Page Header -->
-      <div class="relative overflow-hidden bg-gradient-to-br from-quran-deep to-quran-medium text-white rounded-2xl p-6 md:p-8 shadow-md border border-quran-gold/20 mb-6">
+      <div class="relative overflow-hidden bg-quran-deep text-white rounded-2xl p-6 md:p-8 shadow-md border border-quran-gold/20 mb-6">
         <div class="flex justify-between items-center relative z-10">
           <div>
             <h1 class="text-3xl font-bold tracking-tight text-white">Doa Harian</h1>

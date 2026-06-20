@@ -65,8 +65,8 @@
       </div>
     </div>
 
-    <!-- Hover Gradient Bottom Accent Bar -->
-    <div class="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-quran-medium to-quran-gold transition-all duration-300 group-hover:w-full"></div>
+    <!-- Hover Solid Bottom Accent Bar -->
+    <div class="absolute bottom-0 left-0 w-0 h-1 bg-quran-gold transition-all duration-300 group-hover:w-full"></div>
   </router-link>
 </template>
 

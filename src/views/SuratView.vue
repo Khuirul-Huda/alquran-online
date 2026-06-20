@@ -87,7 +87,7 @@
         <div v-else class="space-y-6">
           
           <!-- Surah Header Banner Card -->
-          <div class="relative overflow-hidden bg-gradient-to-br from-quran-deep to-quran-medium text-white rounded-2xl p-6 md:p-8 shadow-md border border-quran-gold/20">
+          <div class="relative overflow-hidden bg-quran-deep text-white rounded-2xl p-6 md:p-8 shadow-md border border-quran-gold/20">
             <div class="flex justify-between items-center relative z-10">
               <div>
                 <h1 class="text-3xl font-bold tracking-tight text-white">{{ surahdata.name.transliteration.id }}</h1>
@@ -327,10 +327,10 @@
             class="px-6 py-4 flex justify-between items-center border-b-2"
             :class="[
               activeTheme === 'dark'
-                ? 'bg-gradient-to-r from-slate-950 to-slate-800 text-white border-quran-gold'
+                ? 'bg-slate-950 text-white border-quran-gold'
                 : (activeTheme === 'sepia'
-                    ? 'bg-gradient-to-r from-amber-900 to-amber-850 text-amber-50 border-amber-400'
-                    : 'bg-gradient-to-r from-quran-deep to-quran-medium text-white border-quran-gold')
+                    ? 'bg-amber-900 text-amber-55 border-amber-450'
+                    : 'bg-quran-deep text-white border-quran-gold')
             ]"
           >
             <h3 class="font-bold text-base flex items-center gap-2">

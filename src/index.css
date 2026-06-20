@@ -32,7 +32,7 @@ body.theme-dark .themed-card {
 
 /* Cascaded active/playing verse card styles */
 body.theme-light .themed-card.active-verse {
-  @apply bg-gradient-to-r from-quran-accent/5 to-white border-quran-gold shadow-md;
+  @apply bg-quran-accent/5 border-quran-gold shadow-md;
 }
 body.theme-sepia .themed-card.active-verse {
   @apply bg-amber-100/60 border-quran-gold shadow-md;
@@ -61,25 +61,17 @@ body.theme-dark ::-webkit-scrollbar-track { background: #0f172a; }
   background: #2d6a4f;
 }
 
-/* Skeleton Loading Shimmer Keyframes */
-@keyframes shimmer {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 .animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    #f2f5f3 25%,
-    #e3ebd7 37%,
-    #f2f5f3 63%
-  );
-  background-size: 400% 100%;
-  animation: shimmer 1.5s infinite;
+  @apply animate-pulse;
+}
+body.theme-light .animate-shimmer {
+  @apply bg-gray-200/60;
+}
+body.theme-sepia .animate-shimmer {
+  @apply bg-amber-200/30;
+}
+body.theme-dark .animate-shimmer {
+  @apply bg-slate-800/80;
 }
 
 /* Dynamic Verse Pulse Highlight Animation */

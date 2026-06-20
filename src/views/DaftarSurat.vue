@@ -1,10 +1,10 @@
 <template>
   <div class="pb-12">
     <!-- Hero Header -->
-    <div class="relative overflow-hidden bg-gradient-to-br from-quran-deep to-quran-medium text-white px-6 py-16 md:py-20 rounded-b-[2.5rem] shadow-md border-b border-quran-gold/20">
+    <div class="relative overflow-hidden bg-quran-deep text-white px-6 py-16 md:py-20 rounded-b-[2.5rem] shadow-md border-b border-quran-gold/20">
       <!-- Decorative gold circle background elements -->
-      <div class="absolute top-[-10%] right-[-10%] w-[350px] h-[350px] rounded-full bg-radial-gradient from-quran-gold/15 to-transparent pointer-events-none"></div>
-      <div class="absolute bottom-[-15%] left-[-5%] w-[250px] h-[250px] rounded-full bg-radial-gradient from-quran-gold/10 to-transparent pointer-events-none"></div>
+      <div class="absolute top-[-10%] right-[-10%] w-[350px] h-[350px] rounded-full border border-quran-gold/10 pointer-events-none"></div>
+      <div class="absolute bottom-[-15%] left-[-5%] w-[250px] h-[250px] rounded-full border border-quran-gold/5 pointer-events-none"></div>
 
       <div class="max-w-6xl mx-auto text-center relative z-10">
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 animate-fade-in">
@@ -152,8 +152,8 @@
                     <span>Mulai: {{ j.start }} s/d {{ j.end }}</span>
                   </p>
                 </div>
-                <!-- Gradient highlight bar -->
-                <div class="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-quran-medium to-quran-gold transition-all duration-300 group-hover:w-full"></div>
+                 <!-- Solid highlight bar -->
+                 <div class="absolute bottom-0 left-0 w-0 h-1 bg-quran-gold transition-all duration-300 group-hover:w-full"></div>
               </router-link>
             </div>
           </div>
@@ -167,13 +167,13 @@
           <div 
             v-if="lastRead" 
             class="border rounded-2xl p-5 shadow-sm transition-all duration-300 animate-fade-in"
-            :class="[
-              activeTheme === 'dark' 
-                ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-slate-800' 
-                : (activeTheme === 'sepia' 
-                    ? 'bg-gradient-to-br from-amber-100/40 to-[#fffcf3] border-amber-250/50' 
-                    : 'bg-gradient-to-br from-quran-cream to-white border-quran-gold/30')
-            ]"
+             :class="[
+               activeTheme === 'dark' 
+                 ? 'bg-slate-900 border-slate-800' 
+                 : (activeTheme === 'sepia' 
+                     ? 'bg-[#fffcf3] border-amber-200/50' 
+                     : 'bg-quran-cream border-quran-gold/30')
+             ]"
           >
             <h4 class="text-xs uppercase tracking-wider font-bold mb-3 flex items-center gap-1.5" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-medium'">
               <i class="fa-solid fa-bookmark"></i> Lanjutkan Membaca
