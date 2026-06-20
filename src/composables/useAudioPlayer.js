@@ -8,6 +8,8 @@ const audioInstance = ref(null);
 const currentQari = ref("");
 const versesList = ref([]);
 const onNextCallback = ref(null);
+const currentTime = ref(0);
+const duration = ref(0);
 
 export function useAudioPlayer() {
   const preferencesStore = usePreferencesStore();
@@ -48,6 +50,8 @@ export function useAudioPlayer() {
     }
     activeVerse.value = null;
     isPlaying.value = false;
+    currentTime.value = 0;
+    duration.value = 0;
   };
 
   const playNextVerse = () => {
@@ -80,6 +84,8 @@ export function useAudioPlayer() {
       const audio = new Audio(audioUrl);
       audioInstance.value = audio;
       isPlaying.value = true;
+      currentTime.value = 0;
+      duration.value = 0;
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
@@ -90,6 +96,22 @@ export function useAudioPlayer() {
           }
         });
       }
+
+      audio.addEventListener("timeupdate", () => {
+        currentTime.value = audio.currentTime;
+      });
+
+      audio.addEventListener("durationchange", () => {
+        if (!isNaN(audio.duration)) {
+          duration.value = audio.duration;
+        }
+      });
+
+      audio.addEventListener("loadedmetadata", () => {
+        if (!isNaN(audio.duration)) {
+          duration.value = audio.duration;
+        }
+      });
 
       audio.addEventListener("ended", () => {
         playNextVerse();
@@ -132,14 +154,24 @@ export function useAudioPlayer() {
     }
   };
 
+  const seek = (time) => {
+    if (audioInstance.value) {
+      audioInstance.value.currentTime = time;
+      currentTime.value = time;
+    }
+  };
+
   return {
     activeVerse,
     activeVerseNumber,
     activeVerseInSurah,
     isAudioPlaying: isPlaying,
     activeQariName: currentQari,
+    currentTime,
+    duration,
     toggleAudio,
     toggleActiveAudio,
     stopAudio,
+    seek,
   };
 }

@@ -219,7 +219,7 @@
       <div
         v-if="audioPlayer.activeVerse.value !== null"
         ref="audioBarRef"
-        class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-md rounded-2xl shadow-xl border p-4 flex items-center justify-between gap-4"
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-md rounded-2xl shadow-xl border flex flex-col overflow-hidden"
         :class="[
           preferencesStore.theme === 'dark'
             ? 'bg-slate-900/90 border-slate-750 text-slate-100 backdrop-blur-md'
@@ -228,56 +228,74 @@
             : 'bg-white/90 border-quran-gold/20 text-quran-deep backdrop-blur-md',
         ]"
       >
-        <!-- Info -->
-        <div class="flex items-center gap-3">
+        <!-- Click-to-Seek Progress Bar -->
+        <div
+          class="w-full h-1 bg-gray-200/40 dark:bg-slate-800/40 relative cursor-pointer group flex-shrink-0"
+          @click="handleProgressSeek"
+          title="Seek playback position"
+        >
           <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center"
-            :class="preferencesStore.theme === 'dark' ? 'bg-slate-800' : 'bg-quran-medium/10'"
+            class="h-full bg-quran-gold transition-all duration-150 relative"
+            :style="{ width: progressPercent + '%' }"
           >
-            <i
-              class="fa-solid fa-volume-high text-lg"
-              :class="[audioPlayer.isAudioPlaying.value ? 'animate-pulse text-quran-gold' : 'text-gray-400']"
-            ></i>
-          </div>
-          <div class="text-left">
-            <p class="text-[10.5px] font-bold uppercase tracking-wider text-gray-400">Sedang Diputar</p>
-            <h5 class="font-bold text-xs leading-snug">
-              {{ surahdata.name?.transliteration?.id || "..." }} Ayat
-              {{ audioPlayer.activeVerseInSurah.value }}
-            </h5>
-            <p
-              class="text-xs font-semibold"
-              :class="preferencesStore.theme === 'dark' ? 'text-quran-gold-light' : 'text-quran-medium'"
-            >
-              {{ audioPlayer.activeQariName.value }}
-            </p>
+            <!-- Seek handle dot (shows on hover) -->
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-quran-gold scale-0 group-hover:scale-125 transition-transform shadow-sm"></div>
           </div>
         </div>
 
-        <!-- Controls -->
-        <div class="flex items-center gap-2">
-          <button
-            @click="audioPlayer.toggleActiveAudio()"
-            class="w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm text-white border-none"
-            :class="[
-              preferencesStore.theme === 'dark'
-                ? 'bg-slate-800 hover:bg-slate-700 text-quran-gold border border-slate-700'
-                : preferencesStore.theme === 'sepia'
-                ? 'bg-amber-800 hover:bg-amber-900'
-                : 'bg-quran-medium hover:bg-quran-deep',
-            ]"
-            :title="audioPlayer.isAudioPlaying.value ? 'Pause' : 'Putar'"
-          >
-            <i class="fa-solid" :class="audioPlayer.isAudioPlaying.value ? 'fa-pause' : 'fa-play'"></i>
-          </button>
-          <button
-            @click="audioPlayer.stopAudio()"
-            class="w-9 h-9 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-sm text-red-500 hover:bg-red-500/10 border-none"
-            :class="preferencesStore.theme === 'dark' ? 'border-slate-850' : 'border-gray-200'"
-            title="Hentikan Audio"
-          >
-            <i class="fa-solid fa-stop"></i>
-          </button>
+        <!-- Contents container -->
+        <div class="p-4 flex items-center justify-between gap-4">
+          <!-- Info -->
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-xl flex items-center justify-center"
+              :class="preferencesStore.theme === 'dark' ? 'bg-slate-800' : 'bg-quran-medium/10'"
+            >
+              <i
+                class="fa-solid fa-volume-high text-lg"
+                :class="[audioPlayer.isAudioPlaying.value ? 'animate-pulse text-quran-gold' : 'text-gray-400']"
+              ></i>
+            </div>
+            <div class="text-left">
+              <p class="text-[10.5px] font-bold uppercase tracking-wider text-gray-400">Sedang Diputar</p>
+              <h5 class="font-bold text-xs leading-snug">
+                {{ surahdata.name?.transliteration?.id || "..." }} Ayat
+                {{ audioPlayer.activeVerseInSurah.value }}
+              </h5>
+              <p
+                class="text-xs font-semibold"
+                :class="preferencesStore.theme === 'dark' ? 'text-quran-gold-light' : 'text-quran-medium'"
+              >
+                {{ audioPlayer.activeQariName.value }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex items-center gap-2">
+            <button
+              @click="audioPlayer.toggleActiveAudio()"
+              class="w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm text-white border-none"
+              :class="[
+                preferencesStore.theme === 'dark'
+                  ? 'bg-slate-800 hover:bg-slate-700 text-quran-gold border border-slate-700'
+                  : preferencesStore.theme === 'sepia'
+                  ? 'bg-amber-800 hover:bg-amber-900'
+                  : 'bg-quran-medium hover:bg-quran-deep',
+              ]"
+              :title="audioPlayer.isAudioPlaying.value ? 'Pause' : 'Putar'"
+            >
+              <i class="fa-solid" :class="audioPlayer.isAudioPlaying.value ? 'fa-pause' : 'fa-play'"></i>
+            </button>
+            <button
+              @click="audioPlayer.stopAudio()"
+              class="w-9 h-9 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-sm text-red-500 hover:bg-red-500/10 border-none"
+              :class="preferencesStore.theme === 'dark' ? 'border-slate-850' : 'border-gray-200'"
+              title="Hentikan Audio"
+            >
+              <i class="fa-solid fa-stop"></i>
+            </button>
+          </div>
         </div>
       </div>
       </Transition>
@@ -322,6 +340,21 @@ const sidebarSearch = ref("");
 
 // Highlighted verse
 const highlightedVerseNumber = ref(null);
+
+const progressPercent = computed(() => {
+  if (!audioPlayer.duration.value) return 0;
+  return (audioPlayer.currentTime.value / audioPlayer.duration.value) * 100;
+});
+
+const handleProgressSeek = (e) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const percentage = clickX / rect.width;
+  const seekTime = percentage * audioPlayer.duration.value;
+  if (!isNaN(seekTime)) {
+    audioPlayer.seek(seekTime);
+  }
+};
 
 // Modal states
 const showModal = ref(false);
