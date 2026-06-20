@@ -203,6 +203,11 @@
   </Transition>
 </template>
 
+<script>
+// Global cache shared across all instances of TafsirModal
+const translationCache = new Map();
+</script>
+
 <script setup>
 import { ref, computed, nextTick, watch } from "vue";
 import axios from "axios";
@@ -254,8 +259,7 @@ const translatedSurahText = ref("");
 const translating = ref(false);
 const translateError = ref(false);
 
-// Local in-memory cache for translations of this session
-const translationCache = new Map();
+// Shared translationCache is imported at module scope above
 
 // Helper to decode HTML entities returned by MyMemory
 const decodeHtmlEntities = (html) => {
@@ -407,10 +411,12 @@ const translateText = async () => {
   try {
     const chunks = splitIntoChunks(textToTranslate, 430);
 
-    // Call translation API for each chunk in parallel
-    const translationPromises = chunks.map(async (chunk) => {
+    // Call translation API for each chunk sequentially to prevent hitting public rate limits (429)
+    const translatedChunks = [];
+    for (const chunk of chunks) {
       if (chunk.isNewline) {
-        return "\n";
+        translatedChunks.push("\n");
+        continue;
       }
       const response = await axios.get("https://api.mymemory.translated.net/get", {
         params: {
@@ -425,13 +431,11 @@ const translateText = async () => {
         response.data.responseData &&
         response.data.responseData.translatedText
       ) {
-        return decodeHtmlEntities(response.data.responseData.translatedText);
+        translatedChunks.push(decodeHtmlEntities(response.data.responseData.translatedText));
       } else {
         throw new Error("Translation payload error");
       }
-    });
-
-    const translatedChunks = await Promise.all(translationPromises);
+    }
 
     // Reconstruct the translated paragraphs
     let result = "";
