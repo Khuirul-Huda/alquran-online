@@ -259,11 +259,11 @@
                     :class="[
                       activeVerseNumber === verse.number.inSurah 
                         ? 'bg-quran-gold text-quran-deep border-quran-gold shadow-sm' 
-                        : (activeTheme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100')
+                        : (activeTheme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100')
                     ]"
-                    :title="activeVerseNumber === verse.number.inSurah ? 'Pause' : 'Putar Audio'"
+                    :title="activeVerseNumber === verse.number.inSurah && isAudioPlaying ? 'Pause' : 'Putar Audio'"
                   >
-                    <i :class="activeVerseNumber === verse.number.inSurah ? 'fa-solid fa-pause' : 'fa-solid fa-play'"></i>
+                    <i :class="(activeVerseNumber === verse.number.inSurah && isAudioPlaying) ? 'fa-solid fa-pause' : 'fa-solid fa-play'"></i>
                   </button>
                   <!-- Tafsir Ayat Button -->
                   <button 
@@ -422,6 +422,62 @@
         </div>
       </div>
 
+      <!-- Floating Audio Player Bar -->
+      <div 
+        v-if="activeVerseNumber !== null" 
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-md rounded-2xl shadow-xl border p-4 flex items-center justify-between gap-4 transition-all duration-300 animate-slide-up"
+        :class="[
+          activeTheme === 'dark' 
+            ? 'bg-slate-900/90 border-slate-750 text-slate-100 backdrop-blur-md' 
+            : (activeTheme === 'sepia' 
+                ? 'bg-[#fbf6e7]/90 border-amber-250 text-amber-950 backdrop-blur-md' 
+                : 'bg-white/90 border-quran-gold/20 text-quran-deep backdrop-blur-md')
+        ]"
+      >
+        <!-- Info -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" :class="activeTheme === 'dark' ? 'bg-slate-800' : 'bg-quran-medium/10'">
+            <i class="fa-solid fa-volume-high text-lg" :class="[isAudioPlaying ? 'animate-pulse text-quran-gold' : 'text-gray-400']"></i>
+          </div>
+          <div class="text-left">
+            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-400">Sedang Diputar</p>
+            <h5 class="font-bold text-xs leading-snug">
+              {{ surahdata.name.transliteration.id }} Ayat {{ activeVerseNumber }}
+            </h5>
+            <p class="text-[10px] text-quran-medium font-semibold" :class="activeTheme === 'dark' ? 'text-quran-gold-light' : 'text-quran-medium'">
+              {{ activeQariName }}
+            </p>
+          </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="flex items-center gap-2">
+          <!-- Pause/Play button -->
+          <button 
+            @click="toggleActiveAudio()" 
+            class="w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm text-white"
+            :class="[
+              activeTheme === 'dark' 
+                ? 'bg-slate-800 hover:bg-slate-700 text-quran-gold border border-slate-700' 
+                : (activeTheme === 'sepia' ? 'bg-amber-800 hover:bg-amber-900' : 'bg-quran-medium hover:bg-quran-deep')
+            ]"
+            :title="isAudioPlaying ? 'Pause' : 'Putar'"
+          >
+            <i class="fa-solid" :class="isAudioPlaying ? 'fa-pause' : 'fa-play'"></i>
+          </button>
+          
+          <!-- Stop Button -->
+          <button 
+            @click="stopAudio()" 
+            class="w-9 h-9 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-sm text-red-500 hover:bg-red-500/10"
+            :class="activeTheme === 'dark' ? 'border-slate-850' : 'border-gray-200'"
+            title="Hentikan Audio"
+          >
+            <i class="fa-solid fa-stop"></i>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -467,6 +523,12 @@ export default {
       modalTafsirWajiz: "",
       modalTafsirTahlili: "",
       showCustomSettings: false,
+      
+      // Active Audio metadata
+      activeVerseObject: null,
+      isAudioPlaying: false,
+      activeQariName: "",
+      activeQariSlug: "",
     };
   },
   computed: {
@@ -696,6 +758,15 @@ export default {
     },
 
     // Audio Methods
+    getQariName(slug) {
+      const qariList = {
+        "ar.alafasy": "Syaikh Mishary Rashid Alafasy",
+        "ar.sudais": "Syaikh Abdurrahman As-Sudais",
+        "ar.mahermuaiqly": "Syaikh Maher Al-Muaiqly",
+        "ar.abdullahbasfar": "Syaikh Abdullah Basfar"
+      };
+      return qariList[slug] || "Syaikh Mishary Rashid Alafasy";
+    },
     getAudioUrl(verse) {
       const qari = localStorage.getItem("quran_pref_qari") || "ar.alafasy";
       let url = verse.audio.primary;
@@ -709,7 +780,15 @@ export default {
     },
     toggleAudio(verse) {
       if (this.activeVerseNumber === verse.number.inSurah) {
-        this.stopAudio();
+        if (this.isAudioPlaying) {
+          if (this.audioPlayer) this.audioPlayer.pause();
+          this.isAudioPlaying = false;
+        } else {
+          if (this.audioPlayer) {
+            this.audioPlayer.play().catch(err => console.error(err));
+            this.isAudioPlaying = true;
+          }
+        }
         return;
       }
 
@@ -717,8 +796,14 @@ export default {
 
       const audioUrl = this.getAudioUrl(verse);
       if (audioUrl) {
+        const qari = localStorage.getItem("quran_pref_qari") || "ar.alafasy";
+        this.activeQariSlug = qari;
+        this.activeQariName = this.getQariName(qari);
+        
         this.activeVerseNumber = verse.number.inSurah;
+        this.activeVerseObject = verse;
         this.audioPlayer = new Audio(audioUrl);
+        this.isAudioPlaying = true;
         
         this.audioPlayer.play().catch((err) => {
           console.error("Audio playback failed:", err);
@@ -730,6 +815,11 @@ export default {
         });
 
         this.saveProgress(verse.number.inSurah);
+      }
+    },
+    toggleActiveAudio() {
+      if (this.activeVerseObject) {
+        this.toggleAudio(this.activeVerseObject);
       }
     },
     playNextVerse() {
@@ -748,6 +838,8 @@ export default {
         this.audioPlayer = null;
       }
       this.activeVerseNumber = null;
+      this.activeVerseObject = null;
+      this.isAudioPlaying = false;
     },
     onJumpChange(ayahNumber) {
       if (!ayahNumber) return;
