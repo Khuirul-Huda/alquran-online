@@ -26,12 +26,21 @@ export const usePreferencesStore = defineStore("preferences", {
     })(),
   }),
   actions: {
+    /**
+     * Change the active reading theme and apply it to the document body.
+     * Dispatches "theme-changed" so any non-Pinia listeners can react.
+     */
     setTheme(newTheme) {
       this.theme = newTheme;
       localStorage.setItem("quran_pref_theme", newTheme);
       document.body.className = "theme-" + newTheme;
       window.dispatchEvent(new Event("theme-changed"));
     },
+
+    /**
+     * Adjust the Arabic font size factor (clamps between 1.6–3.8).
+     * Dispatches "theme-changed" so any non-Pinia listeners can react.
+     */
     setFontSizeFactor(factor) {
       const parsed = parseFloat(factor);
       if (parsed >= 1.6 && parsed <= 3.8) {
@@ -40,6 +49,11 @@ export const usePreferencesStore = defineStore("preferences", {
         window.dispatchEvent(new Event("theme-changed"));
       }
     },
+
+    /**
+     * Toggle showing the Indonesian translation under each verse.
+     * Dispatches "theme-changed" so any non-Pinia listeners can react.
+     */
     setShowTranslation(value) {
       this.showTranslation = !!value;
       localStorage.setItem(
@@ -48,6 +62,11 @@ export const usePreferencesStore = defineStore("preferences", {
       );
       window.dispatchEvent(new Event("theme-changed"));
     },
+
+    /**
+     * Toggle showing the Latin transliteration under each verse.
+     * Dispatches "theme-changed" so any non-Pinia listeners can react.
+     */
     setShowTransliteration(value) {
       this.showTransliteration = !!value;
       localStorage.setItem(
@@ -56,16 +75,20 @@ export const usePreferencesStore = defineStore("preferences", {
       );
       window.dispatchEvent(new Event("theme-changed"));
     },
+
+    /** Persist the selected Qari (reciter) slug. */
     setSelectedQari(qari) {
       this.selectedQari = qari;
       localStorage.setItem("quran_pref_qari", qari);
-      window.dispatchEvent(new Event("theme-changed"));
     },
+
+    /** Persist the selected city for prayer-time lookups. */
     setSelectedCity(city) {
       this.selectedCity = city;
       localStorage.setItem("sholat_city", city);
-      window.dispatchEvent(new Event("theme-changed"));
     },
+
+    /** Persist the last-read verse position so the user can resume. */
     saveProgress({ number, name, arabic, lastAyah, verseCount }) {
       const progress = {
         number,
@@ -77,8 +100,9 @@ export const usePreferencesStore = defineStore("preferences", {
       };
       this.lastRead = progress;
       localStorage.setItem("lastReadSurah", JSON.stringify(progress));
-      window.dispatchEvent(new Event("theme-changed"));
     },
+
+    /** Wipe all user preferences and restore defaults. */
     clearAllData() {
       localStorage.clear();
       this.theme = "light";

@@ -15,6 +15,7 @@ export const useBookmarksStore = defineStore("bookmarks", {
     })(),
   }),
   actions: {
+    /** Add a bookmark if it doesn't exist, or remove it if it does (toggle). */
     toggleBookmark({ surahNumber, surahName, surahArabic, verseNumber }) {
       const id = `${surahNumber}_${verseNumber}`;
       const idx = this.bookmarks.findIndex((b) => b.id === id);
@@ -30,22 +31,25 @@ export const useBookmarksStore = defineStore("bookmarks", {
         });
       }
       localStorage.setItem("quran_bookmarks", JSON.stringify(this.bookmarks));
-      window.dispatchEvent(new Event("theme-changed"));
     },
+
+    /** Remove a specific bookmark by its composite id (surahNumber_verseNumber). */
     removeBookmark(id) {
       this.bookmarks = this.bookmarks.filter((b) => b.id !== id);
       localStorage.setItem("quran_bookmarks", JSON.stringify(this.bookmarks));
-      window.dispatchEvent(new Event("theme-changed"));
     },
+
+    /** Returns true if the given surah/verse combination is bookmarked. */
     isBookmarked(surahNumber, verseNumber) {
       return this.bookmarks.some(
         (b) => b.surahNumber === surahNumber && b.verseNumber === verseNumber
       );
     },
+
+    /** Remove all bookmarks. */
     clearBookmarks() {
       this.bookmarks = [];
       localStorage.setItem("quran_bookmarks", JSON.stringify([]));
-      window.dispatchEvent(new Event("theme-changed"));
     },
   },
 });

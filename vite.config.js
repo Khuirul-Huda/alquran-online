@@ -38,9 +38,65 @@ export default defineConfig({
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable"
-          }
-        ]
-      }
+          },
+        ],
+      },
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => {
+              return (
+                url.origin === "https://aqa.khuirulhuda.me.eu.org" &&
+                (url.pathname.startsWith("/surah") || url.pathname.startsWith("/juz"))
+              );
+            },
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "quran-api-cache",
+              expiration: {
+                maxEntries: 120,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 Days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => {
+              return (
+                url.origin === "https://equran.id" &&
+                url.pathname.startsWith("/api/doa")
+              );
+            },
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "doa-api-cache",
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === "audio",
+            handler: "CacheFirst",
+            options: {
+              cacheName: "audio-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 Days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
     })
   ],
   resolve: {

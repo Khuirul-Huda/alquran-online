@@ -276,31 +276,14 @@ const fetchDoas = async () => {
   loading.value = true;
   error.value = false;
 
-  // Stale-While-Revalidate pattern using Cache
-  const cached = localStorage.getItem("cached_doas");
-  if (cached) {
-    try {
-      doas.value = JSON.parse(cached);
-      extractGroups();
-      loading.value = false;
-    } catch (e) {
-      console.error("Failed to parse cached doas:", e);
-    }
-  }
-
   try {
     const liveDoas = await quranApi.fetchDoas();
     doas.value = liveDoas;
     extractGroups();
-
-    localStorage.setItem("cached_doas", JSON.stringify(liveDoas));
-    localStorage.setItem("cached_doas_time", String(Date.now()));
   } catch (err) {
     console.error("Failed to fetch doas:", err);
-    if (doas.value.length === 0) {
-      errMsg.value = err.message || "Gagal mengambil data dari server.";
-      error.value = true;
-    }
+    errMsg.value = err.message || "Gagal mengambil data dari server.";
+    error.value = true;
   } finally {
     loading.value = false;
   }
