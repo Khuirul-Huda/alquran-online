@@ -52,24 +52,7 @@
                 : 'text-gray-600 hover:text-quran-medium hover:bg-quran-bg',
             ]"
           >
-            <i class="fa-solid fa-house text-xs"></i> Beranda
-          </router-link>
-
-          <!-- Doa Harian -->
-          <router-link
-            to="/doa"
-            class="nav-link text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-transparent"
-            :class="[
-              isActive('/doa')
-                ? preferencesStore.theme === 'dark'
-                  ? 'text-quran-gold bg-slate-800 border-slate-700/50 shadow-sm'
-                  : 'text-quran-deep bg-quran-accent/15 border-quran-accent/15 shadow-sm'
-                : preferencesStore.theme === 'dark'
-                ? 'text-slate-300 hover:text-white hover:bg-slate-800'
-                : 'text-gray-600 hover:text-quran-medium hover:bg-quran-bg',
-            ]"
-          >
-            <i class="fa-solid fa-hands-praying text-xs"></i> Doa Harian
+            <i class="fa-solid fa-house text-xs"></i> {{ t('surahList') }}
           </router-link>
 
           <!-- Pengaturan -->
@@ -86,7 +69,7 @@
                 : 'text-gray-600 hover:text-quran-medium hover:bg-quran-bg',
             ]"
           >
-            <i class="fa-solid fa-gear text-xs"></i> Pengaturan
+            <i class="fa-solid fa-gear text-xs"></i> {{ t('settings') }}
           </router-link>
 
           <!-- Tentang -->
@@ -103,7 +86,7 @@
                 : 'text-gray-600 hover:text-quran-medium hover:bg-quran-bg',
             ]"
           >
-            <i class="fa-solid fa-circle-info text-xs"></i> Tentang
+            <i class="fa-solid fa-circle-info text-xs"></i> {{ t('about') }}
           </router-link>
         </nav>
 
@@ -162,7 +145,7 @@
             "
           >
             <span class="font-bold text-base flex items-center gap-2">
-              <i class="fa-solid fa-book-quran text-quran-gold"></i> Menu Navigasi
+              <i class="fa-solid fa-book-quran text-quran-gold"></i> {{ t('menuNavigation') }}
             </span>
             <button
               @click="closeMobileMenu"
@@ -188,25 +171,7 @@
                   : 'text-gray-600 hover:text-quran-medium hover:bg-quran-bg',
               ]"
             >
-              <i class="fa-solid fa-house text-sm"></i> Beranda
-            </router-link>
-
-            <!-- Doa Harian -->
-            <router-link
-              to="/doa"
-              @click="closeMobileMenu"
-              class="drawer-link text-sm font-semibold px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 border border-transparent"
-              :class="[
-                isActive('/doa')
-                  ? preferencesStore.theme === 'dark'
-                    ? 'text-quran-gold bg-slate-800 border-slate-700/50 shadow-sm'
-                    : 'text-quran-deep bg-quran-accent/15 border-quran-accent/15 shadow-sm'
-                  : preferencesStore.theme === 'dark'
-                  ? 'text-slate-300 hover:text-white hover:bg-slate-800'
-                  : 'text-gray-600 hover:text-quran-medium hover:bg-quran-bg',
-              ]"
-            >
-              <i class="fa-solid fa-hands-praying text-sm"></i> Doa Harian
+              <i class="fa-solid fa-house text-sm"></i> {{ t('surahList') }}
             </router-link>
 
             <!-- Pengaturan -->
@@ -224,7 +189,7 @@
                   : 'text-gray-600 hover:text-quran-medium hover:bg-quran-bg',
               ]"
             >
-              <i class="fa-solid fa-gear text-sm"></i> Pengaturan
+              <i class="fa-solid fa-gear text-sm"></i> {{ t('settings') }}
             </router-link>
 
             <!-- Tentang -->
@@ -242,7 +207,7 @@
                   : 'text-gray-600 hover:text-quran-medium hover:bg-quran-bg',
               ]"
             >
-              <i class="fa-solid fa-circle-info text-sm"></i> Tentang
+              <i class="fa-solid fa-circle-info text-sm"></i> {{ t('about') }}
             </router-link>
           </nav>
         </aside>
@@ -265,8 +230,7 @@
     >
       <div class="max-w-6xl mx-auto flex flex-col gap-2.5">
         <p class="font-medium text-sm tracking-wide opacity-90">
-          &copy; {{ new Date().getFullYear() }} Al-Quran Online. Hak Cipta
-          Dilindungi.
+          &copy; {{ new Date().getFullYear() }} Al-Quran Online. {{ preferencesStore.language === 'en' ? 'All Rights Reserved.' : 'Hak Cipta Dilindungi.' }}
         </p>
         <p class="text-xs opacity-75">
           <a
@@ -288,6 +252,7 @@ import { ref, nextTick, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { gsap } from "gsap";
 import { usePreferencesStore } from "./stores/preferences";
+import { useI18n } from "./composables/useI18n";
 import {
   slideInLeft,
   slideOutRight,
@@ -299,6 +264,7 @@ import {
 
 const route = useRoute();
 const preferencesStore = usePreferencesStore();
+const { t } = useI18n();
 const isMobileMenuOpen = ref(false);
 
 // Template refs

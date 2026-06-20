@@ -19,7 +19,6 @@ Built with Vue 3 · Pinia · GSAP · Vite · PWA
 - **Audio Playback** — Listen to each verse with multiple reciter (Qari) options, auto-advance to next verse
 - **Bookmarks** — Save and revisit your favourite verses, persisted locally
 - **Prayer Times** — Shalat schedule by city via Aladhan API
-- **Daily Prayers (Doa)** — Collection of daily Islamic supplications with Arabic, transliteration & translation
 - **Reading Modes** — Light, Sepia, and Dark theme
 - **Adjustable Font Size** — Arabic text size slider for comfortable reading
 - **Sidebar Navigation** — Instant jump between any Surah or Juz
@@ -49,7 +48,7 @@ Built with Vue 3 · Pinia · GSAP · Vite · PWA
 | API | Purpose |
 |---|---|
 | [gadingnst/quran-api](https://github.com/gadingnst/quran-api) | Quran text, translation, audio, tafsir (self-hostable) |
-| [equran.id](https://equran.id/) | Daily Prayers (Doa Harian) |
+| [MyMemory](https://mymemory.translated.net/) | Exegesis English translations |
 | [Aladhan](https://aladhan.com/prayer-times-api) | Prayer times by city |
 
 > The Quran API is **self-hostable**. Deploy your own instance and point `VITE_API_URL` to it.
@@ -153,7 +152,6 @@ alquran-online/
 | Resource | Strategy | TTL |
 |---|---|---|
 | Quran text & Juz (API) | StaleWhileRevalidate (SW) + In-memory session cache | 7 days |
-| Doa (API) | StaleWhileRevalidate (SW) + In-memory session cache | 30 days |
 | Audio files | CacheFirst (SW) | 7 days |
 | Prayer times | No cache — always fresh | — |
 

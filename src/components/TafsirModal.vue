@@ -13,7 +13,7 @@
           preferencesStore.theme === 'dark'
             ? 'bg-slate-900 border-quran-gold text-slate-100'
             : (preferencesStore.theme === 'sepia'
-                ? 'bg-[#fffcf3] border-amber-455 text-amber-950'
+                ? 'bg-[#fffcf3] border-amber-455 text-amber-955'
                 : 'bg-white border-quran-gold text-quran-deep'),
         ]"
       >
@@ -22,7 +22,7 @@
           class="px-6 py-4 flex justify-between items-center border-b-2 rounded-t-2xl"
           :class="[
             preferencesStore.theme === 'dark'
-              ? 'bg-slate-950 text-white border-quran-gold'
+              ? 'bg-slate-955 text-white border-quran-gold'
               : (preferencesStore.theme === 'sepia'
                   ? 'bg-amber-900 text-amber-50 border-amber-450'
                   : 'bg-quran-deep text-white border-quran-gold'),
@@ -85,7 +85,7 @@
                           : 'text-gray-400 border-transparent hover:text-quran-medium')),
               ]"
             >
-              Tafsir Wajiz (Ringkas)
+              {{ t('tafsirWajiz') }}
             </button>
             <button
               @click="switchTab('tahlili')"
@@ -104,26 +104,57 @@
                           : 'text-gray-400 border-transparent hover:text-quran-medium')),
               ]"
             >
-              Tafsir Tahlili (Lengkap)
+              {{ t('tafsirTahlili') }}
             </button>
+          </div>
+
+          <!-- Translate Action Panel (Only shows when app is in English) -->
+          <div
+            v-if="preferencesStore.language === 'en' && hasOriginalText"
+            class="mb-5 flex flex-col gap-2 p-3.5 rounded-xl border border-dashed transition-all"
+            :class="
+              preferencesStore.theme === 'dark'
+                ? 'bg-slate-950/40 border-slate-800'
+                : (preferencesStore.theme === 'sepia'
+                    ? 'bg-amber-50/55 border-amber-250/30'
+                    : 'bg-gray-50 border-gray-150')
+            "
+          >
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+              <span class="text-xs text-gray-400 font-semibold">
+                {{ currentTranslatedText ? 'Exegesis translated to English.' : 'Exegesis is available in Indonesian.' }}
+              </span>
+              <button
+                v-if="!currentTranslatedText && !translating"
+                @click="translateText"
+                class="bg-quran-medium hover:bg-quran-deep text-white font-bold px-3 py-1.5 rounded-lg text-[10.5px] transition-all flex items-center gap-1 cursor-pointer border-none"
+              >
+                <i class="fa-solid fa-globe text-xs"></i> {{ t('translateToEn') }}
+              </button>
+              <span v-else-if="translating" class="text-xs text-quran-medium flex items-center gap-1.5 font-bold">
+                <i class="fa-solid fa-circle-notch animate-spin"></i> {{ t('translating') }}
+              </span>
+              <button
+                v-else-if="translateError"
+                @click="translateText"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-1.5 rounded-lg text-[10.5px] transition-all flex items-center gap-1 cursor-pointer border-none"
+              >
+                <i class="fa-solid fa-rotate text-xs"></i> Retry Translation
+              </button>
+              <span v-else class="text-[10px] text-gray-400 italic">
+                Powered by MyMemory API
+              </span>
+            </div>
+            <p v-if="translateError" class="text-[10.5px] text-red-500 font-bold mt-1">
+              {{ t('translationFailed') }}
+            </p>
           </div>
 
           <!-- Tafsir Content with crossfade -->
           <Transition :css="false" @enter="onContentEnter" @leave="onContentLeave" mode="out-in">
-            <div :key="tafsirTab">
-              <p v-if="!isVerseTafsir" class="whitespace-pre-line text-justify">
-                {{ text }}
-              </p>
-              <div v-else>
-                <div
-                  v-if="tafsirTab === 'wajiz'"
-                  class="whitespace-pre-line text-justify leading-relaxed"
-                >
-                  {{ tafsirWajiz }}
-                </div>
-                <div v-else class="whitespace-pre-line text-justify leading-relaxed">
-                  {{ tafsirTahlili }}
-                </div>
+            <div :key="tafsirTab + (currentTranslatedText ? '-tr' : '-org')">
+              <div class="whitespace-pre-line text-justify leading-relaxed">
+                {{ currentTextToDisplay }}
               </div>
             </div>
           </Transition>
@@ -138,7 +169,7 @@
                     : 'border-gray-100 text-gray-400')
             "
           >
-            Sumber Tafsir: Kemenag RI (Kementerian Agama Republik Indonesia)
+            {{ t('tafsirSource') }}
           </div>
         </div>
 
@@ -147,7 +178,7 @@
           class="px-6 py-4 border-t flex justify-end rounded-b-2xl"
           :class="[
             preferencesStore.theme === 'dark'
-              ? 'bg-slate-950/40 border-slate-800'
+              ? 'bg-slate-955/40 border-slate-800'
               : (preferencesStore.theme === 'sepia'
                   ? 'bg-amber-100/20 border-amber-200/40'
                   : 'bg-quran-bg border-gray-100'),
@@ -155,7 +186,7 @@
         >
           <button
             @click="$emit('close')"
-            class="font-bold px-5 py-2.5 rounded-xl text-xs transition-colors shadow-sm cursor-pointer text-white"
+            class="font-bold px-5 py-2.5 rounded-xl text-xs transition-colors shadow-sm cursor-pointer text-white border-none"
             :class="[
               preferencesStore.theme === 'dark'
                 ? 'bg-slate-800 hover:bg-slate-700'
@@ -164,7 +195,7 @@
                     : 'bg-quran-medium hover:bg-quran-deep'),
             ]"
           >
-            Tutup
+            {{ preferencesStore.language === 'en' ? 'Close' : 'Tutup' }}
           </button>
         </div>
       </div>
@@ -173,12 +204,14 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue";
+import { ref, computed, nextTick, watch } from "vue";
+import axios from "axios";
 import { gsap } from "gsap";
 import { usePreferencesStore } from "../stores/preferences";
-import { popIn, popOut, fadeIn, fadeOut } from "../composables/useGsap";
+import { useI18n } from "../composables/useI18n";
+import { popIn, popOut } from "../composables/useGsap";
 
-defineProps({
+const props = defineProps({
   isOpen: {
     type: Boolean,
     required: true,
@@ -208,10 +241,221 @@ defineProps({
 defineEmits(["close"]);
 
 const preferencesStore = usePreferencesStore();
-const tafsirTab = ref("wajiz");
+const { t } = useI18n();
 
+const tafsirTab = ref("wajiz");
 const backdropRef = ref(null);
 const panelRef = ref(null);
+
+// Translation local states
+const translatedWajiz = ref("");
+const translatedTahlili = ref("");
+const translatedSurahText = ref("");
+const translating = ref(false);
+const translateError = ref(false);
+
+// Local in-memory cache for translations of this session
+const translationCache = new Map();
+
+// Helper to decode HTML entities returned by MyMemory
+const decodeHtmlEntities = (html) => {
+  if (!html) return "";
+  const txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+};
+
+// Reset translation states when modal opens/closes
+watch(() => props.isOpen, (newVal) => {
+  if (newVal) {
+    translatedWajiz.value = "";
+    translatedTahlili.value = "";
+    translatedSurahText.value = "";
+    translating.value = false;
+    translateError.value = false;
+    tafsirTab.value = "wajiz";
+  }
+});
+
+const hasOriginalText = computed(() => {
+  if (props.isVerseTafsir) {
+    return tafsirTab.value === "wajiz" ? !!props.tafsirWajiz : !!props.tafsirTahlili;
+  }
+  return !!props.text;
+});
+
+const currentTranslatedText = computed(() => {
+  if (props.isVerseTafsir) {
+    return tafsirTab.value === "wajiz" ? translatedWajiz.value : translatedTahlili.value;
+  }
+  return translatedSurahText.value;
+});
+
+const currentTextToDisplay = computed(() => {
+  if (preferencesStore.language === "en" && currentTranslatedText.value) {
+    return currentTranslatedText.value;
+  }
+  if (props.isVerseTafsir) {
+    return tafsirTab.value === "wajiz" ? props.tafsirWajiz : props.tafsirTahlili;
+  }
+  return props.text;
+});
+
+const splitIntoChunks = (text, maxLength = 430) => {
+  if (!text) return [];
+  const paragraphs = text.split("\n");
+  const chunks = [];
+
+  const splitLongTextByWords = (str, maxLen) => {
+    const words = str.split(" ");
+    const subChunks = [];
+    let current = "";
+    for (const word of words) {
+      if (!word) continue;
+      if ((current + " " + word).trim().length <= maxLen) {
+        current = current ? current + " " + word : word;
+      } else {
+        if (current) {
+          subChunks.push(current);
+        }
+        if (word.length > maxLen) {
+          let remainingWord = word;
+          while (remainingWord.length > maxLen) {
+            subChunks.push(remainingWord.slice(0, maxLen));
+            remainingWord = remainingWord.slice(maxLen);
+          }
+          current = remainingWord;
+        } else {
+          current = word;
+        }
+      }
+    }
+    if (current) {
+      subChunks.push(current);
+    }
+    return subChunks;
+  };
+
+  for (const para of paragraphs) {
+    if (!para.trim()) {
+      chunks.push({ text: "\n", isNewline: true });
+      continue;
+    }
+
+    if (para.length <= maxLength) {
+      chunks.push({ text: para, isNewline: false });
+    } else {
+      // Split paragraph into sentences by punctuation (.?! followed by space) without discarding any characters
+      const sentences = para.split(/(?<=[.!?])\s+/);
+      let currentChunk = "";
+
+      for (const sentence of sentences) {
+        if (sentence.length > maxLength) {
+          if (currentChunk) {
+            chunks.push({ text: currentChunk, isNewline: false });
+            currentChunk = "";
+          }
+          const subChunks = splitLongTextByWords(sentence, maxLength);
+          for (const sub of subChunks) {
+            chunks.push({ text: sub, isNewline: false });
+          }
+        } else if ((currentChunk + (currentChunk ? " " : "") + sentence).length <= maxLength) {
+          currentChunk = currentChunk ? currentChunk + " " + sentence : sentence;
+        } else {
+          if (currentChunk) {
+            chunks.push({ text: currentChunk, isNewline: false });
+          }
+          currentChunk = sentence;
+        }
+      }
+      if (currentChunk) {
+        chunks.push({ text: currentChunk, isNewline: false });
+      }
+    }
+  }
+  return chunks;
+};
+
+const translateText = async () => {
+  let textToTranslate = "";
+  let targetRef = null;
+
+  if (props.isVerseTafsir) {
+    if (tafsirTab.value === "wajiz") {
+      textToTranslate = props.tafsirWajiz;
+      targetRef = translatedWajiz;
+    } else {
+      textToTranslate = props.tafsirTahlili;
+      targetRef = translatedTahlili;
+    }
+  } else {
+    textToTranslate = props.text;
+    targetRef = translatedSurahText;
+  }
+
+  if (!textToTranslate) return;
+
+  // Check cache
+  if (translationCache.has(textToTranslate)) {
+    targetRef.value = translationCache.get(textToTranslate);
+    return;
+  }
+
+  translating.value = true;
+  translateError.value = false;
+
+  try {
+    const chunks = splitIntoChunks(textToTranslate, 430);
+
+    // Call translation API for each chunk in parallel
+    const translationPromises = chunks.map(async (chunk) => {
+      if (chunk.isNewline) {
+        return "\n";
+      }
+      const response = await axios.get("https://api.mymemory.translated.net/get", {
+        params: {
+          q: chunk.text,
+          langpair: "id|en",
+        },
+        timeout: 20000,
+      });
+
+      if (
+        response.data &&
+        response.data.responseData &&
+        response.data.responseData.translatedText
+      ) {
+        return decodeHtmlEntities(response.data.responseData.translatedText);
+      } else {
+        throw new Error("Translation payload error");
+      }
+    });
+
+    const translatedChunks = await Promise.all(translationPromises);
+
+    // Reconstruct the translated paragraphs
+    let result = "";
+    for (let i = 0; i < chunks.length; i++) {
+      if (chunks[i].isNewline) {
+        result += "\n";
+      } else {
+        if (result && !result.endsWith("\n") && !result.endsWith(" ")) {
+          result += " ";
+        }
+        result += translatedChunks[i];
+      }
+    }
+
+    const finalResult = result.trim();
+    targetRef.value = finalResult;
+    translationCache.set(textToTranslate, finalResult);
+  } catch (err) {
+    console.error("Translation API failure:", err);
+    translateError.value = true;
+  } finally {
+    translating.value = false;
+  }
+};
 
 // ── Modal enter / leave ────────────────────────────────────────────────────
 const onEnter = (el, done) => {
@@ -223,7 +467,6 @@ const onEnter = (el, done) => {
 
     if (panel) {
       popIn(panel);
-      // popIn's own onComplete isn't exposed, so signal done after its duration
       gsap.delayedCall(0.45, done);
     } else {
       done();
@@ -243,7 +486,11 @@ const onLeave = (el, done) => {
 
 // ── Tab content crossfade ──────────────────────────────────────────────────
 const onContentEnter = (el, done) => {
-  gsap.fromTo(el, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out", onComplete: done });
+  gsap.fromTo(
+    el,
+    { opacity: 0, y: 8 },
+    { opacity: 1, y: 0, duration: 0.2, ease: "power2.out", onComplete: done }
+  );
 };
 
 const onContentLeave = (el, done) => {
@@ -257,5 +504,5 @@ const switchTab = (tab) => {
 </script>
 
 <style scoped>
-/* Styles handled via Tailwind utilities */
+/* Styled natively via Tailwind utilities */
 </style>

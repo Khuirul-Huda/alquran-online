@@ -7,23 +7,23 @@
       <!-- Jump To Ayat Dropdown -->
       <div class="flex items-center gap-2">
         <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400"
-          >Lompat Ke:</span
+          >{{ t('jumpTo') }}</span
         >
         <select
           @change="onJumpSelect($event.target.value)"
           class="bg-quran-bg border border-gray-200 rounded-lg text-xs font-bold p-1.5 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer text-quran-deep"
         >
-          <option value="" disabled selected>Ayat...</option>
+          <option value="" disabled selected>{{ preferencesStore.language === 'en' ? 'Verse...' : 'Ayat...' }}</option>
           <option
             v-for="(v, index) in verses"
             :key="isJuzView ? v.number.inQuran : v.number.inSurah"
             :value="isJuzView ? v.number.inQuran : v.number.inSurah"
           >
             <template v-if="isJuzView">
-              Ayat {{ index + 1 }} ({{ getVerseLabel ? getVerseLabel(v.number.inQuran) : '' }})
+              {{ preferencesStore.language === 'en' ? 'Verse' : 'Ayat' }} {{ index + 1 }} ({{ getVerseLabel ? getVerseLabel(v.number.inQuran) : '' }})
             </template>
             <template v-else>
-              Ayat {{ v.number.inSurah }}
+              {{ preferencesStore.language === 'en' ? 'Verse' : 'Ayat' }} {{ v.number.inSurah }}
             </template>
           </option>
         </select>
@@ -41,7 +41,7 @@
             ? 'bg-slate-800 border-slate-700 text-slate-300'
             : 'bg-quran-bg border-gray-200 text-quran-deep'
         "
-        title="Pengaturan Tampilan"
+        :title="t('settings')"
       >
         <i
           ref="gearIconRef"
@@ -64,7 +64,7 @@
       <!-- Arabic Size Adjusters -->
       <div class="flex items-center gap-2">
         <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400"
-          >Ukuran Teks:</span
+          >{{ preferencesStore.language === 'en' ? 'Text Size:' : 'Ukuran Teks:' }}</span
         >
         <div class="flex items-center gap-1">
           <button
@@ -107,7 +107,7 @@
             v-model="showTransliteration"
             class="w-4 h-4 rounded border-gray-300 text-quran-medium focus:ring-quran-medium/30"
           />
-          <span>Transliterasi</span>
+          <span>{{ preferencesStore.language === 'en' ? 'Transliteration' : 'Transliterasi' }}</span>
         </label>
         <label class="flex items-center gap-1.5 cursor-pointer select-none">
           <input
@@ -115,14 +115,14 @@
             v-model="showTranslation"
             class="w-4 h-4 rounded border-gray-300 text-quran-medium focus:ring-quran-medium/30"
           />
-          <span>Terjemahan</span>
+          <span>{{ preferencesStore.language === 'en' ? 'Translation' : 'Terjemahan' }}</span>
         </label>
       </div>
 
       <!-- Theme Toggles -->
       <div class="flex items-center gap-2">
         <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400"
-          >Tema:</span
+          >{{ preferencesStore.language === 'en' ? 'Theme:' : 'Tema:' }}</span
         >
         <div class="flex gap-1.5">
           <button
@@ -132,7 +132,7 @@
               'ring-2 ring-quran-medium ring-offset-1':
                 preferencesStore.theme === 'light',
             }"
-            title="Mode Terang"
+            :title="preferencesStore.language === 'en' ? 'Light Mode' : 'Mode Terang'"
           ></button>
           <button
             @click="setTheme('sepia', $event)"
@@ -141,7 +141,7 @@
               'ring-2 ring-quran-medium ring-offset-1':
                 preferencesStore.theme === 'sepia',
             }"
-            title="Mode Sepia"
+            :title="preferencesStore.language === 'en' ? 'Sepia Mode' : 'Mode Sepia'"
           ></button>
           <button
             @click="setTheme('dark', $event)"
@@ -150,7 +150,7 @@
               'ring-2 ring-quran-medium ring-offset-1':
                 preferencesStore.theme === 'dark',
             }"
-            title="Mode Malam"
+            :title="preferencesStore.language === 'en' ? 'Dark Mode' : 'Mode Malam'"
           ></button>
         </div>
       </div>
@@ -162,6 +162,7 @@
 import { ref, computed, watch, nextTick } from "vue";
 import { gsap } from "gsap";
 import { usePreferencesStore } from "../stores/preferences";
+import { useI18n } from "../composables/useI18n";
 import { buttonPop } from "../composables/useGsap";
 
 defineProps({
@@ -182,6 +183,7 @@ defineProps({
 const emit = defineEmits(["jump"]);
 
 const preferencesStore = usePreferencesStore();
+const { t } = useI18n();
 const showCustomSettings = ref(false);
 
 // Template refs

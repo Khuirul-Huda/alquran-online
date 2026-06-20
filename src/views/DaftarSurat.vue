@@ -26,19 +26,19 @@
             {{ randomVerse.arabic }}
           </p>
           <p class="text-sm md:text-base font-light italic opacity-95 max-w-2xl mx-auto leading-relaxed">
-            "{{ randomVerse.translation }}"
+            "{{ randomVerse.translation[preferencesStore.language] }}"
           </p>
           <div class="flex flex-col items-center gap-3 mt-4">
             <span
               class="inline-block text-xs font-semibold text-quran-gold-light bg-white/10 px-3 py-1 rounded-full border border-white/5"
             >
-              {{ randomVerse.reference }}
+              {{ randomVerse.reference[preferencesStore.language] }}
             </span>
             <router-link
               :to="'/read/' + randomVerse.surahNumber + '?ayah=' + randomVerse.ayahNumber"
               class="inline-flex items-center gap-1.5 text-xs font-bold text-quran-gold hover:text-white bg-white/10 hover:bg-white/20 border border-quran-gold/40 hover:border-white px-4 py-2 rounded-full transition-all duration-200 shadow-sm"
             >
-              Baca Ayat Ini <i class="fa-solid fa-arrow-right text-xs"></i>
+              {{ preferencesStore.language === 'en' ? 'Read This Ayah' : 'Baca Ayat Ini' }} <i class="fa-solid fa-arrow-right text-xs"></i>
             </router-link>
           </div>
         </div>
@@ -60,7 +60,7 @@
               : 'border-transparent text-gray-400 hover:text-quran-medium'
           "
         >
-          <i class="fa-solid fa-list-ol mr-1.5"></i> Daftar Surah
+          <i class="fa-solid fa-list-ol mr-1.5"></i> {{ t('surahList') }}
         </button>
         <button
           @click="activeTab = 'juz'"
@@ -73,7 +73,7 @@
               : 'border-transparent text-gray-400 hover:text-quran-medium'
           "
         >
-          <i class="fa-solid fa-box-archive mr-1.5"></i> Daftar Juz
+          <i class="fa-solid fa-box-archive mr-1.5"></i> {{ t('juzList') }}
         </button>
       </div>
 
@@ -90,7 +90,7 @@
               <input
                 v-model="searchQuery"
                 type="text"
-                placeholder="Cari surah berdasarkan nama, arti, atau nomor..."
+                :placeholder="t('searchSurah')"
                 class="w-full pl-11 pr-4 py-4 border rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light focus:shadow-md transition-all duration-200"
                 :class="
                   preferencesStore.theme === 'dark'
@@ -139,7 +139,7 @@
                   class="font-bold text-lg mb-2"
                   :class="preferencesStore.theme === 'dark' ? 'text-white' : 'text-gray-900'"
                 >
-                  Gagal Memuat Data
+                  {{ t('errorTitle') }}
                 </h3>
                 <p
                   class="text-sm mb-6"
@@ -151,7 +151,7 @@
                   @click="fetchSurah"
                   class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm cursor-pointer border-none"
                 >
-                  Coba Lagi
+                  {{ t('tryAgain') }}
                 </button>
               </div>
             </div>
@@ -162,7 +162,7 @@
               <div v-if="filteredSurah.length === 0" class="text-center py-16">
                 <i class="fa-solid fa-box-open text-gray-300 text-5xl mb-4"></i>
                 <p class="text-gray-500 font-medium">
-                  Tidak ada surah yang cocok dengan "{{ searchQuery }}"
+                  {{ preferencesStore.language === 'en' ? 'No surah matching "' + searchQuery + '"' : 'Tidak ada surah yang cocok dengan "' + searchQuery + '"' }}
                 </p>
               </div>
 
@@ -170,12 +170,12 @@
               <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 animate-fade-in">
                 <div v-for="suratt in filteredSurah" :key="suratt.number">
                   <Surat
-                    :surat="suratt.name.transliteration.id"
+                    :surat="preferencesStore.language === 'en' ? suratt.name.transliteration.en : suratt.name.transliteration.id"
                     :arabic="suratt.name.short"
-                    :arti="suratt.name.translation.id"
+                    :arti="preferencesStore.language === 'en' ? suratt.name.translation.en : suratt.name.translation.id"
                     :ke="suratt.number"
-                    :revelation="suratt.revelation.id"
-                    :verses="suratt.numberOfVerses"
+                    :revelation="preferencesStore.language === 'en' ? suratt.revelation.en : suratt.revelation.id"
+                    :verses="suratt.number_of_verses || suratt.numberOfVerses"
                     :theme="preferencesStore.theme"
                   />
                 </div>
@@ -247,7 +247,7 @@
                 preferencesStore.theme === 'dark' ? 'text-quran-gold' : 'text-quran-medium'
               "
             >
-              <i class="fa-solid fa-bookmark"></i> Lanjutkan Membaca
+              <i class="fa-solid fa-bookmark"></i> {{ t('lastRead') }}
             </h4>
             <div class="flex justify-between items-center">
               <div>
@@ -261,8 +261,7 @@
                   class="text-xs font-medium mt-0.5"
                   :class="preferencesStore.theme === 'dark' ? 'text-slate-400' : 'text-gray-500'"
                 >
-                  Ayat {{ preferencesStore.lastRead.lastAyah || 1 }} dari
-                  {{ preferencesStore.lastRead.verseCount || "..." }}
+                  {{ preferencesStore.language === 'en' ? 'Ayah ' + (preferencesStore.lastRead.lastAyah || 1) + ' of ' + (preferencesStore.lastRead.verseCount || '...') : 'Ayat ' + (preferencesStore.lastRead.lastAyah || 1) + ' dari ' + (preferencesStore.lastRead.verseCount || '...') }}
                 </p>
               </div>
               <span
@@ -280,7 +279,7 @@
                 class="flex justify-between items-center text-[11px] font-bold uppercase mb-1"
                 :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-400'"
               >
-                <span>Progres</span>
+                <span>{{ preferencesStore.language === 'en' ? 'Progress' : 'Progres' }}</span>
                 <span>{{
                   Math.round(
                     (preferencesStore.lastRead.lastAyah /
@@ -316,7 +315,7 @@
               "
               class="w-full text-center block bg-quran-medium hover:bg-quran-deep text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors duration-200 shadow-sm"
             >
-              Lanjut Membaca
+              {{ preferencesStore.language === 'en' ? 'Resume Reading' : 'Lanjut Membaca' }}
             </router-link>
           </div>
 
@@ -325,7 +324,7 @@
             <h4
               class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2"
             >
-              <i class="fa-solid fa-bookmark text-quran-gold"></i> Ayat Favorit
+              <i class="fa-solid fa-bookmark text-quran-gold"></i> {{ preferencesStore.language === 'en' ? 'Favorite Verses' : 'Ayat Favorit' }}
             </h4>
             <div class="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1">
               <router-link
@@ -371,7 +370,7 @@
           <div class="themed-card rounded-2xl p-5 shadow-sm">
             <div class="flex justify-between items-center mb-3 border-b border-gray-100/50 pb-2">
               <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium flex items-center gap-1.5">
-                <i class="fa-solid fa-clock"></i> Jadwal Shalat
+                <i class="fa-solid fa-clock"></i> {{ t('prayerTimes') }}
               </h4>
               <!-- City Dropdown Selector -->
               <select
@@ -394,7 +393,7 @@
               <div class="animate-spin text-quran-medium text-lg">
                 <i class="fa-solid fa-circle-notch"></i>
               </div>
-              <span class="text-xs text-gray-400">Memuat jadwal...</span>
+              <span class="text-xs text-gray-400">{{ t('loading') }}</span>
             </div>
 
             <!-- Shalat Timings List -->
@@ -426,14 +425,14 @@
                   <span
                     v-if="nextPrayerName === name"
                     class="text-[10.5px] bg-quran-medium text-white px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse"
-                    >Berikutnya</span
+                    >{{ preferencesStore.language === 'en' ? 'Next' : 'Berikutnya' }}</span
                   >
                 </span>
               </div>
             </div>
 
             <div v-else class="text-center py-4 text-xs text-gray-400 italic">
-              Gagal memuat jadwal shalat.
+              {{ preferencesStore.language === 'en' ? 'Failed to load prayer times.' : 'Gagal memuat jadwal shalat.' }}
             </div>
           </div>
 
@@ -442,7 +441,7 @@
             <h4
               class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2"
             >
-              <i class="fa-solid fa-star"></i> Surah Pintasan
+              <i class="fa-solid fa-star"></i> {{ preferencesStore.language === 'en' ? 'Popular Surahs' : 'Surah Pintasan' }}
             </h4>
             <div class="flex flex-col gap-2">
               <router-link
@@ -598,9 +597,11 @@ import Surat from "../components/Surat.vue";
 import { quranApi } from "../services/quranApi";
 import { usePreferencesStore } from "../stores/preferences";
 import { useBookmarksStore } from "../stores/bookmarks";
+import { useI18n } from "../composables/useI18n";
 
 const preferencesStore = usePreferencesStore();
 const bookmarksStore = useBookmarksStore();
+const { t } = useI18n();
 
 const surat = ref([]);
 const loading = ref(true);
@@ -619,40 +620,66 @@ const INSPIRATIONAL_VERSES = [
   {
     arabic:
       "أَفَلَا يَتَدَبَّرُونَ الْقُرْآنَ ۚ وَلَوْ كَانَ مِنْ عِنْدِ غَيْرِ اللَّهِ لَوَجَدُوا فِيهِ اخْتِلَافًا كَثِيرًا",
-    translation:
-      "Maka tidakkah mereka menghayati (mendalami) Al-Qur'an? Sekiranya (Al-Qur'an) itu bukan dari Allah, pastilah mereka menemukan banyak hal yang bertentangan di dalamnya.",
-    reference: "QS. An-Nisa': 82",
+    translation: {
+      id: "Maka tidakkah mereka menghayati (mendalami) Al-Qur'an? Sekiranya (Al-Qur'an) itu bukan dari Allah, pastilah mereka menemukan banyak hal yang bertentangan di dalamnya.",
+      en: "Then do they not reflect upon the Qur'an? If it had been from [any] other than Allah, they would have found within it much contradiction."
+    },
+    reference: {
+      id: "QS. An-Nisa': 82",
+      en: "Quran An-Nisa': 82"
+    },
     surahNumber: 4,
     ayahNumber: 82,
   },
   {
     arabic: "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
-    translation: "Sesungguhnya beserta kesulitan itu ada kemudahan.",
-    reference: "QS. Al-Insyirah: 6",
+    translation: {
+      id: "Sesungguhnya beserta kesulitan itu ada kemudahan.",
+      en: "For indeed, with hardship [will be] ease."
+    },
+    reference: {
+      id: "QS. Al-Insyirah: 6",
+      en: "Quran Al-Sharh: 6"
+    },
     surahNumber: 94,
     ayahNumber: 6,
   },
   {
     arabic: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
-    translation:
-      "Dan apabila hamba-hamba-Ku bertanya kepadamu tentang Aku, maka (jawablah), bahwasanya Aku adalah dekat. Aku mengabulkan permohonan orang yang berdoa apabila ia memohon kepada-Ku.",
-    reference: "QS. Al-Baqarah: 186",
+    translation: {
+      id: "Dan apabila hamba-hamba-Ku bertanya kepadamu tentang Aku, maka (jawablah), bahwasanya Aku adalah dekat. Aku mengabulkan permohonan orang yang berdoa apabila ia memohon kepada-Ku.",
+      en: "And when My servants ask you concerning Me, indeed I am near. I respond to the invocation of the supplicant when he calls upon Me."
+    },
+    reference: {
+      id: "QS. Al-Baqarah: 186",
+      en: "Quran Al-Baqarah: 186"
+    },
     surahNumber: 2,
     ayahNumber: 186,
   },
   {
     arabic: "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِلْمُؤْمِنِينَ",
-    translation:
-      "Dan Kami turunkan dari Al-Qur'an suatu yang menjadi penawar (obat) dan rahmat bagi orang-orang yang beriman.",
-    reference: "QS. Al-Isra': 82",
+    translation: {
+      id: "Dan Kami turunkan dari Al-Qur'an suatu yang menjadi penawar (obat) dan rahmat bagi orang-orang yang beriman.",
+      en: "And We send down of the Qur'an that which is healing and mercy for the believers."
+    },
+    reference: {
+      id: "QS. Al-Isra': 82",
+      en: "Quran Al-Isra': 82"
+    },
     surahNumber: 17,
     ayahNumber: 82,
   },
   {
     arabic: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ",
-    translation:
-      "Allah, tidak ada Tuhan (yang berhak disembah) melainkan Dia Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur.",
-    reference: "QS. Al-Baqarah: 255 (Ayat Kursi)",
+    translation: {
+      id: "Allah, tidak ada Tuhan (yang berhak disembah) melainkan Dia Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur.",
+      en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of [all] existence. Neither drowsiness overtakes Him nor sleep."
+    },
+    reference: {
+      id: "QS. Al-Baqarah: 255 (Ayat Kursi)",
+      en: "Quran Al-Baqarah: 255 (Ayat al-Kursi)"
+    },
     surahNumber: 2,
     ayahNumber: 255,
   },
@@ -828,20 +855,15 @@ const getShalatIcon = (name) => {
 };
 
 const translateShalatName = (name) => {
-  switch (name) {
-    case "Fajr":
-      return "Subuh";
-    case "Dhuhr":
-      return "Dzuhur";
-    case "Asr":
-      return "Ashar";
-    case "Maghrib":
-      return "Maghrib";
-    case "Isha":
-      return "Isya";
-    default:
-      return name;
-  }
+  const translations = {
+    Imsak: { id: "Imsak", en: "Imsak" },
+    Fajr: { id: "Subuh", en: "Fajr" },
+    Dhuhr: { id: "Dzuhur", en: "Dhuhr" },
+    Asr: { id: "Ashar", en: "Asr" },
+    Maghrib: { id: "Maghrib", en: "Maghrib" },
+    Isha: { id: "Isya", en: "Isha" },
+  };
+  return translations[name]?.[preferencesStore.language || "id"] || name;
 };
 
 onMounted(() => {

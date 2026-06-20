@@ -2,6 +2,12 @@ import { defineStore } from "pinia";
 
 export const usePreferencesStore = defineStore("preferences", {
   state: () => ({
+    language: (() => {
+      const saved = localStorage.getItem("quran_pref_language");
+      if (saved) return saved;
+      const browserLang = navigator.language || navigator.userLanguage || "";
+      return browserLang.startsWith("en") ? "en" : "id";
+    })(),
     theme: localStorage.getItem("quran_pref_theme") || "light",
     fontSizeFactor: parseFloat(
       localStorage.getItem("quran_pref_font_factor") || "2.2"
@@ -102,9 +108,20 @@ export const usePreferencesStore = defineStore("preferences", {
       localStorage.setItem("lastReadSurah", JSON.stringify(progress));
     },
 
+    /** Persist the selected language (en or id). */
+    setLanguage(lang) {
+      if (lang === "en" || lang === "id") {
+        this.language = lang;
+        localStorage.setItem("quran_pref_language", lang);
+        window.dispatchEvent(new Event("theme-changed"));
+      }
+    },
+
     /** Wipe all user preferences and restore defaults. */
     clearAllData() {
       localStorage.clear();
+      const browserLang = navigator.language || navigator.userLanguage || "";
+      this.language = browserLang.startsWith("en") ? "en" : "id";
       this.theme = "light";
       this.fontSizeFactor = 2.2;
       this.showTranslation = true;

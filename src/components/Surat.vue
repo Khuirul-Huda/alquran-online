@@ -56,7 +56,7 @@
       >
         <span class="flex items-center gap-1.5">
           <i class="fa-solid fa-book-open text-quran-gold/80 text-[10px]"></i>
-          <span>{{ verses }} Ayat</span>
+          <span>{{ verses }} {{ preferencesStore.language === 'en' ? 'Verses' : 'Ayat' }}</span>
         </span>
         <span class="flex items-center gap-1.5">
           <i class="fa-solid fa-location-dot text-quran-gold/80 text-[10px]"></i>
@@ -71,6 +71,8 @@
 </template>
 
 <script>
+import { usePreferencesStore } from "../stores/preferences";
+
 export default {
   name: "Surat",
   props: {
@@ -101,6 +103,11 @@ export default {
     theme: {
       type: String,
       default: "light"
+    }
+  },
+  computed: {
+    preferencesStore() {
+      return usePreferencesStore();
     }
   },
   methods: {

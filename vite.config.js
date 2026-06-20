@@ -62,25 +62,7 @@ export default defineConfig({
               },
             },
           },
-          {
-            urlPattern: ({ url }) => {
-              return (
-                url.origin === "https://equran.id" &&
-                url.pathname.startsWith("/api/doa")
-              );
-            },
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "doa-api-cache",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
+
           {
             urlPattern: ({ request }) => request.destination === "audio",
             handler: "CacheFirst",

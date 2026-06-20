@@ -51,7 +51,7 @@
               ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
               : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100',
           ]"
-          :title="isBookmarked ? 'Hapus Bookmark' : 'Tambah Bookmark'"
+          :title="isBookmarked ? t('removeBookmark') : t('addBookmark')"
         >
           <i
             ref="bookmarkIconRef"
@@ -71,7 +71,7 @@
               ? 'bg-slate-800 hover:bg-slate-700 text-slate-300'
               : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100',
           ]"
-          :title="isActiveAudio ? 'Pause' : 'Putar Audio'"
+          :title="isActiveAudio ? t('pause') : t('playAudio')"
         >
           <i
             ref="audioIconRef"
@@ -89,7 +89,7 @@
               ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
               : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100'
           "
-          title="Tafsir Ayat"
+          :title="t('verseTafsir')"
         >
           <i ref="tafsirIconRef" class="fa-solid fa-book"></i>
         </button>
@@ -142,7 +142,7 @@
           : 'text-gray-600 border-gray-50'
       "
     >
-      {{ verse.translation.id }}
+      {{ preferencesStore.language === 'en' ? verse.translation.en : verse.translation.id }}
     </p>
   </div>
 </template>
@@ -151,7 +151,10 @@
 import { ref, watch } from "vue";
 import { gsap } from "gsap";
 import { usePreferencesStore } from "../stores/preferences";
+import { useI18n } from "../composables/useI18n";
 import { buttonPop, wiggle, spinPop } from "../composables/useGsap";
+
+const { t } = useI18n();
 
 const props = defineProps({
   verse: {

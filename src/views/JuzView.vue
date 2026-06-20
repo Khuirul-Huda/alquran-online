@@ -9,7 +9,7 @@
           class="p-4 border-b flex-shrink-0"
           :class="preferencesStore.theme === 'dark' ? 'border-slate-800' : 'border-gray-100'"
         >
-          <h3 class="font-bold text-xs uppercase tracking-wider text-gray-400">Pilih Juz</h3>
+          <h3 class="font-bold text-xs uppercase tracking-wider text-gray-400">{{ preferencesStore.language === 'en' ? 'Select Juz' : 'Pilih Juz' }}</h3>
         </div>
 
         <!-- Juz 1-30 List -->
@@ -59,7 +59,7 @@
             to="/"
             class="inline-flex items-center gap-2 text-sm font-semibold text-quran-medium hover:text-quran-deep"
           >
-            <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+            <i class="fa-solid fa-arrow-left"></i> {{ t('backToHome') }}
           </router-link>
         </div>
 
@@ -99,7 +99,7 @@
               class="font-bold text-lg mb-2"
               :class="preferencesStore.theme === 'dark' ? 'text-white' : 'text-gray-900'"
             >
-              Gagal Memuat Juz
+              {{ t('errorTitle') }}
             </h3>
             <p
               class="text-sm mb-6"
@@ -111,7 +111,7 @@
               to="/"
               class="inline-block bg-quran-medium hover:bg-quran-deep text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm"
             >
-              Kembali ke Beranda
+              {{ t('backToHome') }}
             </router-link>
           </div>
         </div>
@@ -127,7 +127,7 @@
                 <h1 class="text-3xl font-bold tracking-tight text-white">Juz {{ juzNumber }}</h1>
                 <p class="text-xs font-semibold text-quran-gold-light mt-1.5 flex items-center gap-1.5">
                   <i class="fa-solid fa-location-arrow"></i>
-                  <span>Rentang: {{ juzData.start }} s/d {{ juzData.end }}</span>
+                  <span>{{ preferencesStore.language === 'en' ? 'Range: ' + translateJuzRange(juzData.start) + ' to ' + translateJuzRange(juzData.end) : 'Rentang: ' + juzData.start + ' s/d ' + juzData.end }}</span>
                 </p>
               </div>
               <div class="font-arabic text-3xl text-quran-gold">
@@ -303,6 +303,7 @@ import { quranApi } from "../services/quranApi";
 import { usePreferencesStore } from "../stores/preferences";
 import { useBookmarksStore } from "../stores/bookmarks";
 import { useAudioPlayer } from "../composables/useAudioPlayer";
+import { useI18n } from "../composables/useI18n";
 import { staggerReveal, audioBarEnter, audioBarLeave } from "../composables/useGsap";
 import TafsirModal from "../components/TafsirModal.vue";
 import ReadingToolbar from "../components/ReadingToolbar.vue";
@@ -315,6 +316,7 @@ const router = useRouter();
 const preferencesStore = usePreferencesStore();
 const bookmarksStore = useBookmarksStore();
 const audioPlayer = useAudioPlayer();
+const { t } = useI18n();
 
 const juzNumber = ref(1);
 const loaded = ref(false);
@@ -383,19 +385,38 @@ const getSurahInfo = (inQuranValue) => {
     return { number: 1, name: "Loading...", arabic: "", translation: "", verseInSurah: 1 };
   }
   let count = 0;
+  const lang = preferencesStore.language || "id";
   for (const s of surahList.value) {
     if (inQuranValue > count && inQuranValue <= count + s.numberOfVerses) {
       return {
         number: s.number,
-        name: s.name.transliteration.id,
+        name: s.name.transliteration[lang] || s.name.transliteration.id,
         arabic: s.name.short,
-        translation: s.name.translation.id,
+        translation: s.name.translation[lang] || s.name.translation.id,
         verseInSurah: inQuranValue - count,
       };
     }
     count += s.numberOfVerses;
   }
   return { number: 1, name: "", arabic: "", translation: "", verseInSurah: 1 };
+};
+
+const translateJuzRange = (str) => {
+  if (!str) return "";
+  const parts = str.split(":");
+  if (parts.length < 2) return str;
+  const surahName = parts[0].trim();
+  const verseNum = parts[1].trim();
+  const lang = preferencesStore.language || "id";
+  const found = surahList.value.find(
+    (s) =>
+      s.name.transliteration.id.toLowerCase() === surahName.toLowerCase() ||
+      s.name.transliteration.en.toLowerCase() === surahName.toLowerCase()
+  );
+  if (found) {
+    return `${found.name.transliteration[lang] || found.name.transliteration.id}: ${verseNum}`;
+  }
+  return str;
 };
 
 const getVerseLabel = (inQuranValue) => {
@@ -500,11 +521,12 @@ const fetchSurahList = async () => {
 const openVerseTafsir = (verse) => {
   const info = getSurahInfo(verse.number.inQuran);
   isVerseTafsirModal.value = true;
-  modalTitle.value = `Tafsir ${info.name} Ayat ${verse.number.inSurah}`;
+  const isEn = preferencesStore.language === "en";
+  modalTitle.value = isEn ? `Tafsir ${info.name} Verse ${verse.number.inSurah}` : `Tafsir ${info.name} Ayat ${verse.number.inSurah}`;
   modalTafsirWajiz.value =
-    verse.tafsir?.id?.short || "Tidak ada detail tafsir wajiz.";
+    verse.tafsir?.id?.short || (isEn ? "No brief exegesis available." : "Tidak ada detail tafsir wajiz.");
   modalTafsirTahlili.value =
-    verse.tafsir?.id?.long || "Tidak ada detail tafsir tahlili.";
+    verse.tafsir?.id?.long || (isEn ? "No detailed exegesis available." : "Tidak ada detail tafsir tahlili.");
   showModal.value = true;
 
   preferencesStore.saveProgress({

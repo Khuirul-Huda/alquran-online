@@ -15,7 +15,7 @@
             <input
               v-model="sidebarSearch"
               type="text"
-              placeholder="Cari surah di sini..."
+              :placeholder="t('searchSurah')"
               class="w-full pl-8 pr-3 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light transition-all"
               :class="
                 preferencesStore.theme === 'dark'
@@ -57,7 +57,7 @@
                 {{ s.number }}
               </span>
               <span class="group-hover:translate-x-0.5 transition-transform duration-200">{{
-                s.name.transliteration.id
+                preferencesStore.language === 'en' ? s.name.transliteration.en : s.name.transliteration.id
               }}</span>
             </div>
             <span class="font-arabic text-base text-quran-medium group-hover:text-quran-deep transition-colors">{{
@@ -75,7 +75,7 @@
             to="/"
             class="inline-flex items-center gap-2 text-sm font-semibold text-quran-medium hover:text-quran-deep"
           >
-            <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+            <i class="fa-solid fa-arrow-left"></i> {{ t('backToHome') }}
           </router-link>
         </div>
 
@@ -115,7 +115,7 @@
               class="font-bold text-lg mb-2"
               :class="preferencesStore.theme === 'dark' ? 'text-white' : 'text-gray-900'"
             >
-              Gagal Memuat Surah
+              {{ t('errorTitle') }}
             </h3>
             <p
               class="text-sm mb-6"
@@ -127,7 +127,7 @@
               to="/"
               class="inline-block bg-quran-medium hover:bg-quran-deep text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm"
             >
-              Kembali ke Beranda
+              {{ t('backToHome') }}
             </router-link>
           </div>
         </div>
@@ -141,10 +141,10 @@
             <div class="flex justify-between items-center relative z-10">
               <div>
                 <h1 class="text-3xl font-bold tracking-tight text-white">
-                  {{ surahdata.name.transliteration.id }}
+                  {{ preferencesStore.language === 'en' ? surahdata.name.transliteration.en : surahdata.name.transliteration.id }}
                 </h1>
                 <p class="text-sm font-medium text-quran-gold-light mt-1 italic">
-                  "{{ surahdata.name.translation.id }}"
+                  "{{ preferencesStore.language === 'en' ? surahdata.name.translation.en : surahdata.name.translation.id }}"
                 </p>
               </div>
               <div class="font-arabic text-4xl text-quran-gold">{{ surahdata.name.short }}</div>
@@ -158,20 +158,20 @@
                   class="bg-white/10 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5"
                 >
                   <i class="fa-solid fa-location-dot text-quran-gold"></i>
-                  <span>{{ formatRevelation(surahdata.revelation.id) }}</span>
+                  <span>{{ formatRevelation(preferencesStore.language === 'en' ? surahdata.revelation.en : surahdata.revelation.id) }}</span>
                 </span>
                 <span
                   class="bg-white/10 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5"
                 >
                   <i class="fa-solid fa-book-open text-quran-gold"></i>
-                  <span>{{ surahdata.numberOfVerses }} Ayat</span>
+                  <span>{{ surahdata.numberOfVerses }} {{ t('verses') }}</span>
                 </span>
               </div>
               <button
                 @click="openSurahTafsir"
                 class="bg-quran-gold hover:bg-white text-quran-deep font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm border-none cursor-pointer"
               >
-                <i class="fa-solid fa-circle-info"></i> Info & Tafsir Surah
+                <i class="fa-solid fa-circle-info"></i> {{ preferencesStore.language === 'en' ? 'Surah Info & Tafsir' : 'Info & Tafsir Surah' }}
               </button>
             </div>
           </div>
@@ -296,6 +296,7 @@ import { quranApi } from "../services/quranApi";
 import { usePreferencesStore } from "../stores/preferences";
 import { useBookmarksStore } from "../stores/bookmarks";
 import { useAudioPlayer } from "../composables/useAudioPlayer";
+import { useI18n } from "../composables/useI18n";
 import { staggerReveal, audioBarEnter, audioBarLeave } from "../composables/useGsap";
 import TafsirModal from "../components/TafsirModal.vue";
 import ReadingToolbar from "../components/ReadingToolbar.vue";
@@ -308,6 +309,7 @@ const router = useRouter();
 const preferencesStore = usePreferencesStore();
 const bookmarksStore = useBookmarksStore();
 const audioPlayer = useAudioPlayer();
+const { t } = useI18n();
 
 const surahnumber = ref(0);
 const loaded = ref(false);
@@ -334,10 +336,12 @@ const modalTafsirTahlili = ref("");
 const filteredSidebarSurahs = computed(() => {
   if (!sidebarSearch.value) return surahList.value;
   const query = sidebarSearch.value.toLowerCase().trim();
+  const lang = preferencesStore.language || "id";
   return surahList.value.filter((s) => {
-    const nameId = s.name.transliteration.id.toLowerCase();
+    const nameId = s.name.transliteration[lang]?.toLowerCase() || "";
+    const nameFallback = s.name.transliteration.id.toLowerCase();
     const num = String(s.number);
-    return nameId.includes(query) || num.includes(query);
+    return nameId.includes(query) || nameFallback.includes(query) || num.includes(query);
   });
 });
 
@@ -441,20 +445,24 @@ const fetchSurahList = async () => {
 
 const openSurahTafsir = () => {
   isVerseTafsirModal.value = false;
-  modalTitle.value = `Detail & Tafsir Surah ${surahdata.value.name.transliteration.id}`;
-  modalText.value = surahdata.value.tafsir ? surahdata.value.tafsir.id : "Tidak ada detail tafsir.";
+  const isEn = preferencesStore.language === "en";
+  const name = isEn ? surahdata.value.name.transliteration.en : surahdata.value.name.transliteration.id;
+  modalTitle.value = isEn ? `Surah ${name} Info & Tafsir` : `Detail & Tafsir Surah ${name}`;
+  modalText.value = surahdata.value.tafsir ? surahdata.value.tafsir.id : (isEn ? "No detail exegesis available." : "Tidak ada detail tafsir.");
   showModal.value = true;
 };
 
 const openVerseTafsir = (verse) => {
   isVerseTafsirModal.value = true;
-  modalTitle.value = `Tafsir Ayat ${verse.number.inSurah}`;
-  modalTafsirWajiz.value = verse.tafsir?.id?.short || "Tidak ada detail tafsir wajiz.";
-  modalTafsirTahlili.value = verse.tafsir?.id?.long || "Tidak ada detail tafsir tahlili.";
+  const isEn = preferencesStore.language === "en";
+  const name = isEn ? surahdata.value.name.transliteration.en : surahdata.value.name.transliteration.id;
+  modalTitle.value = isEn ? `Verse ${verse.number.inSurah} Tafsir` : `Tafsir Ayat ${verse.number.inSurah}`;
+  modalTafsirWajiz.value = verse.tafsir?.id?.short || (isEn ? "No brief exegesis available." : "Tidak ada detail tafsir wajiz.");
+  modalTafsirTahlili.value = verse.tafsir?.id?.long || (isEn ? "No detailed exegesis available." : "Tidak ada detail tafsir tahlili.");
   showModal.value = true;
   preferencesStore.saveProgress({
     number: surahnumber.value,
-    name: surahdata.value.name.transliteration.id,
+    name: name,
     arabic: surahdata.value.name.short,
     lastAyah: verse.number.inSurah,
     verseCount: surahdata.value.numberOfVerses,

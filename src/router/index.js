@@ -17,11 +17,7 @@ const routes = [
     name: "JuzView",
     component: () => import("../views/JuzView.vue"),
   },
-  {
-    path: "/doa",
-    name: "DoaView",
-    component: () => import("../views/DoaView.vue"),
-  },
+
   {
     path: "/settings",
     name: "Settings",

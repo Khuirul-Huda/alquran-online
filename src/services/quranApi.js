@@ -13,10 +13,6 @@ const quranClient = axios.create({
   timeout: 10000,
 });
 
-const doaClient = axios.create({
-  baseURL: "https://equran.id/api",
-  timeout: 10000,
-});
 
 const aladhanClient = axios.create({
   baseURL: "https://api.aladhan.com/v1",
@@ -125,23 +121,6 @@ export const quranApi = {
     });
   },
 
-  /**
-   * Fetch Daily Prayers (Doa).
-   * Cached for the lifetime of the browser session.
-   */
-  async fetchDoas() {
-    return withCache("doas", async () => {
-      try {
-        const response = await doaClient.get("/doa");
-        if (response.data && response.data.data) {
-          return response.data.data;
-        }
-        throw new Error("Format respons API tidak valid.");
-      } catch (error) {
-        return handleApiError(error, "fetchDoas");
-      }
-    });
-  },
 
   /**
    * Fetch Shalat (Prayer) Times by City.
