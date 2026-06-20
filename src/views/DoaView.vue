@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen transition-colors duration-300 pb-16" :class="activeTheme === 'dark' ? 'bg-slate-950 text-slate-100' : (activeTheme === 'sepia' ? 'bg-amber-50/20 text-amber-950' : 'bg-quran-bg text-quran-deep')">
+  <div class="pb-16">
     <div class="max-w-4xl mx-auto px-4 py-6">
       
       <!-- Back Navigation Link -->
@@ -24,10 +24,7 @@
       </div>
 
       <!-- Sticky Search and Filter Controls -->
-      <div 
-        class="sticky top-[80px] lg:top-[90px] z-30 border rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 mb-6 transition-all duration-300"
-        :class="activeTheme === 'dark' ? 'bg-slate-900/95 border-slate-800' : (activeTheme === 'sepia' ? 'bg-amber-50/95 border-amber-200/40' : 'bg-white/95 border-quran-medium/10')"
-      >
+      <div class="sticky top-[70px] md:top-[85px] z-30 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6 transition-all duration-300 themed-card">
         <!-- Search Input -->
         <div class="relative w-full md:w-1/2 shadow-sm">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
@@ -35,8 +32,8 @@
             v-model="searchQuery" 
             type="text" 
             placeholder="Cari doa berdasarkan nama atau terjemahan..." 
-            class="w-full pl-8 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light text-quran-deep transition-all"
-            :class="activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-100' : 'bg-gray-50 border-gray-200 text-quran-deep'"
+            class="w-full pl-8 pr-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light transition-all"
+            :class="activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-100 placeholder-slate-500' : 'bg-gray-50 border-gray-200 text-quran-deep placeholder-gray-400'"
           />
         </div>
 
@@ -45,7 +42,8 @@
           <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 whitespace-nowrap">Kategori:</span>
           <select 
             v-model="selectedGroup" 
-            class="w-full bg-quran-bg border border-gray-200 rounded-lg text-xs font-bold p-1.5 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer text-quran-deep"
+            class="w-full border rounded-lg text-xs font-bold p-1.5 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer transition-colors"
+            :class="activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-white' : 'bg-quran-bg border-gray-200 text-quran-deep'"
           >
             <option value="">Semua Kategori</option>
             <option v-for="g in uniqueGroups" :key="g" :value="g">{{ g }}</option>
@@ -64,11 +62,14 @@
 
       <!-- Error State -->
       <div v-else-if="error && doas.length === 0" class="flex justify-center items-center py-16">
-        <div class="bg-white border border-red-100 rounded-2xl p-8 text-center max-w-sm shadow-sm">
+        <div 
+          class="rounded-2xl p-8 text-center max-w-sm shadow-sm border animate-fade-in"
+          :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-red-100 text-gray-900'"
+        >
           <i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-          <h3 class="font-bold text-lg text-gray-900 mb-2">Gagal Memuat Doa</h3>
-          <p class="text-sm text-gray-500 mb-6">{{ errMsg }}</p>
-          <button @click="fetchDoas" class="bg-quran-medium hover:bg-quran-deep text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm">
+          <h3 class="font-bold text-lg mb-2" :class="activeTheme === 'dark' ? 'text-white' : 'text-gray-900'">Gagal Memuat Doa</h3>
+          <p class="text-sm mb-6" :class="activeTheme === 'dark' ? 'text-slate-400' : 'text-gray-500'">{{ errMsg }}</p>
+          <button @click="fetchDoas" class="bg-quran-medium hover:bg-quran-deep text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer">
             Coba Lagi
           </button>
         </div>
@@ -86,17 +87,15 @@
         <div 
           v-for="doa in filteredDoas" 
           :key="doa.id"
-          class="border rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
-          :class="[
-            activeTheme === 'light' ? 'bg-white border-quran-medium/10 shadow-sm hover:shadow-md' : '',
-            activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-200/50 shadow-sm hover:shadow-md' : '',
-            activeTheme === 'dark' ? 'bg-slate-900 border-slate-800/80 shadow-sm hover:shadow-md' : ''
-          ]"
+          class="themed-card rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
         >
           <!-- Category and Actions -->
           <div class="flex justify-between items-start gap-4 mb-4">
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-quran-medium bg-quran-bg border border-quran-gold-light px-2.5 py-1 rounded-full">
+              <span 
+                class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border"
+                :class="activeTheme === 'dark' ? 'text-quran-gold bg-slate-800 border-slate-700/50' : 'text-quran-medium bg-quran-bg border-quran-gold-light'"
+              >
                 {{ doa.grup }}
               </span>
             </div>
@@ -104,8 +103,12 @@
             <!-- Copy Button -->
             <button 
               @click="copyDoa(doa)" 
-              class="flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-gray-100 hover:bg-quran-accent/10 hover:text-quran-deep transition-all cursor-pointer bg-quran-bg text-gray-500"
-              :class="{'!bg-quran-medium !text-white !border-quran-medium': copiedId === doa.id}"
+              class="flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-lg border transition-all cursor-pointer"
+              :class="[
+                copiedId === doa.id 
+                  ? '!bg-quran-medium !text-white !border-quran-medium' 
+                  : (activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white' : 'bg-quran-bg border-gray-100 hover:bg-quran-accent/10 hover:text-quran-deep text-gray-500')
+              ]"
             >
               <i :class="copiedId === doa.id ? 'fa-solid fa-check' : 'fa-solid fa-clone'"></i>
               <span>{{ copiedId === doa.id ? 'Tersalin!' : 'Salin Doa' }}</span>
@@ -113,7 +116,7 @@
           </div>
 
           <!-- Prayer Title -->
-          <h2 class="font-bold text-base md:text-lg mb-4 text-quran-deep leading-snug">
+          <h2 class="font-bold text-base md:text-lg mb-4 leading-snug" :class="activeTheme === 'dark' ? 'text-white' : 'text-quran-deep'">
             {{ doa.nama }}
           </h2>
 
@@ -206,12 +209,15 @@ export default {
   },
   mounted() {
     this.loadThemePreference();
+    window.addEventListener("theme-changed", this.loadThemePreference);
     this.fetchDoas();
+  },
+  beforeUnmount() {
+    window.removeEventListener("theme-changed", this.loadThemePreference);
   },
   methods: {
     loadThemePreference() {
-      const themePref = localStorage.getItem("quran_pref_theme");
-      if (themePref) this.activeTheme = themePref;
+      this.activeTheme = localStorage.getItem("quran_pref_theme") || "light";
     },
     fetchDoas() {
       this.loading = true;

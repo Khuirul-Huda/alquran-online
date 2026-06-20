@@ -26,8 +26,12 @@
             <div class="grid grid-cols-3 gap-3">
               <button 
                 @click="changeTheme('light')" 
-                class="flex flex-col items-center gap-2 p-4 rounded-2xl border text-xs font-bold transition-all hover:bg-gray-50/50 cursor-pointer"
-                :class="activeTheme === 'light' ? 'border-quran-medium bg-quran-accent/5 text-quran-deep' : 'border-gray-200 text-gray-500 bg-white'"
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl border text-xs font-bold transition-all cursor-pointer"
+                :class="[
+                  activeTheme === 'light' 
+                    ? 'border-quran-medium bg-quran-accent/5 text-quran-deep' 
+                    : (activeTheme === 'dark' ? 'border-slate-800 text-slate-400 bg-slate-950/40 hover:bg-slate-900' : (activeTheme === 'sepia' ? 'border-amber-200/60 text-amber-900/60 bg-[#fffdf0]/50 hover:bg-amber-50/50' : 'border-gray-200 text-gray-500 bg-white hover:bg-gray-50'))
+                ]"
               >
                 <div class="w-8 h-8 rounded-full bg-white border border-gray-300 shadow-sm flex items-center justify-center">
                   <i class="fa-solid fa-sun text-amber-500"></i>
@@ -36,8 +40,12 @@
               </button>
               <button 
                 @click="changeTheme('sepia')" 
-                class="flex flex-col items-center gap-2 p-4 rounded-2xl border text-xs font-bold transition-all hover:bg-amber-50/30 cursor-pointer"
-                :class="activeTheme === 'sepia' ? 'border-amber-400 bg-amber-50/50 text-amber-950' : 'border-gray-200 text-gray-500 bg-white'"
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl border text-xs font-bold transition-all cursor-pointer"
+                :class="[
+                  activeTheme === 'sepia' 
+                    ? 'border-amber-400 bg-amber-50/50 text-amber-950' 
+                    : (activeTheme === 'dark' ? 'border-slate-800 text-slate-400 bg-slate-950/40 hover:bg-slate-900' : (activeTheme === 'sepia' ? 'border-amber-200/60 text-amber-900/60 bg-[#fffdf0]/50 hover:bg-amber-50/50' : 'border-gray-200 text-gray-500 bg-white hover:bg-gray-50'))
+                ]"
               >
                 <div class="w-8 h-8 rounded-full bg-[#fffdf0] border border-amber-300 shadow-sm flex items-center justify-center">
                   <i class="fa-solid fa-coffee text-amber-700"></i>
@@ -46,8 +54,12 @@
               </button>
               <button 
                 @click="changeTheme('dark')" 
-                class="flex flex-col items-center gap-2 p-4 rounded-2xl border text-xs font-bold transition-all hover:bg-slate-800 cursor-pointer"
-                :class="activeTheme === 'dark' ? 'border-quran-gold bg-slate-800 text-white' : 'border-gray-200 text-gray-500 bg-white'"
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl border text-xs font-bold transition-all cursor-pointer"
+                :class="[
+                  activeTheme === 'dark' 
+                    ? 'border-quran-gold bg-slate-800 text-white' 
+                    : (activeTheme === 'dark' ? 'border-slate-800 text-slate-400 bg-slate-950/40 hover:bg-slate-900' : (activeTheme === 'sepia' ? 'border-amber-200/60 text-amber-900/60 bg-[#fffdf0]/50 hover:bg-amber-50/50' : 'border-gray-200 text-gray-500 bg-white hover:bg-gray-50'))
+                ]"
               >
                 <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-950 shadow-sm flex items-center justify-center">
                   <i class="fa-solid fa-moon text-quran-gold"></i>
@@ -107,7 +119,8 @@
               <select 
                 v-model="selectedQari" 
                 @change="savePreference('quran_pref_qari', selectedQari)"
-                class="w-full bg-quran-bg border border-gray-200 rounded-xl text-xs font-bold p-3 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer text-quran-deep"
+                class="w-full border rounded-xl text-xs font-bold p-3 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer transition-colors"
+                :class="activeTheme === 'dark' ? 'bg-slate-950 border-slate-800 text-white' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-200/60 text-amber-950' : 'bg-quran-bg border-gray-200 text-quran-deep')"
               >
                 <option value="ar.alafasy">Syaikh Mishary Rashid Alafasy</option>
                 <option value="ar.sudais">Syaikh Abdurrahman As-Sudais</option>
@@ -124,7 +137,8 @@
               <select 
                 v-model="selectedCity" 
                 @change="saveCity"
-                class="w-full bg-quran-bg border border-gray-200 rounded-xl text-xs font-bold p-3 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer text-quran-deep"
+                class="w-full border rounded-xl text-xs font-bold p-3 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer transition-colors"
+                :class="activeTheme === 'dark' ? 'bg-slate-950 border-slate-800 text-white' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-200/60 text-amber-950' : 'bg-quran-bg border-gray-200 text-quran-deep')"
               >
                 <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
               </select>
@@ -165,14 +179,15 @@
             <div 
               v-for="b in bookmarks" 
               :key="b.id"
-              class="bg-quran-bg/50 border border-gray-100/60 p-3 rounded-xl flex items-center justify-between gap-3 group hover:border-quran-medium/30 transition-all"
+              class="border p-3 rounded-xl flex items-center justify-between gap-3 group transition-all"
+              :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800/80 hover:border-quran-gold/40' : (activeTheme === 'sepia' ? 'bg-amber-50/40 border-amber-200/40 hover:border-amber-400' : 'bg-quran-bg/50 border-gray-100/60 hover:border-quran-medium/30')"
             >
               <router-link 
                 :to="'/read/' + b.surahNumber + '?ayah=' + b.verseNumber"
                 class="flex-grow min-w-0"
               >
                 <div class="flex justify-between items-center mb-1">
-                  <h5 class="font-bold text-xs text-quran-deep leading-none group-hover:text-quran-medium transition-colors">
+                  <h5 class="font-bold text-xs leading-none transition-colors" :class="activeTheme === 'dark' ? 'text-slate-100 group-hover:text-quran-gold' : (activeTheme === 'sepia' ? 'text-amber-950 group-hover:text-amber-700' : 'text-quran-deep group-hover:text-quran-medium')">
                     {{ b.surahName }}
                   </h5>
                   <span class="font-arabic text-sm text-quran-medium">{{ b.surahArabic }}</span>

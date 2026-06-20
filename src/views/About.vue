@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen transition-colors duration-300 pb-16" :class="activeTheme === 'dark' ? 'bg-slate-950 text-slate-100' : (activeTheme === 'sepia' ? 'bg-amber-50/20 text-amber-950' : 'bg-quran-bg text-quran-deep')">
-    <div class="max-w-2xl mx-auto px-4 pt-8">
-      <div class="border rounded-3xl shadow-md overflow-hidden transition-colors duration-300" :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-200/50' : 'bg-white border-quran-medium/10')">
+  <div class="pb-16">
+    <div class="max-w-2xl mx-auto px-4 pt-8 animate-fade-in">
+      <div class="rounded-3xl overflow-hidden transition-all duration-300 themed-card">
         
         <!-- About Header -->
         <div class="bg-gradient-to-br from-quran-deep to-quran-medium text-white p-6 md:p-8 flex items-center gap-4 border-b-2 border-quran-gold">
@@ -21,15 +21,32 @@
           <div class="h-px" :class="activeTheme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'"></div>
 
           <!-- Data Source -->
-          <div class="space-y-2">
+          <div class="space-y-3.5">
             <h3 class="font-bold text-base flex items-center gap-2" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">
               <i class="fa-solid fa-database text-quran-gold"></i> Sumber Data & API
             </h3>
-            <p class="leading-relaxed text-gray-500 text-xs">
-              Seluruh data di dalam aplikasi ini (tafsir, ayat, transliterasi, dan terjemahan) bersumber dari API publik open-source
-              <a href="https://github.com/gadingnst/quran-api" target="_blank" rel="noopener noreferrer" class="font-bold text-quran-medium underline hover:text-quran-deep">gadingnst/quran-api</a> 
-              dan data doa harian dimuat dari 
-              <a href="https://equran.id" target="_blank" rel="noopener noreferrer" class="font-bold text-quran-medium underline hover:text-quran-deep">EQuran.id</a>. 
+            <p class="leading-relaxed text-gray-500 text-xs mb-3">
+              Aplikasi ini mengintegrasikan data dari beberapa sumber terpercaya melalui API publik open-source
+              <a href="https://github.com/gadingnst/quran-api" target="_blank" rel="noopener noreferrer" class="font-bold text-quran-medium underline hover:text-quran-deep">gadingnst/quran-api</a>:
+            </p>
+            <ul class="list-disc list-inside text-xs text-gray-500 space-y-2 pl-2">
+              <li>
+                <strong class="text-gray-400">api.alquran.cloud</strong>: Teks Al-Quran, Meta Informasi Surah, dan Audio.
+              </li>
+              <li>
+                <strong class="text-gray-400">quran.kemenag.go.id</strong>: Terjemahan resmi Bahasa Indonesia dan Tafsir Ayat (Kementerian Agama Republik Indonesia). Data tafsir disajikan lengkap dalam dua opsi: **Tafsir Wajiz** (Tafsir Ringkas edisi tahun 2016) dan **Tafsir Tahlili** (Tafsir Lengkap edisi tahun 2012) yang dapat dialihkan langsung saat membaca.
+              </li>
+              <li>
+                <strong class="text-gray-400">Al-Quran-ID-API</strong>: Tafsir ringkasan Surah (dengan penyesuaian tipe wahyu Surah 13 dan 55 ke Medinan sesuai standar data internasional).
+              </li>
+              <li>
+                <strong class="text-gray-400">equran.id</strong>: Kumpulan data Doa Harian pilihan.
+              </li>
+              <li>
+                <strong class="text-gray-400">api.aladhan.com</strong>: Perhitungan waktu shalat harian tanpa pelacakan lokasi.
+              </li>
+            </ul>
+            <p class="leading-relaxed text-gray-500 text-xs mt-3 border-t pt-3" :class="activeTheme === 'dark' ? 'border-slate-800' : 'border-gray-100'">
               Kode sumber aplikasi ini bersifat terbuka dan dapat diakses melalui 
               <a href="https://github.com/Khuirul-Huda/alquran-online" target="_blank" rel="noopener noreferrer" class="font-bold text-quran-medium underline hover:text-quran-deep">Khuirul-Huda/alquran-online</a>.
             </p>
@@ -38,26 +55,12 @@
           <!-- Bug Reports / Issues -->
           <div class="space-y-2">
             <h3 class="font-bold text-base flex items-center gap-2" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">
-              <i class="fa-solid fa-circle-question text-quran-gold"></i> Laporan Masalah
+              <i class="fa-solid fa-circle-question text-quran-gold"></i> Laporan Masalah & Hubungi Pengembang
             </h3>
             <p class="leading-relaxed text-gray-500 text-xs">
-              Apabila Anda menemukan kesalahan pengetikan ayat, kekeliruan terjemahan, atau masalah teknis aplikasi, silakan laporkan dengan membuat tiket laporan baru di
+              Apabila Anda menemukan kesalahan pengetikan ayat, kekeliruan terjemahan, memiliki saran kontribusi, atau menemukan masalah teknis aplikasi, silakan laporkan dengan membuat tiket laporan baru di
               <a href="https://github.com/Khuirul-Huda/alquran-online/issues" target="_blank" rel="noopener noreferrer" class="font-bold text-quran-medium underline hover:text-quran-deep">halaman issues GitHub kami</a>.
             </p>
-          </div>
-
-          <!-- Contact Developer -->
-          <div class="space-y-2">
-            <h3 class="font-bold text-base flex items-center gap-2" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">
-              <i class="fa-solid fa-envelope-open-text text-quran-gold"></i> Hubungi Pengembang
-            </h3>
-            <p class="leading-relaxed text-gray-500 text-xs mb-3">
-              Jika Anda memiliki saran kerja sama, pertanyaan, atau ingin berkontribusi dalam pengembangan aplikasi ini, silakan hubungi kami melalui Direct Message Instagram:
-            </p>
-            <a href="https://instagram.com/khuirul_huda" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-quran-bg border border-quran-medium/10 px-4 py-2.5 rounded-xl text-xs font-bold text-quran-deep hover:bg-quran-accent/15 transition-colors">
-              <i class="fa-brands fa-instagram text-sm text-quran-gold"></i>
-              <span>@khuirul_huda</span>
-            </a>
           </div>
 
           <div class="h-px" :class="activeTheme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'"></div>
@@ -103,16 +106,25 @@ export default {
   },
   mounted() {
     this.loadThemePreference();
+    window.addEventListener("theme-changed", this.loadThemePreference);
+  },
+  beforeUnmount() {
+    window.removeEventListener("theme-changed", this.loadThemePreference);
   },
   methods: {
     loadThemePreference() {
-      const themePref = localStorage.getItem("quran_pref_theme");
-      if (themePref) this.activeTheme = themePref;
+      this.activeTheme = localStorage.getItem("quran_pref_theme") || "light";
     },
   },
 };
 </script>
 
 <style scoped>
-/* Scoped styles are omitted as all components are styled using Tailwind CSS classes. */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
 </style>

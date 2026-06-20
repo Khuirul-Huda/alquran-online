@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto px-4 py-6 flex gap-8">
       
       <!-- Left Sidebar: List of 30 Juz (hidden on mobile, visible on desktop) -->
-      <aside class="hidden lg:block w-80 rounded-2xl h-[calc(100vh-130px)] sticky top-[90px] flex-shrink-0 flex flex-col transition-all duration-300 themed-card">
+      <aside class="hidden lg:block w-80 rounded-2xl h-[calc(100vh-130px)] sticky top-[95px] flex-shrink-0 flex flex-col transition-all duration-300 themed-card">
         <div class="p-4 border-b flex-shrink-0" :class="activeTheme === 'dark' ? 'border-slate-800' : 'border-gray-100'">
           <h3 class="font-bold text-xs uppercase tracking-wider text-gray-400">Pilih Juz</h3>
         </div>
@@ -62,11 +62,14 @@
 
         <!-- Error State -->
         <div v-else-if="error" class="flex justify-center items-center py-16">
-          <div class="bg-white border border-red-100 rounded-2xl p-8 text-center max-w-sm shadow-sm">
+          <div 
+            class="rounded-2xl p-8 text-center max-w-sm shadow-sm border animate-fade-in"
+            :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-red-100 text-gray-900'"
+          >
             <i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-            <h3 class="font-bold text-lg text-gray-900 mb-2">Gagal Memuat Juz</h3>
-            <p class="text-sm text-gray-500 mb-6">{{ errMsg }}</p>
-            <router-link to="/" class="bg-quran-medium hover:bg-quran-deep text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm">
+            <h3 class="font-bold text-lg mb-2" :class="activeTheme === 'dark' ? 'text-white' : 'text-gray-900'">Gagal Memuat Juz</h3>
+            <p class="text-sm mb-6" :class="activeTheme === 'dark' ? 'text-slate-400' : 'text-gray-500'">{{ errMsg }}</p>
+            <router-link to="/" class="inline-block bg-quran-medium hover:bg-quran-deep text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm">
               Kembali ke Beranda
             </router-link>
           </div>
@@ -90,7 +93,7 @@
           </div>
 
           <!-- Sticky Reading Customizations Panel -->
-          <div class="sticky top-[80px] lg:top-[90px] z-30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 transition-all duration-300 themed-card">
+          <div class="sticky top-[70px] md:top-[85px] z-30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 transition-all duration-300 themed-card">
             <!-- Arabic Size Adjusters -->
             <div class="flex items-center gap-2">
               <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Ukuran Teks:</span>
@@ -287,22 +290,110 @@
 
       <!-- Custom Modal (Green & Gold) -->
       <div v-if="showModal" class="fixed inset-0 bg-quran-deep/40 backdrop-blur-sm flex items-center justify-center z-[1000] p-4 transition-all animate-fade-in" @click.self="closeModal">
-        <div class="bg-white rounded-2xl w-full max-w-lg border-2 border-quran-gold shadow-2xl flex flex-col max-h-[85vh] transform transition-transform duration-300 animate-slide-up">
+        <div 
+          class="rounded-2xl w-full max-w-lg border-2 shadow-2xl flex flex-col max-h-[85vh] transform transition-transform duration-300 animate-slide-up"
+          :class="[
+            activeTheme === 'dark' 
+              ? 'bg-slate-900 border-quran-gold text-slate-100' 
+              : (activeTheme === 'sepia' 
+                  ? 'bg-[#fffcf3] border-amber-400 text-amber-950' 
+                  : 'bg-white border-quran-gold text-quran-deep')
+          ]"
+        >
           <!-- Modal Header -->
-          <div class="bg-gradient-to-r from-quran-deep to-quran-medium text-white px-6 py-4 flex justify-between items-center border-b-2 border-quran-gold">
+          <div 
+            class="px-6 py-4 flex justify-between items-center border-b-2"
+            :class="[
+              activeTheme === 'dark'
+                ? 'bg-gradient-to-r from-slate-950 to-slate-800 text-white border-quran-gold'
+                : (activeTheme === 'sepia'
+                    ? 'bg-gradient-to-r from-amber-900 to-amber-850 text-amber-50 border-amber-400'
+                    : 'bg-gradient-to-r from-quran-deep to-quran-medium text-white border-quran-gold')
+            ]"
+          >
             <h3 class="font-bold text-base flex items-center gap-2">
               <i class="fa-solid fa-book-open text-quran-gold"></i>
               {{ modalTitle }}
             </h3>
-            <button @click="closeModal" class="text-white hover:text-quran-gold text-2xl font-light focus:outline-none transition-colors">&times;</button>
+            <button 
+              @click="closeModal" 
+              class="hover:text-quran-gold text-2xl font-light focus:outline-none transition-colors"
+              :class="activeTheme === 'sepia' ? 'text-amber-100 hover:text-amber-300' : 'text-white hover:text-quran-gold'"
+            >&times;</button>
           </div>
           <!-- Modal Body -->
-          <div class="p-6 overflow-y-auto text-sm text-quran-deep leading-relaxed">
-            <p class="whitespace-pre-line">{{ modalText }}</p>
+          <div 
+            class="p-6 overflow-y-auto text-sm leading-relaxed"
+            :class="[
+              activeTheme === 'dark'
+                ? 'text-slate-300'
+                : (activeTheme === 'sepia'
+                    ? 'text-amber-900'
+                    : 'text-quran-deep')
+            ]"
+          >
+            <!-- Tab Switcher for Verse Tafsir -->
+            <div v-if="isVerseTafsirModal" class="flex border-b mb-5" :class="activeTheme === 'dark' ? 'border-slate-800' : (activeTheme === 'sepia' ? 'border-amber-200/40' : 'border-gray-100')">
+              <button 
+                @click="tafsirTab = 'wajiz'"
+                class="flex-1 py-2 px-4 text-center font-semibold text-xs border-b-2 transition-all cursor-pointer focus:outline-none"
+                :class="[
+                  tafsirTab === 'wajiz'
+                    ? (activeTheme === 'dark' ? 'text-quran-gold border-quran-gold font-bold' : (activeTheme === 'sepia' ? 'text-amber-800 border-amber-800 font-bold' : 'text-quran-medium border-quran-medium font-bold'))
+                    : (activeTheme === 'dark' ? 'text-slate-500 border-transparent hover:text-slate-300' : (activeTheme === 'sepia' ? 'text-amber-900/40 border-transparent hover:text-amber-900/70' : 'text-gray-400 border-transparent hover:text-quran-medium'))
+                ]"
+              >
+                Tafsir Wajiz (Ringkas)
+              </button>
+              <button 
+                @click="tafsirTab = 'tahlili'"
+                class="flex-1 py-2 px-4 text-center font-semibold text-xs border-b-2 transition-all cursor-pointer focus:outline-none"
+                :class="[
+                  tafsirTab === 'tahlili'
+                    ? (activeTheme === 'dark' ? 'text-quran-gold border-quran-gold font-bold' : (activeTheme === 'sepia' ? 'text-amber-800 border-amber-800 font-bold' : 'text-quran-medium border-quran-medium font-bold'))
+                    : (activeTheme === 'dark' ? 'text-slate-500 border-transparent hover:text-slate-300' : (activeTheme === 'sepia' ? 'text-amber-900/40 border-transparent hover:text-amber-900/70' : 'text-gray-400 border-transparent hover:text-quran-medium'))
+                ]"
+              >
+                Tafsir Tahlili (Lengkap)
+              </button>
+            </div>
+
+            <!-- Tafsir Content -->
+            <p v-if="!isVerseTafsirModal" class="whitespace-pre-line text-justify">{{ modalText }}</p>
+            <div v-else>
+              <div v-if="tafsirTab === 'wajiz'" class="whitespace-pre-line text-justify leading-relaxed">{{ modalTafsirWajiz }}</div>
+              <div v-else class="whitespace-pre-line text-justify leading-relaxed">{{ modalTafsirTahlili }}</div>
+            </div>
+
+            <div 
+              class="mt-6 pt-3 border-t text-[10.5px] font-bold uppercase tracking-wider" 
+              :class="activeTheme === 'dark' ? 'border-slate-800 text-slate-500' : (activeTheme === 'sepia' ? 'border-amber-200/40 text-amber-900/40' : 'border-gray-100 text-gray-400')"
+            >
+              Sumber Tafsir: Kemenag RI (Kementerian Agama Republik Indonesia)
+            </div>
           </div>
           <!-- Modal Footer -->
-          <div class="px-6 py-4 bg-quran-bg border-t border-gray-100 flex justify-end">
-            <button @click="closeModal" class="bg-quran-medium hover:bg-quran-deep text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-colors shadow-sm">
+          <div 
+            class="px-6 py-4 border-t flex justify-end"
+            :class="[
+              activeTheme === 'dark'
+                ? 'bg-slate-950/40 border-slate-800'
+                : (activeTheme === 'sepia'
+                    ? 'bg-amber-100/20 border-amber-200/40'
+                    : 'bg-quran-bg border-gray-100')
+            ]"
+          >
+            <button 
+              @click="closeModal" 
+              class="font-bold px-5 py-2.5 rounded-xl text-xs transition-colors shadow-sm cursor-pointer text-white"
+              :class="[
+                activeTheme === 'dark'
+                  ? 'bg-slate-800 hover:bg-slate-700'
+                  : (activeTheme === 'sepia'
+                      ? 'bg-amber-800 hover:bg-amber-900'
+                      : 'bg-quran-medium hover:bg-quran-deep')
+              ]"
+            >
               Tutup
             </button>
           </div>
@@ -348,6 +439,10 @@ export default {
       showModal: false,
       modalTitle: "",
       modalText: "",
+      isVerseTafsirModal: false,
+      tafsirTab: "wajiz",
+      modalTafsirWajiz: "",
+      modalTafsirTahlili: "",
     };
   },
   watch: {
@@ -416,6 +511,7 @@ export default {
     changeTheme(theme) {
       this.activeTheme = theme;
       this.savePreference("quran_pref_theme", theme);
+      window.dispatchEvent(new Event("theme-changed"));
     },
     increaseFontSize() {
       if (this.arabicFontSizeFactor < 3.8) {
@@ -605,10 +701,15 @@ export default {
     // Custom Modal Methods
     openVerseTafsir(verse) {
       const info = this.getSurahInfo(verse.number.inQuran);
+      this.isVerseTafsirModal = true;
+      this.tafsirTab = "wajiz";
       this.modalTitle = `Tafsir ${info.name} Ayat ${verse.number.inSurah}`;
-      this.modalText = verse.tafsir && verse.tafsir.id && verse.tafsir.id.short 
+      this.modalTafsirWajiz = verse.tafsir && verse.tafsir.id && verse.tafsir.id.short 
         ? verse.tafsir.id.short 
-        : "Tidak ada detail tafsir untuk ayat ini.";
+        : "Tidak ada detail tafsir wajiz untuk ayat ini.";
+      this.modalTafsirTahlili = verse.tafsir && verse.tafsir.id && verse.tafsir.id.long 
+        ? verse.tafsir.id.long 
+        : "Tidak ada detail tafsir tahlili untuk ayat ini.";
       this.showModal = true;
       this.saveProgress(verse.number.inQuran);
     },

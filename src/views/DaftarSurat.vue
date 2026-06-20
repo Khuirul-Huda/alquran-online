@@ -41,14 +41,14 @@
         <button 
           @click="activeTab = 'surah'" 
           class="flex-1 text-center py-3.5 text-sm font-bold border-b-2 transition-all cursor-pointer"
-          :class="activeTab === 'surah' ? 'border-quran-medium text-quran-deep' : 'border-transparent text-gray-400 hover:text-quran-medium'"
+          :class="activeTab === 'surah' ? (activeTheme === 'dark' ? 'border-quran-gold text-quran-gold' : 'border-quran-medium text-quran-deep') : 'border-transparent text-gray-400 hover:text-quran-medium'"
         >
           <i class="fa-solid fa-list-ol mr-1.5"></i> Daftar Surah
         </button>
         <button 
           @click="activeTab = 'juz'" 
           class="flex-1 text-center py-3.5 text-sm font-bold border-b-2 transition-all cursor-pointer"
-          :class="activeTab === 'juz' ? 'border-quran-medium text-quran-deep' : 'border-transparent text-gray-400 hover:text-quran-medium'"
+          :class="activeTab === 'juz' ? (activeTheme === 'dark' ? 'border-quran-gold text-quran-gold' : 'border-quran-medium text-quran-deep') : 'border-transparent text-gray-400 hover:text-quran-medium'"
         >
           <i class="fa-solid fa-box-archive mr-1.5"></i> Daftar Juz
         </button>
@@ -68,8 +68,8 @@
                 v-model="searchQuery"
                 type="text"
                 placeholder="Cari surah berdasarkan nama, arti, atau nomor..."
-                class="w-full pl-11 pr-4 py-4 border rounded-2xl text-sm text-quran-deep placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light focus:shadow-md transition-all duration-200"
-                :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100 focus:border-quran-gold focus:ring-quran-gold/10' : 'bg-white border-quran-medium/10 text-quran-deep'"
+                class="w-full pl-11 pr-4 py-4 border rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light focus:shadow-md transition-all duration-200"
+                :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100 placeholder-slate-500 focus:border-quran-gold focus:ring-quran-gold/10' : 'bg-white border-quran-medium/10 text-quran-deep placeholder-gray-400'"
               />
             </div>
 
@@ -90,11 +90,14 @@
 
             <!-- Error State -->
             <div v-else-if="error" class="flex justify-center items-center py-16">
-              <div class="bg-white border border-red-100 rounded-2xl p-8 text-center max-w-sm shadow-sm">
+              <div 
+                class="rounded-2xl p-8 text-center max-w-sm shadow-sm border animate-fade-in"
+                :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-red-100 text-gray-900'"
+              >
                 <i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-                <h3 class="font-bold text-lg text-gray-900 mb-2">Gagal Memuat Data</h3>
-                <p class="text-sm text-gray-500 mb-6">{{ errMsg }}</p>
-                <button @click="fetchSurah" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm">
+                <h3 class="font-bold text-lg mb-2" :class="activeTheme === 'dark' ? 'text-white' : 'text-gray-900'">Gagal Memuat Data</h3>
+                <p class="text-sm mb-6" :class="activeTheme === 'dark' ? 'text-slate-400' : 'text-gray-500'">{{ errMsg }}</p>
+                <button @click="fetchSurah" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm cursor-pointer">
                   Coba Lagi
                 </button>
               </div>
@@ -118,6 +121,7 @@
                     :ke="suratt.number"
                     :revelation="suratt.revelation.id"
                     :verses="suratt.numberOfVerses"
+                    :theme="activeTheme"
                   />
                 </div>
               </div>
@@ -160,27 +164,37 @@
         <div class="lg:col-span-1 flex flex-col gap-6 order-2 lg:mt-0">
           
           <!-- Last Read / Continue Reading Card -->
-          <div v-if="lastRead" class="bg-gradient-to-br from-quran-cream to-white border border-quran-gold/30 rounded-2xl p-5 shadow-sm">
-            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-gold mb-3 flex items-center gap-1.5">
+          <div 
+            v-if="lastRead" 
+            class="border rounded-2xl p-5 shadow-sm transition-all duration-300 animate-fade-in"
+            :class="[
+              activeTheme === 'dark' 
+                ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-slate-800' 
+                : (activeTheme === 'sepia' 
+                    ? 'bg-gradient-to-br from-amber-100/40 to-[#fffcf3] border-amber-250/50' 
+                    : 'bg-gradient-to-br from-quran-cream to-white border-quran-gold/30')
+            ]"
+          >
+            <h4 class="text-xs uppercase tracking-wider font-bold mb-3 flex items-center gap-1.5" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-medium'">
               <i class="fa-solid fa-bookmark"></i> Lanjutkan Membaca
             </h4>
             <div class="flex justify-between items-center">
               <div>
-                <h3 class="font-bold text-quran-deep text-base">{{ lastRead.name }}</h3>
-                <p class="text-xs text-gray-500 font-medium mt-0.5">
+                <h3 class="font-bold text-base" :class="activeTheme === 'dark' ? 'text-white' : 'text-quran-deep'">{{ lastRead.name }}</h3>
+                <p class="text-xs font-medium mt-0.5" :class="activeTheme === 'dark' ? 'text-slate-400' : 'text-gray-500'">
                   Ayat {{ lastRead.lastAyah || 1 }} dari {{ lastRead.verseCount || '...' }}
                 </p>
               </div>
-              <span class="font-arabic text-xl text-quran-medium">{{ lastRead.arabic }}</span>
+              <span class="font-arabic text-xl" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-medium'">{{ lastRead.arabic }}</span>
             </div>
 
             <!-- Reading progress percentage bar -->
             <div v-if="lastRead.verseCount" class="mt-3.5 mb-4">
-              <div class="flex justify-between items-center text-[9.5px] text-gray-400 font-bold uppercase mb-1">
+              <div class="flex justify-between items-center text-[9.5px] font-bold uppercase mb-1" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-400'">
                 <span>Progres</span>
                 <span>{{ Math.round((lastRead.lastAyah / lastRead.verseCount) * 100) }}%</span>
               </div>
-              <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden">
+              <div class="w-full h-1.5 rounded-full overflow-hidden" :class="activeTheme === 'dark' ? 'bg-slate-800' : 'bg-gray-200/50'">
                 <div class="h-full bg-quran-medium transition-all" :style="{ width: Math.round((lastRead.lastAyah / lastRead.verseCount) * 100) + '%' }"></div>
               </div>
             </div>
@@ -203,13 +217,14 @@
                 v-for="b in bookmarks" 
                 :key="b.id" 
                 :to="'/read/' + b.surahNumber + '?ayah=' + b.verseNumber"
-                class="flex items-center justify-between p-2.5 rounded-xl hover:bg-quran-bg border border-transparent hover:border-quran-medium/10 transition-all duration-200 group text-xs font-semibold"
+                class="flex items-center justify-between p-2.5 rounded-xl border border-transparent transition-all duration-200 group text-xs font-semibold"
+                :class="activeTheme === 'dark' ? 'hover:bg-slate-800 hover:border-slate-800' : (activeTheme === 'sepia' ? 'hover:bg-amber-100/40 hover:border-amber-250/20' : 'hover:bg-quran-bg hover:border-quran-medium/10')"
               >
                 <div class="flex items-center gap-2">
-                  <span class="bg-quran-bg text-quran-deep font-bold text-[9px] w-5 h-5 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30">
+                  <span class="font-bold text-[9px] w-5 h-5 rounded-full flex items-center justify-center border transition-all" :class="activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-quran-bg text-quran-deep border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30'">
                     {{ b.verseNumber }}
                   </span>
-                  <span class="text-gray-600 group-hover:text-quran-medium transition-colors">{{ b.surahName }}</span>
+                  <span class="transition-colors" :class="activeTheme === 'dark' ? 'text-slate-300 group-hover:text-quran-gold' : 'text-gray-600 group-hover:text-quran-medium'">{{ b.surahName }}</span>
                 </div>
                 <span class="font-arabic text-sm text-quran-medium">{{ b.surahArabic }}</span>
               </router-link>
@@ -226,7 +241,8 @@
               <select 
                 v-model="selectedCity" 
                 @change="onCityChange"
-                class="bg-quran-bg border border-gray-200 rounded-lg text-[10px] font-bold p-1 cursor-pointer outline-none focus:ring-1 focus:ring-quran-light text-quran-deep max-w-[100px]"
+                class="border rounded-lg text-[10px] font-bold p-1 cursor-pointer outline-none focus:ring-1 focus:ring-quran-light max-w-[100px] transition-colors"
+                :class="activeTheme === 'dark' ? 'bg-slate-950 border-slate-800 text-white' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-200/60 text-amber-950' : 'bg-quran-bg border-gray-200 text-quran-deep')"
               >
                 <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
               </select>
@@ -244,7 +260,15 @@
                 v-for="(time, name) in formattedShalatTimes" 
                 :key="name"
                 class="flex justify-between p-2 rounded-xl border border-transparent transition-all"
-                :class="nextPrayerName === name ? 'bg-quran-accent/10 border-quran-accent/25 text-quran-deep ring-1 ring-quran-accent/5' : 'text-gray-600'"
+                :class="[
+                  nextPrayerName === name 
+                    ? (activeTheme === 'dark' 
+                        ? 'bg-quran-gold/10 border-quran-gold/25 text-quran-gold ring-1 ring-quran-gold/5' 
+                        : (activeTheme === 'sepia' 
+                            ? 'bg-amber-100/50 border-amber-300/40 text-amber-950 ring-1 ring-amber-300/20' 
+                            : 'bg-quran-accent/10 border-quran-accent/25 text-quran-deep ring-1 ring-quran-accent/5'))
+                    : (activeTheme === 'dark' ? 'text-slate-400' : (activeTheme === 'sepia' ? 'text-amber-900/70' : 'text-gray-600'))
+                ]"
               >
                 <span class="flex items-center gap-1.5">
                   <i :class="getShalatIcon(name)" class="text-quran-gold text-[10px]"></i>
@@ -272,13 +296,14 @@
                 v-for="shortcut in popularSurahs" 
                 :key="shortcut.number" 
                 :to="'/read/' + shortcut.number"
-                class="flex items-center justify-between p-2.5 rounded-xl hover:bg-quran-bg border border-transparent hover:border-quran-medium/10 transition-all duration-200 group text-xs font-semibold"
+                class="flex items-center justify-between p-2.5 rounded-xl border border-transparent transition-all duration-200 group text-xs font-semibold"
+                :class="activeTheme === 'dark' ? 'hover:bg-slate-800 hover:border-slate-800' : (activeTheme === 'sepia' ? 'hover:bg-amber-100/40 hover:border-amber-250/20' : 'hover:bg-quran-bg hover:border-quran-medium/10')"
               >
                 <div class="flex items-center gap-3">
-                  <span class="bg-quran-bg text-quran-deep font-bold text-[10px] w-6 h-6 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30">
+                  <span class="font-bold text-[10px] w-6 h-6 rounded-full flex items-center justify-center border transition-all" :class="activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-quran-bg text-quran-deep border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30'">
                     {{ shortcut.number }}
                   </span>
-                  <span class="text-gray-600 group-hover:text-quran-medium transition-colors">{{ shortcut.name }}</span>
+                  <span class="transition-colors" :class="activeTheme === 'dark' ? 'text-slate-300 group-hover:text-quran-gold' : 'text-gray-600 group-hover:text-quran-medium'">{{ shortcut.name }}</span>
                 </div>
                 <span class="font-arabic text-sm text-quran-medium">{{ shortcut.arabic }}</span>
               </router-link>
@@ -291,21 +316,33 @@
               <i class="fa-solid fa-chart-simple"></i> Informasi Al-Quran
             </h4>
             <div class="grid grid-cols-2 gap-3.5">
-              <div class="bg-quran-bg/60 p-3 rounded-xl border border-gray-100/50 text-center">
-                <span class="block text-xl font-bold text-quran-deep leading-none mb-1">114</span>
-                <span class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Surah</span>
+              <div 
+                class="p-3 rounded-xl border text-center transition-colors"
+                :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-250/20 text-amber-950' : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep')"
+              >
+                <span class="block text-xl font-bold leading-none mb-1" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">114</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-500'">Surah</span>
               </div>
-              <div class="bg-quran-bg/60 p-3 rounded-xl border border-gray-100/50 text-center">
-                <span class="block text-xl font-bold text-quran-deep leading-none mb-1">30</span>
-                <span class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Juz</span>
+              <div 
+                class="p-3 rounded-xl border text-center transition-colors"
+                :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-250/20 text-amber-950' : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep')"
+              >
+                <span class="block text-xl font-bold leading-none mb-1" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">30</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-500'">Juz</span>
               </div>
-              <div class="bg-quran-bg/60 p-3 rounded-xl border border-gray-100/50 text-center">
-                <span class="block text-xl font-bold text-quran-deep leading-none mb-1">6236</span>
-                <span class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Ayat</span>
+              <div 
+                class="p-3 rounded-xl border text-center transition-colors"
+                :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-250/20 text-amber-950' : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep')"
+              >
+                <span class="block text-xl font-bold leading-none mb-1" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">6236</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-500'">Ayat</span>
               </div>
-              <div class="bg-quran-bg/60 p-3 rounded-xl border border-gray-100/50 text-center">
-                <span class="block text-xl font-bold text-quran-deep leading-none mb-1">77.430</span>
-                <span class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Kata</span>
+              <div 
+                class="p-3 rounded-xl border text-center transition-colors"
+                :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-250/20 text-amber-950' : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep')"
+              >
+                <span class="block text-xl font-bold leading-none mb-1" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">77.430</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-500'">Kata</span>
               </div>
             </div>
           </div>
