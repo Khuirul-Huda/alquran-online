@@ -22,8 +22,8 @@
             :class="
               j == juzNumber
                 ? preferencesStore.theme === 'dark'
-                  ? 'bg-slate-800 text-quran-gold shadow-sm border-l-4 border-quran-gold'
-                  : 'bg-quran-accent/15 text-quran-deep border-l-4 border-quran-medium shadow-sm'
+                  ? 'bg-slate-800 text-quran-gold shadow-sm'
+                  : 'bg-quran-accent/15 text-quran-deep shadow-sm'
                 : preferencesStore.theme === 'dark'
                 ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
                 : 'text-gray-600 hover:bg-quran-bg hover:text-quran-medium'
@@ -70,10 +70,7 @@
           <div
             v-for="h in 5"
             :key="h"
-            class="border rounded-2xl p-6 h-48 flex flex-col justify-between"
-            :class="
-              preferencesStore.theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'
-            "
+            class="themed-card rounded-2xl p-6 h-48 flex flex-col justify-between"
           >
             <div class="flex justify-between items-center">
               <div class="animate-shimmer w-8 h-8 rounded-full"></div>
@@ -201,6 +198,7 @@
                 "
                 :is-active-audio="audioPlayer.activeVerseNumber.value === verse.number.inQuran"
                 :is-highlighted="highlightedVerseNumber === verse.number.inQuran"
+                :is-playing="audioPlayer.isAudioPlaying.value"
                 @toggle-bookmark="toggleBookmark"
                 @toggle-audio="toggleAudio"
                 @show-tafsir="openVerseTafsir"
@@ -459,6 +457,15 @@ const scrollToVerse = (inQuranValue) => {
   }
 };
 
+const scrollActiveSidebarItemIntoView = () => {
+  nextTick(() => {
+    const activeEl = document.querySelector("aside .router-link-exact-active");
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  });
+};
+
 const fetchJuzDetails = async () => {
   loaded.value = false;
   error.value = false;
@@ -496,6 +503,8 @@ const fetchJuzDetails = async () => {
             highlightedVerseNumber.value = null;
           }
         }, 5000);
+      } else {
+        window.scrollTo({ top: 0 });
       }
     });
   } catch (err) {
@@ -512,6 +521,7 @@ const fetchSurahList = async () => {
     const data = await quranApi.fetchSurahList();
     surahList.value = data;
     fetchJuzDetails(); // Fetch details after mapping is ready
+    scrollActiveSidebarItemIntoView();
   } catch (err) {
     console.error("Failed to load surah list for Juz mapping:", err);
     fetchJuzDetails();
@@ -572,6 +582,7 @@ watch(
       audioPlayer.stopAudio();
       fetchJuzDetails();
       window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollActiveSidebarItemIntoView();
     }
   }
 );

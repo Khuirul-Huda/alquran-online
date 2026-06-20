@@ -8,11 +8,10 @@
       'pulse-highlight-verse': isHighlighted,
     }"
   >
-    <!-- Highlight bar left (expands when active audio) -->
+    <!-- Highlight bar left (visible when active audio) -->
     <div
-      ref="barRef"
-      class="absolute left-0 top-0 h-full w-1 bg-quran-light opacity-30 rounded-l-2xl"
-      :class="{ '!bg-quran-gold !opacity-100 !w-1.5': isActiveAudio }"
+      v-if="isActiveAudio"
+      class="absolute left-0 top-0 h-full w-1.5 bg-quran-gold rounded-l-2xl shadow-sm"
     ></div>
 
     <!-- Verse Top Controls -->
@@ -71,11 +70,11 @@
               ? 'bg-slate-800 hover:bg-slate-700 text-slate-300'
               : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100',
           ]"
-          :title="isActiveAudio ? t('pause') : t('playAudio')"
+          :title="isActiveAudio && isPlaying ? t('pause') : t('playAudio')"
         >
           <i
             ref="audioIconRef"
-            :class="isActiveAudio ? 'fa-solid fa-pause' : 'fa-solid fa-play'"
+            :class="isActiveAudio && isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play'"
           ></i>
         </button>
 
@@ -174,6 +173,10 @@ const props = defineProps({
     default: false,
   },
   isActiveAudio: {
+    type: Boolean,
+    default: false,
+  },
+  isPlaying: {
     type: Boolean,
     default: false,
   },

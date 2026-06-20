@@ -81,10 +81,15 @@ export function useAudioPlayer() {
       audioInstance.value = audio;
       isPlaying.value = true;
 
-      audio.play().catch((err) => {
-        console.error("Audio playback failed:", err);
-        stopAudio();
-      });
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          if (err.name !== "AbortError") {
+            console.error("Audio playback failed:", err);
+            stopAudio();
+          }
+        });
+      }
 
       audio.addEventListener("ended", () => {
         playNextVerse();
@@ -105,7 +110,14 @@ export function useAudioPlayer() {
         audioInstance.value?.pause();
         isPlaying.value = false;
       } else {
-        audioInstance.value?.play().catch((err) => console.error(err));
+        const playPromise = audioInstance.value?.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err) => {
+            if (err.name !== "AbortError") {
+              console.error("Audio playback failed:", err);
+            }
+          });
+        }
         isPlaying.value = true;
       }
       return;
