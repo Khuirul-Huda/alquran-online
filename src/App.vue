@@ -3,7 +3,7 @@
     class="flex flex-col min-h-screen transition-colors duration-300"
     :class="
       preferencesStore.theme === 'dark'
-        ? 'bg-slate-955'
+        ? 'bg-slate-950'
         : preferencesStore.theme === 'sepia'
         ? 'bg-[#fdfaf2]'
         : 'bg-quran-bg'

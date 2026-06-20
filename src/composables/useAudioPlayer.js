@@ -46,6 +46,9 @@ export function useAudioPlayer() {
   const stopAudio = () => {
     if (audioInstance.value) {
       audioInstance.value.pause();
+      // Halt download and release streaming resources
+      audioInstance.value.src = "";
+      audioInstance.value.load();
       audioInstance.value = null;
     }
     activeVerse.value = null;

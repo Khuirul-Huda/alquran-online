@@ -57,18 +57,40 @@ export function staggerReveal(targets, opts = {}) {
     useScrollTrigger = true,
   } = opts;
 
-  if (!targets) return null;
+  if (!targets || targets.length === 0) return null;
 
-  const scrollTriggerConfig = useScrollTrigger
-    ? {
-        scrollTrigger: {
-          trigger:
-            typeof targets === "string" ? targets : targets[0] ?? targets,
-          start: "top 92%",
-          once: true,
-        },
-      }
-    : {};
+  // Respect prefers-reduced-motion
+  const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReducedMotion) {
+    gsap.set(targets, { opacity: 1, y: 0, clearProps: "transform" });
+    return null;
+  }
+
+  if (useScrollTrigger) {
+    // Kill existing ScrollTriggers to prevent leaks when switching pages/surahs
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+
+    // Use ScrollTrigger.batch to animate card lists in chunks as they enter the screen
+    return ScrollTrigger.batch(targets, {
+      start: "top 92%",
+      once: true,
+      onEnter: (batch) => {
+        gsap.fromTo(
+          batch,
+          { opacity: 0, y },
+          {
+            opacity: 1,
+            y: 0,
+            duration,
+            ease,
+            stagger,
+            clearProps: "transform",
+            overwrite: "auto",
+          }
+        );
+      },
+    });
+  }
 
   return gsap.fromTo(
     targets,
@@ -80,7 +102,6 @@ export function staggerReveal(targets, opts = {}) {
       ease,
       stagger,
       clearProps: "transform",
-      ...scrollTriggerConfig,
     }
   );
 }
