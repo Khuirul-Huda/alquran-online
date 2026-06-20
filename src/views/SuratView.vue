@@ -273,6 +273,22 @@
 
           <!-- Controls -->
           <div class="flex items-center gap-2">
+            <!-- Focus Button (Only visible if auto scroll is currently disabled) -->
+            <button
+              v-if="!isAutoScrollEnabled"
+              @click="focusPlayingVerse"
+              class="w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm text-white border-none animate-pulse"
+              :class="[
+                preferencesStore.theme === 'dark'
+                  ? 'bg-slate-800 hover:bg-slate-700 text-quran-gold'
+                  : preferencesStore.theme === 'sepia'
+                  ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-250/30 shadow-sm'
+                  : 'bg-gray-100 hover:bg-gray-200 text-quran-medium border border-gray-150 shadow-sm',
+              ]"
+              :title="t('focusVerse')"
+            >
+              <i class="fa-solid fa-crosshairs"></i>
+            </button>
             <button
               @click="audioPlayer.toggleActiveAudio()"
               class="w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm text-white border-none"
@@ -340,6 +356,20 @@ const sidebarSearch = ref("");
 
 // Highlighted verse
 const highlightedVerseNumber = ref(null);
+const isAutoScrollEnabled = ref(true);
+
+const handleManualScroll = () => {
+  if (audioPlayer.activeVerse.value !== null && isAutoScrollEnabled.value) {
+    isAutoScrollEnabled.value = false;
+  }
+};
+
+const focusPlayingVerse = () => {
+  isAutoScrollEnabled.value = true;
+  if (audioPlayer.activeVerse.value) {
+    scrollToVerse(audioPlayer.activeVerseInSurah.value);
+  }
+};
 
 const progressPercent = computed(() => {
   if (!audioPlayer.duration.value) return 0;
@@ -524,8 +554,11 @@ const toggleBookmark = (verse) => {
 };
 
 const toggleAudio = (verse) => {
+  isAutoScrollEnabled.value = true;
   audioPlayer.toggleAudio(verse, verses.value, (nextVerse) => {
-    scrollToVerse(nextVerse.number.inSurah);
+    if (isAutoScrollEnabled.value) {
+      scrollToVerse(nextVerse.number.inSurah);
+    }
   });
 };
 
@@ -563,11 +596,16 @@ onMounted(() => {
   surahnumber.value = parseInt(params);
   fetchSurahDetails();
   fetchSurahList();
+
+  window.addEventListener("wheel", handleManualScroll, { passive: true });
+  window.addEventListener("touchmove", handleManualScroll, { passive: true });
 });
 
 onUnmounted(() => {
   audioPlayer.stopAudio();
   ScrollTrigger.getAll().forEach((t) => t.kill());
+  window.removeEventListener("wheel", handleManualScroll);
+  window.removeEventListener("touchmove", handleManualScroll);
 });
 </script>
 

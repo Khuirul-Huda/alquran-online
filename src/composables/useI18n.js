@@ -74,6 +74,7 @@ export const translations = {
     translateToEn: "Translate to English",
     translating: "Menerjemahkan...",
     translationFailed: "Terjemahan gagal. Silakan coba lagi.",
+    focusVerse: "Ke Ayat yang Diputar",
   },
   en: {
     backToHome: "Back to Home",
@@ -147,6 +148,7 @@ export const translations = {
     translateToEn: "Translate to English",
     translating: "Translating...",
     translationFailed: "Translation failed. Please try again.",
+    focusVerse: "Focus Playing Verse",
   }
 };
 
