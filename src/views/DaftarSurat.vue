@@ -38,7 +38,7 @@
               :to="'/read/' + randomVerse.surahNumber + '?ayah=' + randomVerse.ayahNumber"
               class="inline-flex items-center gap-1.5 text-xs font-bold text-quran-gold hover:text-white bg-white/10 hover:bg-white/20 border border-quran-gold/40 hover:border-white px-4 py-2 rounded-full transition-all duration-200 shadow-sm"
             >
-              Baca Ayat Ini <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              Baca Ayat Ini <i class="fa-solid fa-arrow-right text-xs"></i>
             </router-link>
           </div>
         </div>
@@ -213,7 +213,7 @@
                   >
                     {{ j.start.split(":")[0] }} - {{ j.end.split(":")[0] }}
                   </h3>
-                  <p class="text-[10.5px] text-gray-400 font-semibold flex items-center gap-1">
+                  <p class="text-xs text-gray-400 font-semibold flex items-center gap-1">
                     <i class="fa-solid fa-location-arrow text-quran-gold"></i>
                     <span>Mulai: {{ j.start }} s/d {{ j.end }}</span>
                   </p>
@@ -277,7 +277,7 @@
             <!-- Reading progress percentage bar -->
             <div v-if="preferencesStore.lastRead.verseCount" class="mt-3.5 mb-4">
               <div
-                class="flex justify-between items-center text-[9.5px] font-bold uppercase mb-1"
+                class="flex justify-between items-center text-[11px] font-bold uppercase mb-1"
                 :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-400'"
               >
                 <span>Progres</span>
@@ -343,7 +343,7 @@
               >
                 <div class="flex items-center gap-2">
                   <span
-                    class="font-bold text-[9px] w-5 h-5 rounded-full flex items-center justify-center border transition-all"
+                    class="font-bold text-[11px] w-5 h-5 rounded-full flex items-center justify-center border transition-all"
                     :class="
                       preferencesStore.theme === 'dark'
                         ? 'bg-slate-800 border-slate-700 text-slate-300'
@@ -376,7 +376,7 @@
               <!-- City Dropdown Selector -->
               <select
                 v-model="selectedCityComputed"
-                class="border rounded-lg text-[10px] font-bold p-1 cursor-pointer outline-none focus:ring-1 focus:ring-quran-light max-w-[100px] transition-colors"
+                class="border rounded-lg text-xs font-bold p-1 cursor-pointer outline-none focus:ring-1 focus:ring-quran-light max-w-[100px] transition-colors"
                 :class="
                   preferencesStore.theme === 'dark'
                     ? 'bg-slate-955 border-slate-800 text-white'
@@ -418,14 +418,14 @@
                 ]"
               >
                 <span class="flex items-center gap-1.5">
-                  <i :class="getShalatIcon(name)" class="text-quran-gold text-[10px]"></i>
+                  <i :class="getShalatIcon(name)" class="text-quran-gold text-xs"></i>
                   <span>{{ translateShalatName(name) }}</span>
                 </span>
                 <span class="flex items-center gap-1.5">
                   <span>{{ time }}</span>
                   <span
                     v-if="nextPrayerName === name"
-                    class="text-[9px] bg-quran-medium text-white px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse"
+                    class="text-[10.5px] bg-quran-medium text-white px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse"
                     >Berikutnya</span
                   >
                 </span>
@@ -460,7 +460,7 @@
               >
                 <div class="flex items-center gap-3">
                   <span
-                    class="font-bold text-[10px] w-6 h-6 rounded-full flex items-center justify-center border transition-all"
+                    class="font-bold text-xs w-6 h-6 rounded-full flex items-center justify-center border transition-all"
                     :class="
                       preferencesStore.theme === 'dark'
                         ? 'bg-slate-800 border-slate-700 text-slate-300'
@@ -510,7 +510,7 @@
                   >114</span
                 >
                 <span
-                  class="text-[10px] font-semibold uppercase tracking-wider"
+                  class="text-xs font-semibold uppercase tracking-wider"
                   :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
                   >Surah</span
                 >
@@ -533,7 +533,7 @@
                   >30</span
                 >
                 <span
-                  class="text-[10px] font-semibold uppercase tracking-wider"
+                  class="text-xs font-semibold uppercase tracking-wider"
                   :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
                   >Juz</span
                 >
@@ -556,7 +556,7 @@
                   >6236</span
                 >
                 <span
-                  class="text-[10px] font-semibold uppercase tracking-wider"
+                  class="text-xs font-semibold uppercase tracking-wider"
                   :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
                   >Ayat</span
                 >
@@ -579,7 +579,7 @@
                   >77.430</span
                 >
                 <span
-                  class="text-[10px] font-semibold uppercase tracking-wider"
+                  class="text-xs font-semibold uppercase tracking-wider"
                   :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
                   >Kata</span
                 >

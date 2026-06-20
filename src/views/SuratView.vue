@@ -45,7 +45,7 @@
           >
             <div class="flex items-center gap-2.5">
               <span
-                class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] transition-colors border"
+                class="w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors border"
                 :class="
                   s.number == surahnumber
                     ? 'bg-quran-gold-light text-quran-deep font-bold border-quran-gold/40'
@@ -240,13 +240,13 @@
             ></i>
           </div>
           <div class="text-left">
-            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-400">Sedang Diputar</p>
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-gray-400">Sedang Diputar</p>
             <h5 class="font-bold text-xs leading-snug">
               {{ surahdata.name?.transliteration?.id || "..." }} Ayat
               {{ audioPlayer.activeVerseInSurah.value }}
             </h5>
             <p
-              class="text-[10px] text-quran-medium font-semibold"
+              class="text-xs text-quran-medium font-semibold"
               :class="preferencesStore.theme === 'dark' ? 'text-quran-gold-light' : 'text-quran-medium'"
             >
               {{ audioPlayer.activeQariName.value }}

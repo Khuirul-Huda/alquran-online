@@ -31,7 +31,7 @@
           >
             <div class="flex items-center gap-2.5">
               <span
-                class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors"
+                class="w-6 h-6 rounded-full flex items-center justify-center text-xs border transition-colors"
                 :class="
                   j == juzNumber
                     ? 'bg-quran-gold-light text-quran-deep font-bold border-quran-gold/40'
@@ -44,7 +44,7 @@
               </span>
               <span>Juz {{ j }}</span>
             </div>
-            <span class="text-[9.5px] text-gray-400 group-hover:text-quran-medium transition-colors">
+            <span class="text-[11px] text-gray-400 group-hover:text-quran-medium transition-colors">
               {{ getJuzLabel(j) }}
             </span>
           </router-link>
@@ -171,7 +171,7 @@
                     >
                       Surah {{ getSurahInfo(verse.number.inQuran).name }}
                     </h2>
-                    <p class="text-[10.5px] opacity-80 font-medium italic mt-0.5">
+                    <p class="text-xs opacity-80 font-medium italic mt-0.5">
                       "{{ getSurahInfo(verse.number.inQuran).translation }}"
                     </p>
                   </div>
@@ -245,13 +245,13 @@
             ></i>
           </div>
           <div class="text-left">
-            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-400">Sedang Diputar</p>
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-gray-400">Sedang Diputar</p>
             <h5 class="font-bold text-xs leading-snug">
               Surah {{ getSurahInfo(audioPlayer.activeVerseNumber.value).name }} Ayat
               {{ getSurahInfo(audioPlayer.activeVerseNumber.value).verseInSurah }}
             </h5>
             <p
-              class="text-[10px] text-quran-medium font-semibold"
+              class="text-xs text-quran-medium font-semibold"
               :class="preferencesStore.theme === 'dark' ? 'text-quran-gold-light' : 'text-quran-medium'"
             >
               {{ audioPlayer.activeQariName.value }}

@@ -8,7 +8,7 @@
           <i class="fa-solid fa-sliders text-2xl text-quran-gold"></i>
           <div>
             <h1 class="font-bold text-xl">Pengaturan Aplikasi</h1>
-            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
               Sesuaikan Kenyamanan Membaca Anda
             </p>
           </div>
@@ -244,7 +244,7 @@
                   </h5>
                   <span class="font-arabic text-sm text-quran-medium">{{ b.surahArabic }}</span>
                 </div>
-                <span class="text-[9.5px] text-gray-400 font-bold uppercase tracking-wider">
+                <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">
                   Ayat {{ b.verseNumber }}
                 </span>
               </router-link>
