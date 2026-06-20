@@ -13,7 +13,7 @@
           preferencesStore.theme === 'dark'
             ? 'bg-slate-900 border-quran-gold text-slate-100'
             : (preferencesStore.theme === 'sepia'
-                ? 'bg-[#fffcf3] border-amber-455 text-amber-955'
+                ? 'bg-[#fffcf3] border-amber-400 text-amber-950'
                 : 'bg-white border-quran-gold text-quran-deep'),
         ]"
       >
@@ -22,7 +22,7 @@
           class="px-6 py-4 flex justify-between items-center border-b-2 rounded-t-2xl"
           :class="[
             preferencesStore.theme === 'dark'
-              ? 'bg-slate-955 text-white border-quran-gold'
+              ? 'bg-slate-900 text-white border-quran-gold'
               : (preferencesStore.theme === 'sepia'
                   ? 'bg-amber-900 text-amber-50 border-amber-450'
                   : 'bg-quran-deep text-white border-quran-gold'),
@@ -178,7 +178,7 @@
           class="px-6 py-4 border-t flex justify-end rounded-b-2xl"
           :class="[
             preferencesStore.theme === 'dark'
-              ? 'bg-slate-955/40 border-slate-800'
+              ? 'bg-slate-900/40 border-slate-800'
               : (preferencesStore.theme === 'sepia'
                   ? 'bg-amber-100/20 border-amber-200/40'
                   : 'bg-quran-bg border-gray-100'),

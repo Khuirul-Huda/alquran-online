@@ -135,7 +135,7 @@
                   preferencesStore.theme === 'dark'
                     ? 'bg-slate-900 border-slate-800'
                     : preferencesStore.theme === 'sepia'
-                    ? 'bg-[#fdf8e6] border-amber-200/50 text-amber-955'
+                    ? 'bg-[#fdf8e6] border-amber-200/50 text-amber-950'
                     : 'bg-quran-deep border-quran-gold/20 text-white',
                 ]"
               >
@@ -211,7 +211,7 @@
           preferencesStore.theme === 'dark'
             ? 'bg-slate-900/90 border-slate-750 text-slate-100 backdrop-blur-md'
             : preferencesStore.theme === 'sepia'
-            ? 'bg-[#fbf6e7]/90 border-amber-250 text-amber-955 backdrop-blur-md'
+            ? 'bg-[#fbf6e7]/90 border-amber-200 text-amber-950 backdrop-blur-md'
             : 'bg-white/90 border-quran-gold/20 text-quran-deep backdrop-blur-md',
         ]"
       >

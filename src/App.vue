@@ -132,7 +132,7 @@
             preferencesStore.theme === 'dark'
               ? 'bg-slate-900 border-l border-slate-800 text-white'
               : preferencesStore.theme === 'sepia'
-              ? 'bg-[#fffdf0] border-l border-amber-200/40 text-amber-955'
+              ? 'bg-[#fffdf0] border-l border-amber-200/40 text-amber-950'
               : 'bg-white border-l border-gray-100 text-quran-deep'
           "
         >

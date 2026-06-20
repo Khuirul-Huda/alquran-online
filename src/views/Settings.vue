@@ -33,7 +33,7 @@
                     : preferencesStore.theme === 'dark'
                     ? 'border-slate-800 text-slate-400 bg-slate-950/40 hover:bg-slate-900'
                     : preferencesStore.theme === 'sepia'
-                    ? 'border-amber-200/60 text-amber-905 bg-[#fffdf0]/50 hover:bg-amber-50/50'
+                    ? 'border-amber-200/60 text-amber-900 bg-[#fffdf0]/50 hover:bg-amber-50/50'
                     : 'border-gray-200 text-gray-500 bg-white hover:bg-gray-50',
                 ]"
               >
@@ -47,11 +47,11 @@
                 class="flex flex-col items-center gap-2 p-4 rounded-2xl border text-xs font-bold transition-all cursor-pointer"
                 :class="[
                   preferencesStore.theme === 'sepia'
-                    ? 'border-amber-400 bg-amber-50/50 text-amber-955'
+                    ? 'border-amber-400 bg-amber-50/50 text-amber-900'
                     : preferencesStore.theme === 'dark'
                     ? 'border-slate-800 text-slate-400 bg-slate-950/40 hover:bg-slate-900'
                     : preferencesStore.theme === 'sepia'
-                    ? 'border-amber-200/60 text-amber-905 bg-[#fffdf0]/50 hover:bg-amber-50/50'
+                    ? 'border-amber-200/60 text-amber-900 bg-[#fffdf0]/50 hover:bg-amber-50/50'
                     : 'border-gray-200 text-gray-500 bg-white hover:bg-gray-50',
                 ]"
               >
@@ -69,7 +69,7 @@
                     : preferencesStore.theme === 'dark'
                     ? 'border-slate-800 text-slate-400 bg-slate-950/40 hover:bg-slate-900'
                     : preferencesStore.theme === 'sepia'
-                    ? 'border-amber-200/60 text-amber-905 bg-[#fffdf0]/50 hover:bg-amber-50/50'
+                    ? 'border-amber-200/60 text-amber-900 bg-[#fffdf0]/50 hover:bg-amber-50/50'
                     : 'border-gray-200 text-gray-500 bg-white hover:bg-gray-50',
                 ]"
               >
@@ -188,9 +188,9 @@
                 class="w-full border rounded-xl text-xs font-bold p-3 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer transition-colors"
                 :class="
                   preferencesStore.theme === 'dark'
-                    ? 'bg-slate-955 border-slate-800 text-white'
+                    ? 'bg-slate-900 border-slate-800 text-white'
                     : preferencesStore.theme === 'sepia'
-                    ? 'bg-[#fffdf0] border-amber-200/60 text-amber-955'
+                    ? 'bg-[#fffdf0] border-amber-200/60 text-amber-950'
                     : 'bg-quran-bg border-gray-200 text-quran-deep'
                 "
               >
@@ -209,9 +209,9 @@
                 class="w-full border rounded-xl text-xs font-bold p-3 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer transition-colors"
                 :class="
                   preferencesStore.theme === 'dark'
-                    ? 'bg-slate-955 border-slate-800 text-white'
+                    ? 'bg-slate-900 border-slate-800 text-white'
                     : preferencesStore.theme === 'sepia'
-                    ? 'bg-[#fffdf0] border-amber-200/60 text-amber-955'
+                    ? 'bg-[#fffdf0] border-amber-200/60 text-amber-950'
                     : 'bg-quran-bg border-gray-200 text-quran-deep'
                 "
               >
@@ -276,7 +276,7 @@
                       preferencesStore.theme === 'dark'
                         ? 'text-slate-100 group-hover:text-quran-gold'
                         : preferencesStore.theme === 'sepia'
-                        ? 'text-amber-955 group-hover:text-amber-700'
+                        ? 'text-amber-950 group-hover:text-amber-700'
                         : 'text-quran-deep group-hover:text-quran-medium'
                     "
                   >

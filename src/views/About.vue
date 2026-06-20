@@ -214,7 +214,7 @@
           class="px-6 py-4 text-xs font-semibold text-right border-t"
           :class="
             preferencesStore.theme === 'dark'
-              ? 'bg-slate-955/40 border-slate-800 text-slate-400'
+              ? 'bg-slate-900/40 border-slate-800 text-slate-400'
               : 'bg-quran-bg border-gray-100 text-gray-400'
           "
         >

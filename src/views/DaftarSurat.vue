@@ -378,9 +378,9 @@
                 class="border rounded-lg text-xs font-bold p-1 cursor-pointer outline-none focus:ring-1 focus:ring-quran-light max-w-[100px] transition-colors"
                 :class="
                   preferencesStore.theme === 'dark'
-                    ? 'bg-slate-955 border-slate-800 text-white'
+                    ? 'bg-slate-900 border-slate-800 text-white'
                     : preferencesStore.theme === 'sepia'
-                    ? 'bg-[#fffdf0] border-amber-200/60 text-amber-955'
+                    ? 'bg-[#fffdf0] border-amber-200/60 text-amber-950'
                     : 'bg-quran-bg border-gray-200 text-quran-deep'
                 "
               >
@@ -407,7 +407,7 @@
                     ? preferencesStore.theme === 'dark'
                       ? 'bg-quran-gold/10 border-quran-gold/25 text-quran-gold ring-1 ring-quran-gold/5'
                       : preferencesStore.theme === 'sepia'
-                      ? 'bg-amber-100/50 border-amber-300/40 text-amber-955 ring-1 ring-amber-300/20'
+                      ? 'bg-amber-100/50 border-amber-300/40 text-amber-950 ring-1 ring-amber-300/20'
                       : 'bg-quran-accent/10 border-quran-accent/25 text-quran-deep ring-1 ring-quran-accent/5'
                     : preferencesStore.theme === 'dark'
                     ? 'text-slate-400'
@@ -495,9 +495,9 @@
                 class="p-3 rounded-xl border text-center transition-colors"
                 :class="
                   preferencesStore.theme === 'dark'
-                    ? 'bg-slate-955/40 border-slate-800 text-slate-100'
+                    ? 'bg-slate-900/40 border-slate-800 text-slate-100'
                     : preferencesStore.theme === 'sepia'
-                    ? 'bg-[#fffdf0] border-amber-250/20 text-amber-955'
+                    ? 'bg-[#fffdf0] border-amber-200/20 text-amber-950'
                     : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep'
                 "
               >
@@ -510,7 +510,7 @@
                 >
                 <span
                   class="text-xs font-semibold uppercase tracking-wider"
-                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-500'"
                   >Surah</span
                 >
               </div>
@@ -518,9 +518,9 @@
                 class="p-3 rounded-xl border text-center transition-colors"
                 :class="
                   preferencesStore.theme === 'dark'
-                    ? 'bg-slate-955/40 border-slate-800 text-slate-100'
+                    ? 'bg-slate-900/40 border-slate-800 text-slate-100'
                     : preferencesStore.theme === 'sepia'
-                    ? 'bg-[#fffdf0] border-amber-250/20 text-amber-955'
+                    ? 'bg-[#fffdf0] border-amber-200/20 text-amber-950'
                     : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep'
                 "
               >
@@ -533,7 +533,7 @@
                 >
                 <span
                   class="text-xs font-semibold uppercase tracking-wider"
-                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-500'"
                   >Juz</span
                 >
               </div>
@@ -541,9 +541,9 @@
                 class="p-3 rounded-xl border text-center transition-colors"
                 :class="
                   preferencesStore.theme === 'dark'
-                    ? 'bg-slate-955/40 border-slate-800 text-slate-100'
+                    ? 'bg-slate-900/40 border-slate-800 text-slate-100'
                     : preferencesStore.theme === 'sepia'
-                    ? 'bg-[#fffdf0] border-amber-250/20 text-amber-955'
+                    ? 'bg-[#fffdf0] border-amber-200/20 text-amber-950'
                     : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep'
                 "
               >
@@ -556,7 +556,7 @@
                 >
                 <span
                   class="text-xs font-semibold uppercase tracking-wider"
-                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-500'"
                   >Ayat</span
                 >
               </div>
@@ -564,9 +564,9 @@
                 class="p-3 rounded-xl border text-center transition-colors"
                 :class="
                   preferencesStore.theme === 'dark'
-                    ? 'bg-slate-955/40 border-slate-800 text-slate-100'
+                    ? 'bg-slate-900/40 border-slate-800 text-slate-100'
                     : preferencesStore.theme === 'sepia'
-                    ? 'bg-[#fffdf0] border-amber-250/20 text-amber-955'
+                    ? 'bg-[#fffdf0] border-amber-200/20 text-amber-950'
                     : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep'
                 "
               >
@@ -579,7 +579,7 @@
                 >
                 <span
                   class="text-xs font-semibold uppercase tracking-wider"
-                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-500'"
                   >Kata</span
                 >
               </div>
