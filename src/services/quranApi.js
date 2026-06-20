@@ -143,6 +143,24 @@ export const quranApi = {
   },
 
   /**
+   * Check if specific Surah details are already cached in-memory.
+   * @param {number} surahNumber
+   * @returns {boolean}
+   */
+  isSurahDetailsCached(surahNumber) {
+    return _cache.has(`surahDetails:${surahNumber}`);
+  },
+
+  /**
+   * Check if specific Juz details are already cached in-memory.
+   * @param {number} juzNumber
+   * @returns {boolean}
+   */
+  isJuzDetailsCached(juzNumber) {
+    return _cache.has(`juzDetails:${juzNumber}`);
+  },
+
+  /**
    * Manually clear the in-memory cache.
    * Useful for testing or forcing a fresh fetch.
    */

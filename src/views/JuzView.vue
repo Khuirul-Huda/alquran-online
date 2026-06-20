@@ -13,7 +13,7 @@
         </div>
 
         <!-- Juz 1-30 List -->
-        <div class="flex-grow overflow-y-auto p-2 space-y-1">
+        <div class="h-[calc(100vh-190px)] overflow-y-auto p-2 space-y-1">
           <router-link
             v-for="j in 30"
             :key="j"
@@ -530,8 +530,13 @@ const scrollActiveSidebarItemIntoView = () => {
 };
 
 const fetchJuzDetails = async () => {
-  loaded.value = false;
+  const isCached = quranApi.isJuzDetailsCached(juzNumber.value);
+  if (!isCached) {
+    loaded.value = false;
+  }
   error.value = false;
+  highlightedVerseNumber.value = null;
+  isAutoScrollEnabled.value = true;
   try {
     const data = await quranApi.fetchJuzDetails(juzNumber.value);
     juzData.value = data;

@@ -27,7 +27,7 @@
         </div>
 
         <!-- Scrollable List of Surahs -->
-        <div class="flex-grow overflow-y-auto p-2 space-y-1">
+        <div class="h-[calc(100vh-210px)] overflow-y-auto p-2 space-y-1">
           <router-link
             v-for="s in filteredSidebarSurahs"
             :key="s.number"
@@ -465,8 +465,14 @@ const scrollActiveSidebarItemIntoView = () => {
 };
 
 const fetchSurahDetails = async () => {
-  loaded.value = false;
+  const isCached = quranApi.isSurahDetailsCached(surahnumber.value);
+  if (!isCached) {
+    loaded.value = false;
+  }
   error.value = false;
+  highlightedVerseNumber.value = null;
+  isAutoScrollEnabled.value = true;
+  sidebarSearch.value = "";
   try {
     const data = await quranApi.fetchSurahDetails(surahnumber.value);
     surahdata.value = data;

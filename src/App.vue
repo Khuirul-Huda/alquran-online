@@ -218,7 +218,7 @@
     <main class="flex-grow">
       <router-view v-slot="{ Component }">
         <Transition :css="false" @enter="pageEnter" @leave="pageLeave" mode="out-in">
-          <component :is="Component" :key="$route.path" />
+          <component :is="Component" :key="$route.name" />
         </Transition>
       </router-view>
     </main>
