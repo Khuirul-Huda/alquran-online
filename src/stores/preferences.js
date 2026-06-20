@@ -39,7 +39,20 @@ export const usePreferencesStore = defineStore("preferences", {
     setTheme(newTheme) {
       this.theme = newTheme;
       localStorage.setItem("quran_pref_theme", newTheme);
+
+      // Disable transitions temporarily to prevent lag on 1000+ elements
+      document.documentElement.classList.add("no-transitions");
+      
       document.body.className = "theme-" + newTheme;
+
+      // Force layout repaint
+      void document.documentElement.offsetHeight;
+
+      // Re-enable transitions
+      setTimeout(() => {
+        document.documentElement.classList.remove("no-transitions");
+      }, 50);
+
       window.dispatchEvent(new Event("theme-changed"));
     },
 
@@ -129,7 +142,15 @@ export const usePreferencesStore = defineStore("preferences", {
       this.selectedQari = "ar.alafasy";
       this.selectedCity = "Jakarta";
       this.lastRead = null;
+
+      // Disable transitions temporarily
+      document.documentElement.classList.add("no-transitions");
       document.body.className = "theme-light";
+      void document.documentElement.offsetHeight;
+      setTimeout(() => {
+        document.documentElement.classList.remove("no-transitions");
+      }, 50);
+
       window.dispatchEvent(new Event("theme-changed"));
     },
   },

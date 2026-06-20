@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Disable transitions temporarily during theme changes to prevent lag on large pages */
+.no-transitions,
+.no-transitions * {
+  transition: none !important;
+  animation: none !important;
+}
+
 @layer base {
   body {
     @apply font-ui antialiased leading-relaxed transition-colors duration-300;
@@ -94,3 +101,129 @@ body.theme-dark .animate-shimmer {
 .pulse-highlight-verse {
   animation: pulse-highlight 1.5s ease-in-out 3; /* Pulse 3 times */
 }
+
+/* ==========================================================================
+   Cascading Theme Performance Enhancements (CSS Theme Selection)
+   ========================================================================== */
+
+/* Verse number badge */
+.verse-number-badge {
+  @apply bg-quran-bg border-quran-gold-light text-quran-deep;
+}
+body.theme-dark .verse-number-badge:not(.active-badge) {
+  @apply bg-slate-800 border-slate-700 text-slate-300;
+}
+body.theme-sepia .verse-number-badge:not(.active-badge) {
+  @apply bg-amber-100/40 border-amber-200/40 text-amber-950;
+}
+.verse-number-badge.active-badge {
+  @apply bg-quran-gold-light border-quran-gold text-quran-deep;
+}
+
+/* Verse action buttons (bookmark, play, tafsir) */
+.verse-action-btn {
+  @apply bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100;
+}
+body.theme-dark .verse-action-btn:not(.active-btn) {
+  @apply bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700;
+}
+body.theme-sepia .verse-action-btn:not(.active-btn) {
+  @apply bg-amber-100/45 hover:bg-amber-100 text-amber-900 border-amber-200/30;
+}
+.verse-action-btn.active-btn {
+  @apply bg-quran-gold text-quran-deep border-quran-gold shadow-sm;
+}
+
+/* Arabic Verse Text */
+.verse-arabic-text {
+  @apply text-quran-deep;
+}
+body.theme-dark .verse-arabic-text {
+  @apply text-slate-100;
+}
+body.theme-sepia .verse-arabic-text {
+  @apply text-amber-950;
+}
+
+/* Verse Latin Transliteration */
+.verse-transliteration {
+  @apply text-quran-medium/95;
+}
+body.theme-dark .verse-transliteration {
+  @apply text-slate-300;
+}
+body.theme-sepia .verse-transliteration {
+  @apply text-amber-900/90;
+}
+
+/* Verse Translation */
+.verse-translation {
+  @apply text-gray-600 border-gray-50;
+}
+body.theme-dark .verse-translation {
+  @apply text-slate-400 border-slate-800;
+}
+body.theme-sepia .verse-translation {
+  @apply text-amber-900/75 border-amber-200/30;
+}
+
+/* Sidebar search input container */
+.sidebar-search-container {
+  @apply border-gray-100;
+}
+body.theme-dark .sidebar-search-container {
+  @apply border-slate-800;
+}
+body.theme-sepia .sidebar-search-container {
+  @apply border-amber-200/25;
+}
+
+/* Sidebar search input field */
+.sidebar-search-input {
+  @apply bg-gray-50 border-gray-200 text-quran-deep;
+}
+body.theme-dark .sidebar-search-input {
+  @apply bg-slate-800 border-slate-700 text-slate-100;
+}
+body.theme-sepia .sidebar-search-input {
+  @apply bg-amber-100/50 border-amber-200/30 text-amber-950;
+}
+
+/* Sidebar links */
+.sidebar-link {
+  @apply text-gray-600 hover:bg-quran-bg hover:text-quran-medium;
+}
+body.theme-dark .sidebar-link {
+  @apply text-slate-300 hover:bg-slate-800 hover:text-white;
+}
+body.theme-sepia .sidebar-link {
+  @apply text-amber-900/80 hover:bg-[#f6ecd2] hover:text-amber-950;
+}
+
+/* Sidebar link active state */
+.sidebar-link.active-link {
+  @apply bg-quran-accent/15 text-quran-deep shadow-sm;
+}
+body.theme-dark .sidebar-link.active-link {
+  @apply bg-slate-800 text-quran-gold shadow-sm;
+}
+body.theme-sepia .sidebar-link.active-link {
+  @apply bg-amber-200/60 text-amber-950 shadow-sm;
+}
+
+/* Sidebar link badge */
+.sidebar-link-badge {
+  @apply bg-gray-100 border-gray-200 group-hover:bg-quran-gold-light text-gray-600;
+}
+body.theme-dark .sidebar-link-badge {
+  @apply bg-slate-800 border-slate-700 text-slate-300;
+}
+body.theme-sepia .sidebar-link-badge {
+  @apply bg-[#f4ebd0] border-amber-200/30 text-amber-800;
+}
+
+/* Sidebar link badge active state */
+.sidebar-link-badge.active-badge {
+  @apply bg-quran-gold-light text-quran-deep font-bold border-quran-gold/40;
+}
+

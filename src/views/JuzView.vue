@@ -5,10 +5,7 @@
       <aside
         class="hidden lg:block w-80 rounded-2xl h-[calc(100vh-130px)] sticky top-[95px] flex-shrink-0 flex flex-col transition-all duration-300 themed-card overflow-hidden self-start"
       >
-        <div
-          class="p-4 border-b flex-shrink-0"
-          :class="preferencesStore.theme === 'dark' ? 'border-slate-800' : 'border-gray-100'"
-        >
+        <div class="p-4 border-b flex-shrink-0 sidebar-search-container">
           <h3 class="font-bold text-xs uppercase tracking-wider text-gray-400">{{ preferencesStore.language === 'en' ? 'Select Juz' : 'Pilih Juz' }}</h3>
         </div>
 
@@ -18,27 +15,13 @@
             v-for="j in 30"
             :key="j"
             :to="'/juz/' + j"
-            class="flex items-center justify-between p-3 rounded-xl transition-all duration-150 text-xs font-semibold group"
-            :class="
-              j == juzNumber
-                ? preferencesStore.theme === 'dark'
-                  ? 'bg-slate-800 text-quran-gold shadow-sm'
-                  : 'bg-quran-accent/15 text-quran-deep shadow-sm'
-                : preferencesStore.theme === 'dark'
-                ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                : 'text-gray-600 hover:bg-quran-bg hover:text-quran-medium'
-            "
+            class="flex items-center justify-between p-3 rounded-xl transition-all duration-150 text-xs font-semibold group sidebar-link"
+            :class="{ 'active-link': j == juzNumber }"
           >
             <div class="flex items-center gap-2.5">
               <span
-                class="w-6 h-6 rounded-full flex items-center justify-center text-xs border transition-colors"
-                :class="
-                  j == juzNumber
-                    ? 'bg-quran-gold-light text-quran-deep font-bold border-quran-gold/40'
-                    : preferencesStore.theme === 'dark'
-                    ? 'bg-slate-800 border-slate-700'
-                    : 'bg-gray-100 border-gray-200 group-hover:bg-quran-gold-light'
-                "
+                class="w-6 h-6 rounded-full flex items-center justify-center text-xs border transition-colors sidebar-link-badge"
+                :class="{ 'active-badge': j == juzNumber }"
               >
                 {{ j }}
               </span>

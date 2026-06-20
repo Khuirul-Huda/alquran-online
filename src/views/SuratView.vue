@@ -6,22 +6,14 @@
         class="hidden lg:block w-80 rounded-2xl h-[calc(100vh-130px)] sticky top-[95px] flex-shrink-0 flex flex-col transition-all duration-300 themed-card overflow-hidden self-start"
       >
         <!-- Search Input in Sidebar -->
-        <div
-          class="p-4 border-b flex-shrink-0"
-          :class="preferencesStore.theme === 'dark' ? 'border-slate-800' : 'border-gray-100'"
-        >
+        <div class="p-4 border-b flex-shrink-0 sidebar-search-container">
           <div class="relative shadow-sm">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
             <input
               v-model="sidebarSearch"
               type="text"
               :placeholder="t('searchSurah')"
-              class="w-full pl-8 pr-3 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light transition-all"
-              :class="
-                preferencesStore.theme === 'dark'
-                  ? 'bg-slate-800 border-slate-700 text-slate-100'
-                  : 'bg-gray-50 border-gray-200 text-quran-deep'
-              "
+              class="w-full pl-8 pr-3 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light transition-all sidebar-search-input"
             />
           </div>
         </div>
@@ -32,27 +24,13 @@
             v-for="s in filteredSidebarSurahs"
             :key="s.number"
             :to="'/read/' + s.number"
-            class="flex items-center justify-between p-3 rounded-xl transition-all duration-150 text-xs font-semibold group"
-            :class="
-              s.number == surahnumber
-                ? preferencesStore.theme === 'dark'
-                  ? 'bg-slate-800 text-quran-gold shadow-sm'
-                  : 'bg-quran-accent/15 text-quran-deep shadow-sm'
-                : preferencesStore.theme === 'dark'
-                ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                : 'text-gray-600 hover:bg-quran-bg hover:text-quran-medium'
-            "
+            class="flex items-center justify-between p-3 rounded-xl transition-all duration-150 text-xs font-semibold group sidebar-link"
+            :class="{ 'active-link': s.number == surahnumber }"
           >
             <div class="flex items-center gap-2.5">
               <span
-                class="w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors border"
-                :class="
-                  s.number == surahnumber
-                    ? 'bg-quran-gold-light text-quran-deep font-bold border-quran-gold/40'
-                    : preferencesStore.theme === 'dark'
-                    ? 'bg-slate-800 border-slate-700'
-                    : 'bg-gray-100 border-gray-200 group-hover:bg-quran-gold-light'
-                "
+                class="w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors border sidebar-link-badge"
+                :class="{ 'active-badge': s.number == surahnumber }"
               >
                 {{ s.number }}
               </span>
