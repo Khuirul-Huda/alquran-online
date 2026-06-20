@@ -4,8 +4,41 @@
 
 @layer base {
   body {
-    @apply font-ui bg-quran-bg text-quran-deep antialiased leading-relaxed;
+    @apply font-ui antialiased leading-relaxed transition-colors duration-300;
   }
+}
+
+/* Global Theme Classes applied directly to body */
+body.theme-light {
+  @apply bg-quran-bg text-quran-deep;
+}
+body.theme-sepia {
+  @apply bg-[#fdfaf2] text-amber-950;
+}
+body.theme-dark {
+  @apply bg-slate-950 text-slate-100;
+}
+
+/* Cascaded themed card styles based on body class */
+body.theme-light .themed-card {
+  @apply bg-white border border-quran-medium/10 shadow-sm text-quran-deep;
+}
+body.theme-sepia .themed-card {
+  @apply bg-[#fffdf0] border border-amber-200/50 shadow-sm text-amber-950;
+}
+body.theme-dark .themed-card {
+  @apply bg-slate-900 border border-slate-800/80 shadow-sm text-slate-100;
+}
+
+/* Cascaded active/playing verse card styles */
+body.theme-light .themed-card.active-verse {
+  @apply bg-gradient-to-r from-quran-accent/5 to-white border-quran-gold shadow-md;
+}
+body.theme-sepia .themed-card.active-verse {
+  @apply bg-amber-100/60 border-quran-gold shadow-md;
+}
+body.theme-dark .themed-card.active-verse {
+  @apply bg-slate-800 border-quran-gold shadow-md;
 }
 
 /* Custom Scrollbars */
@@ -14,8 +47,12 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f4f7f5;
+  background: transparent;
 }
+body.theme-light ::-webkit-scrollbar-track { background: #f4f7f5; }
+body.theme-sepia ::-webkit-scrollbar-track { background: #fffdf0; }
+body.theme-dark ::-webkit-scrollbar-track { background: #0f172a; }
+
 ::-webkit-scrollbar-thumb {
   background: #40916c;
   border-radius: 9999px;
@@ -43,4 +80,20 @@
   );
   background-size: 400% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Dynamic Verse Pulse Highlight Animation */
+@keyframes pulse-highlight {
+  0%, 100% {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 rgba(212, 175, 55, 0);
+  }
+  50% {
+    border-color: #d4af37;
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.6);
+  }
+}
+
+.pulse-highlight-verse {
+  animation: pulse-highlight 1.5s ease-in-out 3; /* Pulse 3 times */
 }

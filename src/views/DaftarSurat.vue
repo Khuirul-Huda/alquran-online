@@ -19,9 +19,17 @@
           <p class="text-sm md:text-base font-light italic opacity-95 max-w-2xl mx-auto leading-relaxed">
             "{{ randomVerse.translation }}"
           </p>
-          <span class="inline-block mt-2.5 text-xs font-semibold text-quran-gold-light bg-white/10 px-3 py-1 rounded-full border border-white/5">
-            {{ randomVerse.reference }}
-          </span>
+          <div class="flex flex-col items-center gap-3 mt-4">
+            <span class="inline-block text-xs font-semibold text-quran-gold-light bg-white/10 px-3 py-1 rounded-full border border-white/5">
+              {{ randomVerse.reference }}
+            </span>
+            <router-link 
+              :to="'/read/' + randomVerse.surahNumber + '?ayah=' + randomVerse.ayahNumber" 
+              class="inline-flex items-center gap-1.5 text-xs font-bold text-quran-gold hover:text-white bg-white/10 hover:bg-white/20 border border-quran-gold/40 hover:border-white px-4 py-2 rounded-full transition-all duration-200 shadow-sm"
+            >
+              Baca Ayat Ini <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -29,7 +37,7 @@
     <!-- Main Content Layout -->
     <div class="max-w-6xl mx-auto px-4 mt-8">
       <!-- View Toggle Tabs (Surah vs Juz) -->
-      <div class="flex border-b border-gray-200 mb-8 max-w-sm">
+      <div class="flex border-b border-gray-200/60 mb-8 max-w-sm">
         <button 
           @click="activeTab = 'surah'" 
           class="flex-1 text-center py-3.5 text-sm font-bold border-b-2 transition-all cursor-pointer"
@@ -60,13 +68,14 @@
                 v-model="searchQuery"
                 type="text"
                 placeholder="Cari surah berdasarkan nama, arti, atau nomor..."
-                class="w-full pl-11 pr-4 py-4 bg-white border border-quran-medium/10 rounded-2xl text-sm text-quran-deep placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light focus:shadow-md transition-all duration-200"
+                class="w-full pl-11 pr-4 py-4 border rounded-2xl text-sm text-quran-deep placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light focus:shadow-md transition-all duration-200"
+                :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100 focus:border-quran-gold focus:ring-quran-gold/10' : 'bg-white border-quran-medium/10 text-quran-deep'"
               />
             </div>
 
             <!-- Loading Skeleton -->
             <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              <div v-for="h in 12" :key="h" class="bg-white border border-quran-medium/5 rounded-2xl p-5 h-40 flex flex-col justify-between relative overflow-hidden">
+              <div v-for="h in 12" :key="h" class="border rounded-2xl p-5 h-40 flex flex-col justify-between relative overflow-hidden" :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-quran-medium/5'">
                 <div class="flex justify-between items-start">
                   <div class="animate-shimmer w-9 h-9 rounded-full"></div>
                   <div class="animate-shimmer w-20 h-7 rounded-md"></div>
@@ -122,7 +131,7 @@
                 v-for="j in juzList" 
                 :key="j.number" 
                 :to="'/juz/' + j.number" 
-                class="bg-white border border-quran-medium/10 rounded-2xl p-5 hover:shadow-md hover:border-quran-gold/30 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative overflow-hidden"
+                class="themed-card border rounded-2xl p-5 hover:shadow-md hover:border-quran-gold/30 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative overflow-hidden"
               >
                 <div class="flex justify-between items-center mb-3">
                   <span class="w-8 h-8 rounded-full bg-quran-bg text-quran-deep font-bold flex items-center justify-center text-sm border border-quran-gold-light group-hover:bg-quran-gold-light group-hover:border-quran-gold transition-colors duration-300">
@@ -131,7 +140,7 @@
                   <span class="text-xs font-bold text-quran-medium uppercase tracking-wider">Juz {{ j.number }}</span>
                 </div>
                 <div>
-                  <h3 class="font-bold text-quran-deep text-sm group-hover:text-quran-medium transition-colors mb-1">
+                  <h3 class="font-bold text-sm transition-colors mb-1" :class="activeTheme === 'dark' ? 'text-slate-100 group-hover:text-quran-gold' : 'text-quran-deep group-hover:text-quran-medium'">
                     {{ j.start.split(':')[0] }} - {{ j.end.split(':')[0] }}
                   </h3>
                   <p class="text-[10.5px] text-gray-400 font-semibold flex items-center gap-1">
@@ -155,26 +164,61 @@
             <h4 class="text-xs uppercase tracking-wider font-bold text-quran-gold mb-3 flex items-center gap-1.5">
               <i class="fa-solid fa-bookmark"></i> Lanjutkan Membaca
             </h4>
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center">
               <div>
                 <h3 class="font-bold text-quran-deep text-base">{{ lastRead.name }}</h3>
                 <p class="text-xs text-gray-500 font-medium mt-0.5">
-                  Terakhir dibaca: Ayat {{ lastRead.lastAyah || 1 }}
+                  Ayat {{ lastRead.lastAyah || 1 }} dari {{ lastRead.verseCount || '...' }}
                 </p>
               </div>
               <span class="font-arabic text-xl text-quran-medium">{{ lastRead.arabic }}</span>
             </div>
+
+            <!-- Reading progress percentage bar -->
+            <div v-if="lastRead.verseCount" class="mt-3.5 mb-4">
+              <div class="flex justify-between items-center text-[9.5px] text-gray-400 font-bold uppercase mb-1">
+                <span>Progres</span>
+                <span>{{ Math.round((lastRead.lastAyah / lastRead.verseCount) * 100) }}%</span>
+              </div>
+              <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden">
+                <div class="h-full bg-quran-medium transition-all" :style="{ width: Math.round((lastRead.lastAyah / lastRead.verseCount) * 100) + '%' }"></div>
+              </div>
+            </div>
+            
             <router-link 
-              :to="'/read/' + lastRead.number" 
+              :to="'/read/' + lastRead.number + '?ayah=' + (lastRead.lastAyah || 1)" 
               class="w-full text-center block bg-quran-medium hover:bg-quran-deep text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors duration-200 shadow-sm"
             >
               Lanjut Membaca
             </router-link>
           </div>
 
+          <!-- Bookmarked Verses Sidebar Card -->
+          <div v-if="bookmarks.length > 0" class="themed-card rounded-2xl p-5 shadow-sm">
+            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2">
+              <i class="fa-solid fa-bookmark text-quran-gold"></i> Ayat Favorit
+            </h4>
+            <div class="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1">
+              <router-link 
+                v-for="b in bookmarks" 
+                :key="b.id" 
+                :to="'/read/' + b.surahNumber + '?ayah=' + b.verseNumber"
+                class="flex items-center justify-between p-2.5 rounded-xl hover:bg-quran-bg border border-transparent hover:border-quran-medium/10 transition-all duration-200 group text-xs font-semibold"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="bg-quran-bg text-quran-deep font-bold text-[9px] w-5 h-5 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30">
+                    {{ b.verseNumber }}
+                  </span>
+                  <span class="text-gray-600 group-hover:text-quran-medium transition-colors">{{ b.surahName }}</span>
+                </div>
+                <span class="font-arabic text-sm text-quran-medium">{{ b.surahArabic }}</span>
+              </router-link>
+            </div>
+          </div>
+
           <!-- Privacy-Safe Shalat Times Widget (Dropdown Selection) -->
-          <div class="bg-white border border-quran-medium/10 rounded-2xl p-5 shadow-sm">
-            <div class="flex justify-between items-center mb-3 border-b border-gray-100 pb-2">
+          <div class="themed-card rounded-2xl p-5 shadow-sm">
+            <div class="flex justify-between items-center mb-3 border-b border-gray-100/50 pb-2">
               <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium flex items-center gap-1.5">
                 <i class="fa-solid fa-clock"></i> Jadwal Shalat
               </h4>
@@ -219,8 +263,8 @@
           </div>
 
           <!-- Quick Shortcuts for Popular Surahs -->
-          <div class="bg-white border border-quran-medium/10 rounded-2xl p-5 shadow-sm">
-            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100 pb-2">
+          <div class="themed-card rounded-2xl p-5 shadow-sm">
+            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2">
               <i class="fa-solid fa-star"></i> Surah Pintasan
             </h4>
             <div class="flex flex-col gap-2">
@@ -228,13 +272,13 @@
                 v-for="shortcut in popularSurahs" 
                 :key="shortcut.number" 
                 :to="'/read/' + shortcut.number"
-                class="flex items-center justify-between p-2.5 rounded-xl hover:bg-quran-bg border border-transparent hover:border-quran-medium/10 transition-all duration-200 group"
+                class="flex items-center justify-between p-2.5 rounded-xl hover:bg-quran-bg border border-transparent hover:border-quran-medium/10 transition-all duration-200 group text-xs font-semibold"
               >
                 <div class="flex items-center gap-3">
                   <span class="bg-quran-bg text-quran-deep font-bold text-[10px] w-6 h-6 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30">
                     {{ shortcut.number }}
                   </span>
-                  <span class="text-xs font-semibold text-gray-700 group-hover:text-quran-medium">{{ shortcut.name }}</span>
+                  <span class="text-gray-600 group-hover:text-quran-medium transition-colors">{{ shortcut.name }}</span>
                 </div>
                 <span class="font-arabic text-sm text-quran-medium">{{ shortcut.arabic }}</span>
               </router-link>
@@ -242,8 +286,8 @@
           </div>
 
           <!-- Quran Statistics Widget -->
-          <div class="bg-white border border-quran-medium/10 rounded-2xl p-5 shadow-sm">
-            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100 pb-2">
+          <div class="themed-card rounded-2xl p-5 shadow-sm">
+            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2">
               <i class="fa-solid fa-chart-simple"></i> Informasi Al-Quran
             </h4>
             <div class="grid grid-cols-2 gap-3.5">
@@ -282,32 +326,44 @@ const INSPIRATIONAL_VERSES = [
   {
     arabic: "أَفَلَا يَتَدَبَّرُونَ الْقُرْآنَ ۚ وَلَوْ كَانَ مِنْ عِنْدِ غَيْرِ اللَّهِ لَوَجَدُوا فِيهِ اخْتِلَافًا كَثِيرًا",
     translation: "Maka tidakkah mereka menghayati (mendalami) Al-Qur'an? Sekiranya (Al-Qur'an) itu bukan dari Allah, pastilah mereka menemukan banyak hal yang bertentangan di dalamnya.",
-    reference: "QS. An-Nisa': 82"
+    reference: "QS. An-Nisa': 82",
+    surahNumber: 4,
+    ayahNumber: 82
   },
   {
     arabic: "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
     translation: "Sesungguhnya beserta kesulitan itu ada kemudahan.",
-    reference: "QS. Al-Insyirah: 6"
+    reference: "QS. Al-Insyirah: 6",
+    surahNumber: 94,
+    ayahNumber: 6
   },
   {
-    arabic: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ Dَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
+    arabic: "وَإِذَا سَأَلَكَ عِبَADِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
     translation: "Dan apabila hamba-hamba-Ku bertanya kepadamu tentang Aku, maka (jawablah), bahwasanya Aku adalah dekat. Aku mengabulkan permohonan orang yang berdoa apabila ia memohon kepada-Ku.",
-    reference: "QS. Al-Baqarah: 186"
+    reference: "QS. Al-Baqarah: 186",
+    surahNumber: 2,
+    ayahNumber: 186
   },
   {
-    arabic: "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِلْمُؤْمِنِينَ",
+    arabic: "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُCO شِفَاءٌ وَرَحْمَةٌ لِلْمُؤْمِنِينَ",
     translation: "Dan Kami turunkan dari Al-Qur'an suatu yang menjadi penawar (obat) dan rahmat bagi orang-orang yang beriman.",
-    reference: "QS. Al-Isra': 82"
+    reference: "QS. Al-Isra': 82",
+    surahNumber: 17,
+    ayahNumber: 82
   },
   {
     arabic: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ",
     translation: "Allah, tidak ada Tuhan (yang berhak disembah) melainkan Dia Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur.",
-    reference: "QS. Al-Baqarah: 255 (Ayat Kursi)"
+    reference: "QS. Al-Baqarah: 255 (Ayat Kursi)",
+    surahNumber: 2,
+    ayahNumber: 255
   },
   {
     arabic: "ادْعُ إِلَىٰ سَبِيلِ رَبِّكَ بِالْحِكْمَةِ وَالْمَوْعِظَةِ الْحَسَنَةِ",
     translation: "Serulah (manusia) kepada jalan Tuhan-mu dengan hikmah dan pelajaran yang baik.",
-    reference: "QS. An-Nahl: 125"
+    reference: "QS. An-Nahl: 125",
+    surahNumber: 16,
+    ayahNumber: 125
   }
 ];
 
@@ -357,6 +413,7 @@ export default {
       error: false,
       errMsg: "Terjadi kesalahan saat mengambil data.",
       searchQuery: "",
+      activeTheme: "light",
       
       // Tabs
       activeTab: "surah",
@@ -367,6 +424,7 @@ export default {
       
       // Local progress tracker
       lastRead: null,
+      bookmarks: [],
       
       // Shalat Times
       cities: [
@@ -381,11 +439,11 @@ export default {
 
       // Shortcuts
       popularSurahs: [
-        { number: 18, name: "Al-Kahfi", arabic: "الكهf" },
+        { number: 18, name: "Al-Kahfi", arabic: "الكهف" },
         { number: 36, name: "Yasin", arabic: "يس" },
         { number: 55, name: "Ar-Rahman", arabic: "الرحمن" },
         { number: 56, name: "Al-Waqi'ah", arabic: "الواقعة" },
-        { number: 67, name: "Al-Mulk", arabic: "الملك" }
+        { number: 67, name: "Al-Mulk", arabic: "الملk" }
       ]
     };
   },
@@ -406,7 +464,6 @@ export default {
     },
     formattedShalatTimes() {
       if (!this.shalatTimes) return {};
-      // Filter only the main 5 shalat times + Imsak
       const { Imsak, Fajr, Dhuhr, Asr, Maghrib, Isha } = this.shalatTimes;
       return { Imsak, Fajr, Dhuhr, Asr, Maghrib, Isha };
     }
@@ -414,13 +471,23 @@ export default {
   mounted() {
     this.selectRandomVerse();
     this.checkLastRead();
+    this.loadBookmarks();
     this.fetchSurah();
     
     // Load city from cache
     this.selectedCity = localStorage.getItem("sholat_city") || "Jakarta";
+    this.activeTheme = localStorage.getItem("quran_pref_theme") || "light";
     this.fetchShalatTimes();
+
+    window.addEventListener("theme-changed", this.onThemeChanged);
+  },
+  beforeUnmount() {
+    window.removeEventListener("theme-changed", this.onThemeChanged);
   },
   methods: {
+    onThemeChanged() {
+      this.activeTheme = localStorage.getItem("quran_pref_theme") || "light";
+    },
     selectRandomVerse() {
       const idx = Math.floor(Math.random() * INSPIRATIONAL_VERSES.length);
       this.randomVerse = INSPIRATIONAL_VERSES[idx];
@@ -435,6 +502,16 @@ export default {
         }
       }
     },
+    loadBookmarks() {
+      const saved = localStorage.getItem("quran_bookmarks");
+      if (saved) {
+        try {
+          this.bookmarks = JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse bookmarks:", e);
+        }
+      }
+    },
     onCityChange() {
       localStorage.setItem("sholat_city", this.selectedCity);
       this.fetchShalatTimes();
@@ -444,9 +521,6 @@ export default {
       this.shalatTimes = null;
       this.nextPrayerName = "";
       
-      // Use Aladhan API (with redirect following enabled in standard client)
-      // Note: timingsByCity will trigger redirection to include date on Aladhan server.
-      // Axios handles 302 redirects automatically in browsers.
       const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(this.selectedCity)}&country=Indonesia`;
 
       axios
@@ -472,7 +546,7 @@ export default {
       const currentTotalMinutes = currentHours * 60 + currentMinutes;
 
       const prayerNames = ["Imsak", "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-      let nextName = "Fajr"; // Default fallback to next day Fajr
+      let nextName = "Fajr";
 
       for (const name of prayerNames) {
         const timeStr = this.shalatTimes[name];

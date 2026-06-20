@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="'/read/' + ke" class="bg-white border border-quran-medium/10 rounded-2xl p-5 flex flex-col justify-between cursor-pointer shadow-sm hover:shadow-md hover:border-quran-gold/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden h-full group">
+  <router-link :to="'/read/' + ke" class="themed-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer hover:shadow-md hover:border-quran-gold/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden h-full group">
     <!-- Top Row: Surah Number and Arabic Name -->
     <div class="flex justify-between items-start mb-4">
       <span class="bg-quran-bg text-quran-deep font-bold w-9 h-9 rounded-full flex items-center justify-center text-sm border border-quran-gold-light group-hover:bg-quran-gold-light group-hover:border-quran-gold transition-all duration-300">

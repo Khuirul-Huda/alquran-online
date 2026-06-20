@@ -1,12 +1,9 @@
 <template>
-  <div class="min-h-screen transition-colors duration-300 pb-16" :class="activeTheme === 'dark' ? 'bg-slate-950 text-slate-100' : (activeTheme === 'sepia' ? 'bg-amber-50/20 text-amber-950' : 'bg-quran-bg text-quran-deep')">
+  <div class="pb-16">
     <div class="max-w-6xl mx-auto px-4 py-6 flex gap-8">
       
       <!-- Left Sidebar: List of 30 Juz (hidden on mobile, visible on desktop) -->
-      <aside 
-        class="hidden lg:block w-80 border rounded-2xl h-[calc(100vh-130px)] sticky top-[90px] flex-shrink-0 flex flex-col shadow-sm transition-colors duration-300"
-        :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800' : (activeTheme === 'sepia' ? 'bg-amber-50 border-amber-200/60' : 'bg-white border-quran-medium/10')"
-      >
+      <aside class="hidden lg:block w-80 rounded-2xl h-[calc(100vh-130px)] sticky top-[90px] flex-shrink-0 flex flex-col transition-all duration-300 themed-card">
         <div class="p-4 border-b flex-shrink-0" :class="activeTheme === 'dark' ? 'border-slate-800' : 'border-gray-100'">
           <h3 class="font-bold text-xs uppercase tracking-wider text-gray-400">Pilih Juz</h3>
         </div>
@@ -93,10 +90,7 @@
           </div>
 
           <!-- Sticky Reading Customizations Panel -->
-          <div 
-            class="sticky top-[80px] lg:top-[90px] z-30 border rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4 transition-all duration-300"
-            :class="activeTheme === 'dark' ? 'bg-slate-900/95 border-slate-800' : (activeTheme === 'sepia' ? 'bg-amber-50/95 border-amber-200/40' : 'bg-white/95 border-quran-medium/10')"
-          >
+          <div class="sticky top-[80px] lg:top-[90px] z-30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 transition-all duration-300 themed-card">
             <!-- Arabic Size Adjusters -->
             <div class="flex items-center gap-2">
               <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Ukuran Teks:</span>
@@ -148,7 +142,7 @@
             <div class="flex items-center gap-2">
               <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Lompat Ke:</span>
               <select 
-                @change="scrollToVerse($event.target.value)" 
+                @change="onJumpChange($event.target.value)" 
                 class="bg-quran-bg border border-gray-200 rounded-lg text-xs font-bold p-1.5 focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light cursor-pointer text-quran-deep"
               >
                 <option value="" disabled selected>Ayat...</option>
@@ -190,18 +184,11 @@
               <!-- Verse Card -->
               <div 
                 :id="'verse-' + verse.number.inQuran"
-                class="border rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
-                :class="[
-                  activeTheme === 'light' 
-                    ? (activeVerseNumber === verse.number.inQuran ? 'bg-gradient-to-r from-quran-accent/5 to-white border-quran-gold shadow-md' : 'bg-white border-quran-medium/10 shadow-sm hover:shadow-md') 
-                    : '',
-                  activeTheme === 'sepia' 
-                    ? (activeVerseNumber === verse.number.inQuran ? 'bg-amber-100/60 border-quran-gold shadow-md' : 'bg-[#fffdf0] border-amber-200/50 shadow-sm hover:shadow-md') 
-                    : '',
-                  activeTheme === 'dark' 
-                    ? (activeVerseNumber === verse.number.inQuran ? 'bg-slate-800 border-quran-gold shadow-md' : 'bg-slate-900 border-slate-800/80 shadow-sm hover:shadow-md') 
-                    : ''
-                ]"
+                class="themed-card rounded-2xl p-6 md:p-8 transition-all duration-300 relative group flex flex-col"
+                :class="{ 
+                  'active-verse': activeVerseNumber === verse.number.inQuran,
+                  'pulse-highlight-verse': highlightedVerseNumber === verse.number.inQuran
+                }"
               >
                 <!-- Highlight bar left -->
                 <div 
@@ -226,6 +213,19 @@
                   </div>
 
                   <div class="flex gap-2">
+                    <!-- Bookmark Button -->
+                    <button 
+                      @click="toggleBookmark(verse)" 
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-xs border transition-all cursor-pointer"
+                      :class="[
+                        isBookmarked(verse)
+                          ? 'bg-quran-gold text-quran-deep border-quran-gold shadow-sm'
+                          : (activeTheme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-quran-bg hover:bg-quran-accent/10 text-gray-500 hover:text-quran-deep border-gray-100')
+                      ]"
+                      :title="isBookmarked(verse) ? 'Hapus Bookmark' : 'Tambah Bookmark'"
+                    >
+                      <i :class="isBookmarked(verse) ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
+                    </button>
                     <!-- Play Audio Button -->
                     <button 
                       @click="toggleAudio(verse)" 
@@ -336,6 +336,10 @@ export default {
       showTransliteration: true,
       activeTheme: "light",
 
+      // Bookmarks & Jump Highlights
+      bookmarks: [],
+      highlightedVerseNumber: null,
+
       // Audio state
       activeVerseNumber: null,
       audioPlayer: null,
@@ -362,6 +366,18 @@ export default {
     showTransliteration(newVal) {
       this.savePreference("quran_pref_show_transliteration", newVal);
     },
+    "$route.query.ayah"(newVal) {
+      if (newVal) {
+        const num = parseInt(newVal);
+        this.scrollToVerse(num);
+        this.highlightedVerseNumber = num;
+        setTimeout(() => {
+          if (this.highlightedVerseNumber === num) {
+            this.highlightedVerseNumber = null;
+          }
+        }, 5000);
+      }
+    }
   },
   mounted() {
     const params = this.$route.params.juz;
@@ -372,9 +388,12 @@ export default {
     
     this.juzNumber = parseInt(params);
     this.loadPreferences();
+    window.addEventListener("theme-changed", this.loadPreferences);
+    this.loadBookmarks();
     this.fetchSurahList(); // Load surah list first to establish mapping, then load details
   },
   unmounted() {
+    window.removeEventListener("theme-changed", this.loadPreferences);
     this.stopAudio();
   },
   methods: {
@@ -515,6 +534,21 @@ export default {
             if (this.verses.length > 0) {
               this.saveProgress(this.verses[0].number.inQuran);
             }
+            
+            // Check for deep-linked ayah query
+            this.$nextTick(() => {
+              const queryAyah = this.$route.query.ayah;
+              if (queryAyah) {
+                const num = parseInt(queryAyah);
+                this.scrollToVerse(num);
+                this.highlightedVerseNumber = num;
+                setTimeout(() => {
+                  if (this.highlightedVerseNumber === num) {
+                    this.highlightedVerseNumber = null;
+                  }
+                }, 5000);
+              }
+            });
           } else {
             throw new Error("Respon data tidak sesuai.");
           }
@@ -582,7 +616,60 @@ export default {
       this.showModal = false;
     },
 
+    // Bookmarking Methods
+    loadBookmarks() {
+      const list = localStorage.getItem("quran_bookmarks");
+      if (list) {
+        try {
+          this.bookmarks = JSON.parse(list);
+        } catch (e) {
+          console.error("Failed to load bookmarks:", e);
+          this.bookmarks = [];
+        }
+      } else {
+        this.bookmarks = [];
+      }
+    },
+    isBookmarked(verse) {
+      const info = this.getSurahInfo(verse.number.inQuran);
+      if (!info) return false;
+      return this.bookmarks.some(
+        (b) => b.surahNumber === info.number && b.verseNumber === info.verseInSurah
+      );
+    },
+    toggleBookmark(verse) {
+      const info = this.getSurahInfo(verse.number.inQuran);
+      if (!info) return;
+      const idx = this.bookmarks.findIndex(
+        (b) => b.surahNumber === info.number && b.verseNumber === info.verseInSurah
+      );
+      if (idx > -1) {
+        this.bookmarks.splice(idx, 1);
+      } else {
+        this.bookmarks.push({
+          id: `${info.number}_${info.verseInSurah}`,
+          surahNumber: info.number,
+          surahName: info.name,
+          surahArabic: info.arabic,
+          verseNumber: info.verseInSurah
+        });
+      }
+      localStorage.setItem("quran_bookmarks", JSON.stringify(this.bookmarks));
+      window.dispatchEvent(new Event("theme-changed")); // Sync with home / settings listing
+    },
+
     // Audio Methods
+    getAudioUrl(verse) {
+      const qari = localStorage.getItem("quran_pref_qari") || "ar.alafasy";
+      let url = verse.audio.primary;
+      if (!url && verse.audio.secondary && verse.audio.secondary.length > 0) {
+        url = verse.audio.secondary[0];
+      }
+      if (url) {
+        return url.replace(/ar\.alafasy/g, qari);
+      }
+      return "";
+    },
     toggleAudio(verse) {
       if (this.activeVerseNumber === verse.number.inQuran) {
         this.stopAudio();
@@ -591,7 +678,7 @@ export default {
 
       this.stopAudio();
 
-      const audioUrl = verse.audio.primary;
+      const audioUrl = this.getAudioUrl(verse);
       if (audioUrl) {
         this.activeVerseNumber = verse.number.inQuran;
         this.audioPlayer = new Audio(audioUrl);
@@ -602,10 +689,20 @@ export default {
         });
 
         this.audioPlayer.addEventListener("ended", () => {
-          this.stopAudio();
+          this.playNextVerse();
         });
 
         this.saveProgress(verse.number.inQuran);
+      }
+    },
+    playNextVerse() {
+      const currentIndex = this.verses.findIndex((v) => v.number.inQuran === this.activeVerseNumber);
+      if (currentIndex > -1 && currentIndex < this.verses.length - 1) {
+        const nextVerse = this.verses[currentIndex + 1];
+        this.toggleAudio(nextVerse);
+        this.scrollToVerse(nextVerse.number.inQuran);
+      } else {
+        this.stopAudio();
       }
     },
     stopAudio() {
@@ -614,6 +711,11 @@ export default {
         this.audioPlayer = null;
       }
       this.activeVerseNumber = null;
+    },
+    onJumpChange(inQuranValue) {
+      if (!inQuranValue) return;
+      const num = parseInt(inQuranValue);
+      this.$router.push({ query: { ayah: num } }).catch(() => {});
     },
   },
 };
