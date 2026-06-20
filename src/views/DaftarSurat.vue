@@ -1,30 +1,41 @@
 <template>
   <div class="pb-12">
     <!-- Hero Header -->
-    <div class="relative overflow-hidden bg-quran-deep text-white px-6 py-16 md:py-20 rounded-b-[2.5rem] shadow-md border-b border-quran-gold/20">
+    <div
+      class="relative overflow-hidden bg-quran-deep text-white px-6 py-16 md:py-20 rounded-b-[2.5rem] shadow-md border-b border-quran-gold/20"
+    >
       <!-- Decorative gold circle background elements -->
-      <div class="absolute top-[-10%] right-[-10%] w-[350px] h-[350px] rounded-full border border-quran-gold/10 pointer-events-none"></div>
-      <div class="absolute bottom-[-15%] left-[-5%] w-[250px] h-[250px] rounded-full border border-quran-gold/5 pointer-events-none"></div>
+      <div
+        class="absolute top-[-10%] right-[-10%] w-[350px] h-[350px] rounded-full border border-quran-gold/10 pointer-events-none"
+      ></div>
+      <div
+        class="absolute bottom-[-15%] left-[-5%] w-[250px] h-[250px] rounded-full border border-quran-gold/5 pointer-events-none"
+      ></div>
 
       <div class="max-w-6xl mx-auto text-center relative z-10">
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 animate-fade-in">
           Al-Quran <span class="text-quran-gold">Online</span>
         </h1>
-        
+
         <!-- Randomly selected quote verse -->
         <div v-if="randomVerse" class="my-6 max-w-3xl mx-auto animate-fade-in">
-          <p class="font-arabic text-2xl md:text-3xl text-quran-gold leading-relaxed mb-4 direction-rtl" dir="rtl">
+          <p
+            class="font-arabic text-2xl md:text-3xl text-quran-gold leading-relaxed mb-4 direction-rtl"
+            dir="rtl"
+          >
             {{ randomVerse.arabic }}
           </p>
           <p class="text-sm md:text-base font-light italic opacity-95 max-w-2xl mx-auto leading-relaxed">
             "{{ randomVerse.translation }}"
           </p>
           <div class="flex flex-col items-center gap-3 mt-4">
-            <span class="inline-block text-xs font-semibold text-quran-gold-light bg-white/10 px-3 py-1 rounded-full border border-white/5">
+            <span
+              class="inline-block text-xs font-semibold text-quran-gold-light bg-white/10 px-3 py-1 rounded-full border border-white/5"
+            >
               {{ randomVerse.reference }}
             </span>
-            <router-link 
-              :to="'/read/' + randomVerse.surahNumber + '?ayah=' + randomVerse.ayahNumber" 
+            <router-link
+              :to="'/read/' + randomVerse.surahNumber + '?ayah=' + randomVerse.ayahNumber"
               class="inline-flex items-center gap-1.5 text-xs font-bold text-quran-gold hover:text-white bg-white/10 hover:bg-white/20 border border-quran-gold/40 hover:border-white px-4 py-2 rounded-full transition-all duration-200 shadow-sm"
             >
               Baca Ayat Ini <i class="fa-solid fa-arrow-right text-[10px]"></i>
@@ -38,44 +49,69 @@
     <div class="max-w-6xl mx-auto px-4 mt-8">
       <!-- View Toggle Tabs (Surah vs Juz) -->
       <div class="flex border-b border-gray-200/60 mb-8 max-w-sm">
-        <button 
-          @click="activeTab = 'surah'" 
-          class="flex-1 text-center py-3.5 text-sm font-bold border-b-2 transition-all cursor-pointer"
-          :class="activeTab === 'surah' ? (activeTheme === 'dark' ? 'border-quran-gold text-quran-gold' : 'border-quran-medium text-quran-deep') : 'border-transparent text-gray-400 hover:text-quran-medium'"
+        <button
+          @click="activeTab = 'surah'"
+          class="flex-1 text-center py-3.5 text-sm font-bold border-b-2 transition-all cursor-pointer border-none bg-transparent"
+          :class="
+            activeTab === 'surah'
+              ? preferencesStore.theme === 'dark'
+                ? 'border-quran-gold text-quran-gold'
+                : 'border-quran-medium text-quran-deep'
+              : 'border-transparent text-gray-400 hover:text-quran-medium'
+          "
         >
           <i class="fa-solid fa-list-ol mr-1.5"></i> Daftar Surah
         </button>
-        <button 
-          @click="activeTab = 'juz'" 
-          class="flex-1 text-center py-3.5 text-sm font-bold border-b-2 transition-all cursor-pointer"
-          :class="activeTab === 'juz' ? (activeTheme === 'dark' ? 'border-quran-gold text-quran-gold' : 'border-quran-medium text-quran-deep') : 'border-transparent text-gray-400 hover:text-quran-medium'"
+        <button
+          @click="activeTab = 'juz'"
+          class="flex-1 text-center py-3.5 text-sm font-bold border-b-2 transition-all cursor-pointer border-none bg-transparent"
+          :class="
+            activeTab === 'juz'
+              ? preferencesStore.theme === 'dark'
+                ? 'border-quran-gold text-quran-gold'
+                : 'border-quran-medium text-quran-deep'
+              : 'border-transparent text-gray-400 hover:text-quran-medium'
+          "
         >
           <i class="fa-solid fa-box-archive mr-1.5"></i> Daftar Juz
         </button>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        
         <!-- Left 3 Columns: Grid Lists -->
         <div class="lg:col-span-3 order-1">
-          
           <!-- Tab 1: Surah View -->
           <div v-if="activeTab === 'surah'">
             <!-- Search Bar -->
             <div class="relative max-w-xl mb-8 shadow-sm">
-              <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-quran-light text-base"></i>
+              <i
+                class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-quran-light text-base"
+              ></i>
               <input
                 v-model="searchQuery"
                 type="text"
                 placeholder="Cari surah berdasarkan nama, arti, atau nomor..."
                 class="w-full pl-11 pr-4 py-4 border rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-quran-light/20 focus:border-quran-light focus:shadow-md transition-all duration-200"
-                :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100 placeholder-slate-500 focus:border-quran-gold focus:ring-quran-gold/10' : 'bg-white border-quran-medium/10 text-quran-deep placeholder-gray-400'"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'bg-slate-900 border-slate-800 text-slate-100 placeholder-slate-500 focus:border-quran-gold focus:ring-quran-gold/10'
+                    : 'bg-white border-quran-medium/10 text-quran-deep placeholder-gray-400'
+                "
               />
             </div>
 
             <!-- Loading Skeleton -->
             <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              <div v-for="h in 12" :key="h" class="border rounded-2xl p-5 h-40 flex flex-col justify-between relative overflow-hidden" :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-quran-medium/5'">
+              <div
+                v-for="h in 12"
+                :key="h"
+                class="border rounded-2xl p-5 h-40 flex flex-col justify-between relative overflow-hidden"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'bg-slate-900 border-slate-800'
+                    : 'bg-white border-quran-medium/5'
+                "
+              >
                 <div class="flex justify-between items-start">
                   <div class="animate-shimmer w-9 h-9 rounded-full"></div>
                   <div class="animate-shimmer w-20 h-7 rounded-md"></div>
@@ -90,14 +126,31 @@
 
             <!-- Error State -->
             <div v-else-if="error" class="flex justify-center items-center py-16">
-              <div 
+              <div
                 class="rounded-2xl p-8 text-center max-w-sm shadow-sm border animate-fade-in"
-                :class="activeTheme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-red-100 text-gray-900'"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'bg-slate-900 border-slate-800 text-slate-100'
+                    : 'bg-white border-red-100 text-gray-900'
+                "
               >
                 <i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-                <h3 class="font-bold text-lg mb-2" :class="activeTheme === 'dark' ? 'text-white' : 'text-gray-900'">Gagal Memuat Data</h3>
-                <p class="text-sm mb-6" :class="activeTheme === 'dark' ? 'text-slate-400' : 'text-gray-500'">{{ errMsg }}</p>
-                <button @click="fetchSurah" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm cursor-pointer">
+                <h3
+                  class="font-bold text-lg mb-2"
+                  :class="preferencesStore.theme === 'dark' ? 'text-white' : 'text-gray-900'"
+                >
+                  Gagal Memuat Data
+                </h3>
+                <p
+                  class="text-sm mb-6"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-400' : 'text-gray-500'"
+                >
+                  {{ errMsg }}
+                </p>
+                <button
+                  @click="fetchSurah"
+                  class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm cursor-pointer border-none"
+                >
                   Coba Lagi
                 </button>
               </div>
@@ -108,7 +161,9 @@
               <!-- No Results -->
               <div v-if="filteredSurah.length === 0" class="text-center py-16">
                 <i class="fa-solid fa-box-open text-gray-300 text-5xl mb-4"></i>
-                <p class="text-gray-500 font-medium">Tidak ada surah yang cocok dengan "{{ searchQuery }}"</p>
+                <p class="text-gray-500 font-medium">
+                  Tidak ada surah yang cocok dengan "{{ searchQuery }}"
+                </p>
               </div>
 
               <!-- Grid -->
@@ -121,7 +176,7 @@
                     :ke="suratt.number"
                     :revelation="suratt.revelation.id"
                     :verses="suratt.numberOfVerses"
-                    :theme="activeTheme"
+                    :theme="preferencesStore.theme"
                   />
                 </div>
               </div>
@@ -131,76 +186,134 @@
           <!-- Tab 2: Juz View -->
           <div v-else>
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 animate-fade-in">
-              <router-link 
-                v-for="j in juzList" 
-                :key="j.number" 
-                :to="'/juz/' + j.number" 
+              <router-link
+                v-for="j in juzList"
+                :key="j.number"
+                :to="'/juz/' + j.number"
                 class="themed-card border rounded-2xl p-5 hover:shadow-md hover:border-quran-gold/30 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative overflow-hidden"
               >
                 <div class="flex justify-between items-center mb-3">
-                  <span class="w-8 h-8 rounded-full bg-quran-bg text-quran-deep font-bold flex items-center justify-center text-sm border border-quran-gold-light group-hover:bg-quran-gold-light group-hover:border-quran-gold transition-colors duration-300">
+                  <span
+                    class="w-8 h-8 rounded-full bg-quran-bg text-quran-deep font-bold flex items-center justify-center text-sm border border-quran-gold-light group-hover:bg-quran-gold-light group-hover:border-quran-gold transition-colors duration-300"
+                  >
                     {{ j.number }}
                   </span>
-                  <span class="text-xs font-bold text-quran-medium uppercase tracking-wider">Juz {{ j.number }}</span>
+                  <span class="text-xs font-bold text-quran-medium uppercase tracking-wider"
+                    >Juz {{ j.number }}</span
+                  >
                 </div>
                 <div>
-                  <h3 class="font-bold text-sm transition-colors mb-1" :class="activeTheme === 'dark' ? 'text-slate-100 group-hover:text-quran-gold' : 'text-quran-deep group-hover:text-quran-medium'">
-                    {{ j.start.split(':')[0] }} - {{ j.end.split(':')[0] }}
+                  <h3
+                    class="font-bold text-sm transition-colors mb-1"
+                    :class="
+                      preferencesStore.theme === 'dark'
+                        ? 'text-slate-100 group-hover:text-quran-gold'
+                        : 'text-quran-deep group-hover:text-quran-medium'
+                    "
+                  >
+                    {{ j.start.split(":")[0] }} - {{ j.end.split(":")[0] }}
                   </h3>
                   <p class="text-[10.5px] text-gray-400 font-semibold flex items-center gap-1">
                     <i class="fa-solid fa-location-arrow text-quran-gold"></i>
                     <span>Mulai: {{ j.start }} s/d {{ j.end }}</span>
                   </p>
                 </div>
-                 <!-- Solid highlight bar -->
-                 <div class="absolute bottom-0 left-0 w-0 h-1 bg-quran-gold transition-all duration-300 group-hover:w-full"></div>
+                <!-- Solid highlight bar -->
+                <div
+                  class="absolute bottom-0 left-0 w-0 h-1 bg-quran-gold transition-all duration-300 group-hover:w-full"
+                ></div>
               </router-link>
             </div>
           </div>
-
         </div>
 
         <!-- Right 1 Column: Stats, Shalat Times, Shortcuts Sidebar -->
         <div class="lg:col-span-1 flex flex-col gap-6 order-2 lg:mt-0">
-          
           <!-- Last Read / Continue Reading Card -->
-          <div 
-            v-if="lastRead" 
+          <div
+            v-if="preferencesStore.lastRead"
             class="border rounded-2xl p-5 shadow-sm transition-all duration-300 animate-fade-in"
-             :class="[
-               activeTheme === 'dark' 
-                 ? 'bg-slate-900 border-slate-800' 
-                 : (activeTheme === 'sepia' 
-                     ? 'bg-[#fffcf3] border-amber-200/50' 
-                     : 'bg-quran-cream border-quran-gold/30')
-             ]"
+            :class="[
+              preferencesStore.theme === 'dark'
+                ? 'bg-slate-900 border-slate-800'
+                : preferencesStore.theme === 'sepia'
+                ? 'bg-[#fffcf3] border-amber-200/50'
+                : 'bg-quran-cream border-quran-gold/30',
+            ]"
           >
-            <h4 class="text-xs uppercase tracking-wider font-bold mb-3 flex items-center gap-1.5" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-medium'">
+            <h4
+              class="text-xs uppercase tracking-wider font-bold mb-3 flex items-center gap-1.5"
+              :class="
+                preferencesStore.theme === 'dark' ? 'text-quran-gold' : 'text-quran-medium'
+              "
+            >
               <i class="fa-solid fa-bookmark"></i> Lanjutkan Membaca
             </h4>
             <div class="flex justify-between items-center">
               <div>
-                <h3 class="font-bold text-base" :class="activeTheme === 'dark' ? 'text-white' : 'text-quran-deep'">{{ lastRead.name }}</h3>
-                <p class="text-xs font-medium mt-0.5" :class="activeTheme === 'dark' ? 'text-slate-400' : 'text-gray-500'">
-                  Ayat {{ lastRead.lastAyah || 1 }} dari {{ lastRead.verseCount || '...' }}
+                <h3
+                  class="font-bold text-base"
+                  :class="preferencesStore.theme === 'dark' ? 'text-white' : 'text-quran-deep'"
+                >
+                  {{ preferencesStore.lastRead.name }}
+                </h3>
+                <p
+                  class="text-xs font-medium mt-0.5"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-400' : 'text-gray-500'"
+                >
+                  Ayat {{ preferencesStore.lastRead.lastAyah || 1 }} dari
+                  {{ preferencesStore.lastRead.verseCount || "..." }}
                 </p>
               </div>
-              <span class="font-arabic text-xl" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-medium'">{{ lastRead.arabic }}</span>
+              <span
+                class="font-arabic text-xl"
+                :class="
+                  preferencesStore.theme === 'dark' ? 'text-quran-gold' : 'text-quran-medium'
+                "
+                >{{ preferencesStore.lastRead.arabic }}</span
+              >
             </div>
 
             <!-- Reading progress percentage bar -->
-            <div v-if="lastRead.verseCount" class="mt-3.5 mb-4">
-              <div class="flex justify-between items-center text-[9.5px] font-bold uppercase mb-1" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-400'">
+            <div v-if="preferencesStore.lastRead.verseCount" class="mt-3.5 mb-4">
+              <div
+                class="flex justify-between items-center text-[9.5px] font-bold uppercase mb-1"
+                :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-400'"
+              >
                 <span>Progres</span>
-                <span>{{ Math.round((lastRead.lastAyah / lastRead.verseCount) * 100) }}%</span>
+                <span>{{
+                  Math.round(
+                    (preferencesStore.lastRead.lastAyah /
+                      preferencesStore.lastRead.verseCount) *
+                      100
+                  )
+                }}%</span>
               </div>
-              <div class="w-full h-1.5 rounded-full overflow-hidden" :class="activeTheme === 'dark' ? 'bg-slate-800' : 'bg-gray-200/50'">
-                <div class="h-full bg-quran-medium transition-all" :style="{ width: Math.round((lastRead.lastAyah / lastRead.verseCount) * 100) + '%' }"></div>
+              <div
+                class="w-full h-1.5 rounded-full overflow-hidden"
+                :class="preferencesStore.theme === 'dark' ? 'bg-slate-800' : 'bg-gray-200/50'"
+              >
+                <div
+                  class="h-full bg-quran-medium transition-all"
+                  :style="{
+                    width:
+                      Math.round(
+                        (preferencesStore.lastRead.lastAyah /
+                          preferencesStore.lastRead.verseCount) *
+                          100
+                      ) + '%',
+                  }"
+                ></div>
               </div>
             </div>
-            
-            <router-link 
-              :to="'/read/' + lastRead.number + '?ayah=' + (lastRead.lastAyah || 1)" 
+
+            <router-link
+              :to="
+                '/read/' +
+                preferencesStore.lastRead.number +
+                '?ayah=' +
+                (preferencesStore.lastRead.lastAyah || 1)
+              "
               class="w-full text-center block bg-quran-medium hover:bg-quran-deep text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors duration-200 shadow-sm"
             >
               Lanjut Membaca
@@ -208,23 +321,46 @@
           </div>
 
           <!-- Bookmarked Verses Sidebar Card -->
-          <div v-if="bookmarks.length > 0" class="themed-card rounded-2xl p-5 shadow-sm">
-            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2">
+          <div v-if="bookmarksStore.bookmarks.length > 0" class="themed-card rounded-2xl p-5 shadow-sm">
+            <h4
+              class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2"
+            >
               <i class="fa-solid fa-bookmark text-quran-gold"></i> Ayat Favorit
             </h4>
             <div class="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1">
-              <router-link 
-                v-for="b in bookmarks" 
-                :key="b.id" 
+              <router-link
+                v-for="b in bookmarksStore.bookmarks"
+                :key="b.id"
                 :to="'/read/' + b.surahNumber + '?ayah=' + b.verseNumber"
                 class="flex items-center justify-between p-2.5 rounded-xl border border-transparent transition-all duration-200 group text-xs font-semibold"
-                :class="activeTheme === 'dark' ? 'hover:bg-slate-800 hover:border-slate-800' : (activeTheme === 'sepia' ? 'hover:bg-amber-100/40 hover:border-amber-250/20' : 'hover:bg-quran-bg hover:border-quran-medium/10')"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'hover:bg-slate-800 hover:border-slate-800'
+                    : preferencesStore.theme === 'sepia'
+                    ? 'hover:bg-amber-100/40 hover:border-amber-250/20'
+                    : 'hover:bg-quran-bg hover:border-quran-medium/10'
+                "
               >
                 <div class="flex items-center gap-2">
-                  <span class="font-bold text-[9px] w-5 h-5 rounded-full flex items-center justify-center border transition-all" :class="activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-quran-bg text-quran-deep border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30'">
+                  <span
+                    class="font-bold text-[9px] w-5 h-5 rounded-full flex items-center justify-center border transition-all"
+                    :class="
+                      preferencesStore.theme === 'dark'
+                        ? 'bg-slate-800 border-slate-700 text-slate-300'
+                        : 'bg-quran-bg text-quran-deep border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30'
+                    "
+                  >
                     {{ b.verseNumber }}
                   </span>
-                  <span class="transition-colors" :class="activeTheme === 'dark' ? 'text-slate-300 group-hover:text-quran-gold' : 'text-gray-600 group-hover:text-quran-medium'">{{ b.surahName }}</span>
+                  <span
+                    class="transition-colors"
+                    :class="
+                      preferencesStore.theme === 'dark'
+                        ? 'text-slate-300 group-hover:text-quran-gold'
+                        : 'text-gray-600 group-hover:text-quran-medium'
+                    "
+                    >{{ b.surahName }}</span
+                  >
                 </div>
                 <span class="font-arabic text-sm text-quran-medium">{{ b.surahArabic }}</span>
               </router-link>
@@ -238,11 +374,16 @@
                 <i class="fa-solid fa-clock"></i> Jadwal Shalat
               </h4>
               <!-- City Dropdown Selector -->
-              <select 
-                v-model="selectedCity" 
-                @change="onCityChange"
+              <select
+                v-model="selectedCityComputed"
                 class="border rounded-lg text-[10px] font-bold p-1 cursor-pointer outline-none focus:ring-1 focus:ring-quran-light max-w-[100px] transition-colors"
-                :class="activeTheme === 'dark' ? 'bg-slate-950 border-slate-800 text-white' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-200/60 text-amber-950' : 'bg-quran-bg border-gray-200 text-quran-deep')"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'bg-slate-955 border-slate-800 text-white'
+                    : preferencesStore.theme === 'sepia'
+                    ? 'bg-[#fffdf0] border-amber-200/60 text-amber-955'
+                    : 'bg-quran-bg border-gray-200 text-quran-deep'
+                "
               >
                 <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
               </select>
@@ -250,24 +391,30 @@
 
             <!-- Loading Shalat state -->
             <div v-if="shalatLoading" class="flex flex-col gap-2 py-4 text-center">
-              <div class="animate-spin text-quran-medium text-lg"><i class="fa-solid fa-circle-notch"></i></div>
+              <div class="animate-spin text-quran-medium text-lg">
+                <i class="fa-solid fa-circle-notch"></i>
+              </div>
               <span class="text-xs text-gray-400">Memuat jadwal...</span>
             </div>
 
             <!-- Shalat Timings List -->
             <div v-else-if="shalatTimes" class="flex flex-col gap-2.5 text-xs font-semibold">
-              <div 
-                v-for="(time, name) in formattedShalatTimes" 
+              <div
+                v-for="(time, name) in formattedShalatTimes"
                 :key="name"
                 class="flex justify-between p-2 rounded-xl border border-transparent transition-all"
                 :class="[
-                  nextPrayerName === name 
-                    ? (activeTheme === 'dark' 
-                        ? 'bg-quran-gold/10 border-quran-gold/25 text-quran-gold ring-1 ring-quran-gold/5' 
-                        : (activeTheme === 'sepia' 
-                            ? 'bg-amber-100/50 border-amber-300/40 text-amber-950 ring-1 ring-amber-300/20' 
-                            : 'bg-quran-accent/10 border-quran-accent/25 text-quran-deep ring-1 ring-quran-accent/5'))
-                    : (activeTheme === 'dark' ? 'text-slate-400' : (activeTheme === 'sepia' ? 'text-amber-900/70' : 'text-gray-600'))
+                  nextPrayerName === name
+                    ? preferencesStore.theme === 'dark'
+                      ? 'bg-quran-gold/10 border-quran-gold/25 text-quran-gold ring-1 ring-quran-gold/5'
+                      : preferencesStore.theme === 'sepia'
+                      ? 'bg-amber-100/50 border-amber-300/40 text-amber-955 ring-1 ring-amber-300/20'
+                      : 'bg-quran-accent/10 border-quran-accent/25 text-quran-deep ring-1 ring-quran-accent/5'
+                    : preferencesStore.theme === 'dark'
+                    ? 'text-slate-400'
+                    : preferencesStore.theme === 'sepia'
+                    ? 'text-amber-900/70'
+                    : 'text-gray-600',
                 ]"
               >
                 <span class="flex items-center gap-1.5">
@@ -276,11 +423,15 @@
                 </span>
                 <span class="flex items-center gap-1.5">
                   <span>{{ time }}</span>
-                  <span v-if="nextPrayerName === name" class="text-[9px] bg-quran-medium text-white px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse">Berikutnya</span>
+                  <span
+                    v-if="nextPrayerName === name"
+                    class="text-[9px] bg-quran-medium text-white px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse"
+                    >Berikutnya</span
+                  >
                 </span>
               </div>
             </div>
-            
+
             <div v-else class="text-center py-4 text-xs text-gray-400 italic">
               Gagal memuat jadwal shalat.
             </div>
@@ -288,22 +439,45 @@
 
           <!-- Quick Shortcuts for Popular Surahs -->
           <div class="themed-card rounded-2xl p-5 shadow-sm">
-            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2">
+            <h4
+              class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2"
+            >
               <i class="fa-solid fa-star"></i> Surah Pintasan
             </h4>
             <div class="flex flex-col gap-2">
-              <router-link 
-                v-for="shortcut in popularSurahs" 
-                :key="shortcut.number" 
+              <router-link
+                v-for="shortcut in popularSurahs"
+                :key="shortcut.number"
                 :to="'/read/' + shortcut.number"
                 class="flex items-center justify-between p-2.5 rounded-xl border border-transparent transition-all duration-200 group text-xs font-semibold"
-                :class="activeTheme === 'dark' ? 'hover:bg-slate-800 hover:border-slate-800' : (activeTheme === 'sepia' ? 'hover:bg-amber-100/40 hover:border-amber-250/20' : 'hover:bg-quran-bg hover:border-quran-medium/10')"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'hover:bg-slate-800 hover:border-slate-800'
+                    : preferencesStore.theme === 'sepia'
+                    ? 'hover:bg-amber-100/40 hover:border-amber-250/20'
+                    : 'hover:bg-quran-bg hover:border-quran-medium/10'
+                "
               >
                 <div class="flex items-center gap-3">
-                  <span class="font-bold text-[10px] w-6 h-6 rounded-full flex items-center justify-center border transition-all" :class="activeTheme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-quran-bg text-quran-deep border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30'">
+                  <span
+                    class="font-bold text-[10px] w-6 h-6 rounded-full flex items-center justify-center border transition-all"
+                    :class="
+                      preferencesStore.theme === 'dark'
+                        ? 'bg-slate-800 border-slate-700 text-slate-300'
+                        : 'bg-quran-bg text-quran-deep border-gray-100 group-hover:bg-quran-gold-light group-hover:border-quran-gold/30'
+                    "
+                  >
                     {{ shortcut.number }}
                   </span>
-                  <span class="transition-colors" :class="activeTheme === 'dark' ? 'text-slate-300 group-hover:text-quran-gold' : 'text-gray-600 group-hover:text-quran-medium'">{{ shortcut.name }}</span>
+                  <span
+                    class="transition-colors"
+                    :class="
+                      preferencesStore.theme === 'dark'
+                        ? 'text-slate-300 group-hover:text-quran-gold'
+                        : 'text-gray-600 group-hover:text-quran-medium'
+                    "
+                    >{{ shortcut.name }}</span
+                  >
                 </div>
                 <span class="font-arabic text-sm text-quran-medium">{{ shortcut.arabic }}</span>
               </router-link>
@@ -312,100 +486,187 @@
 
           <!-- Quran Statistics Widget -->
           <div class="themed-card rounded-2xl p-5 shadow-sm">
-            <h4 class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2">
+            <h4
+              class="text-xs uppercase tracking-wider font-bold text-quran-medium mb-4 flex items-center gap-1.5 border-b border-gray-100/50 pb-2"
+            >
               <i class="fa-solid fa-chart-simple"></i> Informasi Al-Quran
             </h4>
             <div class="grid grid-cols-2 gap-3.5">
-              <div 
+              <div
                 class="p-3 rounded-xl border text-center transition-colors"
-                :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-250/20 text-amber-950' : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep')"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'bg-slate-955/40 border-slate-800 text-slate-100'
+                    : preferencesStore.theme === 'sepia'
+                    ? 'bg-[#fffdf0] border-amber-250/20 text-amber-955'
+                    : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep'
+                "
               >
-                <span class="block text-xl font-bold leading-none mb-1" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">114</span>
-                <span class="text-[10px] font-semibold uppercase tracking-wider" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-500'">Surah</span>
+                <span
+                  class="block text-xl font-bold leading-none mb-1"
+                  :class="
+                    preferencesStore.theme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'
+                  "
+                  >114</span
+                >
+                <span
+                  class="text-[10px] font-semibold uppercase tracking-wider"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
+                  >Surah</span
+                >
               </div>
-              <div 
+              <div
                 class="p-3 rounded-xl border text-center transition-colors"
-                :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-250/20 text-amber-950' : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep')"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'bg-slate-955/40 border-slate-800 text-slate-100'
+                    : preferencesStore.theme === 'sepia'
+                    ? 'bg-[#fffdf0] border-amber-250/20 text-amber-955'
+                    : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep'
+                "
               >
-                <span class="block text-xl font-bold leading-none mb-1" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">30</span>
-                <span class="text-[10px] font-semibold uppercase tracking-wider" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-500'">Juz</span>
+                <span
+                  class="block text-xl font-bold leading-none mb-1"
+                  :class="
+                    preferencesStore.theme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'
+                  "
+                  >30</span
+                >
+                <span
+                  class="text-[10px] font-semibold uppercase tracking-wider"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
+                  >Juz</span
+                >
               </div>
-              <div 
+              <div
                 class="p-3 rounded-xl border text-center transition-colors"
-                :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-250/20 text-amber-950' : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep')"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'bg-slate-955/40 border-slate-800 text-slate-100'
+                    : preferencesStore.theme === 'sepia'
+                    ? 'bg-[#fffdf0] border-amber-250/20 text-amber-955'
+                    : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep'
+                "
               >
-                <span class="block text-xl font-bold leading-none mb-1" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">6236</span>
-                <span class="text-[10px] font-semibold uppercase tracking-wider" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-500'">Ayat</span>
+                <span
+                  class="block text-xl font-bold leading-none mb-1"
+                  :class="
+                    preferencesStore.theme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'
+                  "
+                  >6236</span
+                >
+                <span
+                  class="text-[10px] font-semibold uppercase tracking-wider"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
+                  >Ayat</span
+                >
               </div>
-              <div 
+              <div
                 class="p-3 rounded-xl border text-center transition-colors"
-                :class="activeTheme === 'dark' ? 'bg-slate-950/40 border-slate-800 text-slate-100' : (activeTheme === 'sepia' ? 'bg-[#fffdf0] border-amber-250/20 text-amber-950' : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep')"
+                :class="
+                  preferencesStore.theme === 'dark'
+                    ? 'bg-slate-955/40 border-slate-800 text-slate-100'
+                    : preferencesStore.theme === 'sepia'
+                    ? 'bg-[#fffdf0] border-amber-250/20 text-amber-955'
+                    : 'bg-quran-bg/60 border-gray-100/50 text-quran-deep'
+                "
               >
-                <span class="block text-xl font-bold leading-none mb-1" :class="activeTheme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'">77.430</span>
-                <span class="text-[10px] font-semibold uppercase tracking-wider" :class="activeTheme === 'dark' ? 'text-slate-500' : 'text-gray-500'">Kata</span>
+                <span
+                  class="block text-xl font-bold leading-none mb-1"
+                  :class="
+                    preferencesStore.theme === 'dark' ? 'text-quran-gold' : 'text-quran-deep'
+                  "
+                  >77.430</span
+                >
+                <span
+                  class="text-[10px] font-semibold uppercase tracking-wider"
+                  :class="preferencesStore.theme === 'dark' ? 'text-slate-500' : 'text-gray-505'"
+                  >Kata</span
+                >
               </div>
             </div>
           </div>
-
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from "vue";
 import Surat from "../components/Surat.vue";
-import axios from "axios";
+import { quranApi } from "../services/quranApi";
+import { usePreferencesStore } from "../stores/preferences";
+import { useBookmarksStore } from "../stores/bookmarks";
+
+const preferencesStore = usePreferencesStore();
+const bookmarksStore = useBookmarksStore();
+
+const surat = ref([]);
+const loading = ref(true);
+const error = ref(false);
+const errMsg = ref("Terjadi kesalahan saat mengambil data.");
+const searchQuery = ref("");
+const activeTab = ref("surah");
+
+const randomVerse = ref(null);
+const shalatTimes = ref(null);
+const shalatLoading = ref(false);
+const nextPrayerName = ref("");
 
 // Inspirational verse list for dynamic selection
 const INSPIRATIONAL_VERSES = [
   {
-    arabic: "أَفَلَا يَتَدَبَّرُونَ الْقُرْآنَ ۚ وَلَوْ كَانَ مِنْ عِنْدِ غَيْرِ اللَّهِ لَوَجَدُوا فِيهِ اخْتِلَافًا كَثِيرًا",
-    translation: "Maka tidakkah mereka menghayati (mendalami) Al-Qur'an? Sekiranya (Al-Qur'an) itu bukan dari Allah, pastilah mereka menemukan banyak hal yang bertentangan di dalamnya.",
+    arabic:
+      "أَفَلَا يَتَدَبَّرُونَ الْقُرْآنَ ۚ وَلَوْ كَانَ مِنْ عِنْدِ غَيْرِ اللَّهِ لَوَجَدُوا فِيهِ اخْتِلَافًا كَثِيرًا",
+    translation:
+      "Maka tidakkah mereka menghayati (mendalami) Al-Qur'an? Sekiranya (Al-Qur'an) itu bukan dari Allah, pastilah mereka menemukan banyak hal yang bertentangan di dalamnya.",
     reference: "QS. An-Nisa': 82",
     surahNumber: 4,
-    ayahNumber: 82
+    ayahNumber: 82,
   },
   {
     arabic: "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
     translation: "Sesungguhnya beserta kesulitan itu ada kemudahan.",
     reference: "QS. Al-Insyirah: 6",
     surahNumber: 94,
-    ayahNumber: 6
+    ayahNumber: 6,
   },
   {
-    arabic: "وَإِذَا سَأَلَكَ عِبَADِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
-    translation: "Dan apabila hamba-hamba-Ku bertanya kepadamu tentang Aku, maka (jawablah), bahwasanya Aku adalah dekat. Aku mengabulkan permohonan orang yang berdoa apabila ia memohon kepada-Ku.",
+    arabic: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",
+    translation:
+      "Dan apabila hamba-hamba-Ku bertanya kepadamu tentang Aku, maka (jawablah), bahwasanya Aku adalah dekat. Aku mengabulkan permohonan orang yang berdoa apabila ia memohon kepada-Ku.",
     reference: "QS. Al-Baqarah: 186",
     surahNumber: 2,
-    ayahNumber: 186
+    ayahNumber: 186,
   },
   {
-    arabic: "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُCO شِفَاءٌ وَرَحْمَةٌ لِلْمُؤْمِنِينَ",
-    translation: "Dan Kami turunkan dari Al-Qur'an suatu yang menjadi penawar (obat) dan rahmat bagi orang-orang yang beriman.",
+    arabic: "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِلْمُؤْمِنِينَ",
+    translation:
+      "Dan Kami turunkan dari Al-Qur'an suatu yang menjadi penawar (obat) dan rahmat bagi orang-orang yang beriman.",
     reference: "QS. Al-Isra': 82",
     surahNumber: 17,
-    ayahNumber: 82
+    ayahNumber: 82,
   },
   {
     arabic: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ",
-    translation: "Allah, tidak ada Tuhan (yang berhak disembah) melainkan Dia Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur.",
+    translation:
+      "Allah, tidak ada Tuhan (yang berhak disembah) melainkan Dia Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya); tidak mengantuk dan tidak tidur.",
     reference: "QS. Al-Baqarah: 255 (Ayat Kursi)",
     surahNumber: 2,
-    ayahNumber: 255
+    ayahNumber: 255,
   },
   {
     arabic: "ادْعُ إِلَىٰ سَبِيلِ رَبِّكَ بِالْحِكْمَةِ وَالْمَوْعِظَةِ الْحَسَنَةِ",
     translation: "Serulah (manusia) kepada jalan Tuhan-mu dengan hikmah dan pelajaran yang baik.",
     reference: "QS. An-Nahl: 125",
     surahNumber: 16,
-    ayahNumber: 125
-  }
+    ayahNumber: 125,
+  },
 ];
 
 // Juz metadata (30 Juz structures)
-const JUZ_METADATA = [
+const juzList = [
   { number: 1, start: "Al-Fatihah: 1", end: "Al-Baqarah: 141" },
   { number: 2, start: "Al-Baqarah: 142", end: "Al-Baqarah: 252" },
   { number: 3, start: "Al-Baqarah: 253", end: "Ali 'Imran: 92" },
@@ -435,227 +696,171 @@ const JUZ_METADATA = [
   { number: 27, start: "Adz-Dzariyat: 31", end: "Al-Hadid: 29" },
   { number: 28, start: "Al-Mujadilah: 1", end: "At-Tahrim: 12" },
   { number: 29, start: "Al-Mulk: 1", end: "Al-Mursalat: 50" },
-  { number: 30, start: "An-Naba': 1", end: "An-Nas: 6" }
+  { number: 30, start: "An-Naba': 1", end: "An-Nas: 6" },
 ];
 
-export default {
-  name: "DaftarSurat",
-  components: {
-    Surat,
-  },
-  data() {
-    return {
-      surat: [],
-      loading: true,
-      error: false,
-      errMsg: "Terjadi kesalahan saat mengambil data.",
-      searchQuery: "",
-      activeTheme: "light",
-      
-      // Tabs
-      activeTab: "surah",
-      juzList: JUZ_METADATA,
-      
-      // Inspirational Verse
-      randomVerse: null,
-      
-      // Local progress tracker
-      lastRead: null,
-      bookmarks: [],
-      
-      // Shalat Times
-      cities: [
-        "Jakarta", "Surabaya", "Bandung", "Medan", "Makassar", 
-        "Semarang", "Yogyakarta", "Palembang", "Samarinda", "Pekanbaru",
-        "Denpasar", "Banjarmasin", "Malang", "Depok"
-      ],
-      selectedCity: "Jakarta",
-      shalatTimes: null,
-      shalatLoading: false,
-      nextPrayerName: "",
+const popularSurahs = [
+  { number: 18, name: "Al-Kahfi", arabic: "الكهف" },
+  { number: 36, name: "Yasin", arabic: "يس" },
+  { number: 55, name: "Ar-Rahman", arabic: "الرحمن" },
+  { number: 56, name: "Al-Waqi'ah", arabic: "الواقعة" },
+  { number: 67, name: "Al-Mulk", arabic: "الملك" },
+];
 
-      // Shortcuts
-      popularSurahs: [
-        { number: 18, name: "Al-Kahfi", arabic: "الكهف" },
-        { number: 36, name: "Yasin", arabic: "يس" },
-        { number: 55, name: "Ar-Rahman", arabic: "الرحمن" },
-        { number: 56, name: "Al-Waqi'ah", arabic: "الواقعة" },
-        { number: 67, name: "Al-Mulk", arabic: "الملk" }
-      ]
-    };
-  },
-  computed: {
-    filteredSurah() {
-      if (!this.searchQuery) return this.surat;
-      const query = this.searchQuery.toLowerCase().trim();
-      return this.surat.filter((s) => {
-        const nameId = s.name.transliteration.id.toLowerCase();
-        const translation = s.name.translation.id.toLowerCase();
-        const num = String(s.number);
-        return (
-          nameId.includes(query) ||
-          translation.includes(query) ||
-          num.includes(query)
-        );
-      });
-    },
-    formattedShalatTimes() {
-      if (!this.shalatTimes) return {};
-      const { Imsak, Fajr, Dhuhr, Asr, Maghrib, Isha } = this.shalatTimes;
-      return { Imsak, Fajr, Dhuhr, Asr, Maghrib, Isha };
-    }
-  },
-  mounted() {
-    this.selectRandomVerse();
-    this.checkLastRead();
-    this.loadBookmarks();
-    this.fetchSurah();
-    
-    // Load city from cache
-    this.selectedCity = localStorage.getItem("sholat_city") || "Jakarta";
-    this.activeTheme = localStorage.getItem("quran_pref_theme") || "light";
-    this.fetchShalatTimes();
+const cities = [
+  "Jakarta",
+  "Surabaya",
+  "Bandung",
+  "Medan",
+  "Makassar",
+  "Semarang",
+  "Yogyakarta",
+  "Palembang",
+  "Samarinda",
+  "Pekanbaru",
+  "Denpasar",
+  "Banjarmasin",
+  "Malang",
+  "Depok",
+];
 
-    window.addEventListener("theme-changed", this.onThemeChanged);
+const selectedCityComputed = computed({
+  get: () => preferencesStore.selectedCity,
+  set: (val) => {
+    preferencesStore.setSelectedCity(val);
+    fetchShalatTimes();
   },
-  beforeUnmount() {
-    window.removeEventListener("theme-changed", this.onThemeChanged);
-  },
-  methods: {
-    onThemeChanged() {
-      this.activeTheme = localStorage.getItem("quran_pref_theme") || "light";
-    },
-    selectRandomVerse() {
-      const idx = Math.floor(Math.random() * INSPIRATIONAL_VERSES.length);
-      this.randomVerse = INSPIRATIONAL_VERSES[idx];
-    },
-    checkLastRead() {
-      const saved = localStorage.getItem("lastReadSurah");
-      if (saved) {
-        try {
-          this.lastRead = JSON.parse(saved);
-        } catch (e) {
-          console.error("Failed to parse last read progress:", e);
-        }
-      }
-    },
-    loadBookmarks() {
-      const saved = localStorage.getItem("quran_bookmarks");
-      if (saved) {
-        try {
-          this.bookmarks = JSON.parse(saved);
-        } catch (e) {
-          console.error("Failed to parse bookmarks:", e);
-        }
-      }
-    },
-    onCityChange() {
-      localStorage.setItem("sholat_city", this.selectedCity);
-      this.fetchShalatTimes();
-    },
-    fetchShalatTimes() {
-      this.shalatLoading = true;
-      this.shalatTimes = null;
-      this.nextPrayerName = "";
-      
-      const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(this.selectedCity)}&country=Indonesia`;
+});
 
-      axios
-        .get(url)
-        .then((res) => {
-          if (res.data && res.data.data && res.data.data.timings) {
-            this.shalatTimes = res.data.data.timings;
-            this.calculateNextPrayer();
-          }
-        })
-        .catch((err) => {
-          console.error("Failed to load prayer times:", err);
-        })
-        .finally(() => {
-          this.shalatLoading = false;
-        });
-    },
-    calculateNextPrayer() {
-      if (!this.shalatTimes) return;
-      const now = new Date();
-      const currentHours = now.getHours();
-      const currentMinutes = now.getMinutes();
-      const currentTotalMinutes = currentHours * 60 + currentMinutes;
+const filteredSurah = computed(() => {
+  if (!searchQuery.value) return surat.value;
+  const query = searchQuery.value.toLowerCase().trim();
+  return surat.value.filter((s) => {
+    const nameId = s.name.transliteration.id.toLowerCase();
+    const translation = s.name.translation.id.toLowerCase();
+    const num = String(s.number);
+    return nameId.includes(query) || translation.includes(query) || num.includes(query);
+  });
+});
 
-      const prayerNames = ["Imsak", "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-      let nextName = "Fajr";
+const formattedShalatTimes = computed(() => {
+  if (!shalatTimes.value) return {};
+  const { Imsak, Fajr, Dhuhr, Asr, Maghrib, Isha } = shalatTimes.value;
+  return { Imsak, Fajr, Dhuhr, Asr, Maghrib, Isha };
+});
 
-      for (const name of prayerNames) {
-        const timeStr = this.shalatTimes[name];
-        if (timeStr) {
-          const [h, m] = timeStr.split(":").map(Number);
-          const prayerTotalMinutes = h * 60 + m;
-          if (prayerTotalMinutes > currentTotalMinutes) {
-            nextName = name;
-            break;
-          }
-        }
-      }
-      this.nextPrayerName = nextName;
-    },
-    getShalatIcon(name) {
-      switch(name) {
-        case "Imsak": return "fa-solid fa-moon";
-        case "Fajr": return "fa-solid fa-sun-plant-wilt";
-        case "Dhuhr": return "fa-solid fa-sun";
-        case "Asr": return "fa-solid fa-cloud-sun";
-        case "Maghrib": return "fa-solid fa-mountain-sun";
-        case "Isha": return "fa-solid fa-star-and-crescent";
-        default: return "fa-solid fa-clock";
-      }
-    },
-    translateShalatName(name) {
-      switch(name) {
-        case "Fajr": return "Subuh";
-        case "Dhuhr": return "Dzuhur";
-        case "Asr": return "Ashar";
-        case "Maghrib": return "Maghrib";
-        case "Isha": return "Isya";
-        default: return name;
-      }
-    },
-    fetchSurah() {
-      this.loading = true;
-      this.error = false;
-      
-      const baseApiUrl =
-        import.meta.env.VITE_API_URL ||
-        import.meta.env.VUE_APP_MAIN_API_URL ||
-        "https://aqa.khuirulhuda.me.eu.org";
-        
-      const url = `${baseApiUrl}/surah`;
-
-      axios
-        .get(url)
-        .then((res) => {
-          if (res.data && res.data.data) {
-            this.surat = res.data.data;
-          } else {
-            throw new Error("Format respon API tidak valid.");
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          this.errMsg = err.message || "Gagal menghubungi server API.";
-          this.error = true;
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
-  },
+const selectRandomVerse = () => {
+  const idx = Math.floor(Math.random() * INSPIRATIONAL_VERSES.length);
+  randomVerse.value = INSPIRATIONAL_VERSES[idx];
 };
+
+const fetchSurah = async () => {
+  loading.value = true;
+  error.value = false;
+  try {
+    const data = await quranApi.fetchSurahList();
+    surat.value = data;
+  } catch (err) {
+    console.error(err);
+    errMsg.value = err.message || "Gagal menghubungi server API.";
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const calculateNextPrayer = () => {
+  if (!shalatTimes.value) return;
+  const now = new Date();
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+  const currentTotalMinutes = currentHours * 60 + currentMinutes;
+
+  const prayerNames = ["Imsak", "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+  let nextName = "Fajr";
+
+  for (const name of prayerNames) {
+    const timeStr = shalatTimes.value[name];
+    if (timeStr) {
+      const [h, m] = timeStr.split(":").map(Number);
+      const prayerTotalMinutes = h * 60 + m;
+      if (prayerTotalMinutes > currentTotalMinutes) {
+        nextName = name;
+        break;
+      }
+    }
+  }
+  nextPrayerName.value = nextName;
+};
+
+const fetchShalatTimes = async () => {
+  shalatLoading.value = true;
+  shalatTimes.value = null;
+  nextPrayerName.value = "";
+  try {
+    const timings = await quranApi.fetchPrayerTimes(preferencesStore.selectedCity);
+    shalatTimes.value = timings;
+    calculateNextPrayer();
+  } catch (err) {
+    console.error("Failed to load prayer times:", err);
+  } finally {
+    shalatLoading.value = false;
+  }
+};
+
+const getShalatIcon = (name) => {
+  switch (name) {
+    case "Imsak":
+      return "fa-solid fa-moon";
+    case "Fajr":
+      return "fa-solid fa-sun-plant-wilt";
+    case "Dhuhr":
+      return "fa-solid fa-sun";
+    case "Asr":
+      return "fa-solid fa-cloud-sun";
+    case "Maghrib":
+      return "fa-solid fa-mountain-sun";
+    case "Isha":
+      return "fa-solid fa-star-and-crescent";
+    default:
+      return "fa-solid fa-clock";
+  }
+};
+
+const translateShalatName = (name) => {
+  switch (name) {
+    case "Fajr":
+      return "Subuh";
+    case "Dhuhr":
+      return "Dzuhur";
+    case "Asr":
+      return "Ashar";
+    case "Maghrib":
+      return "Maghrib";
+    case "Isha":
+      return "Isya";
+    default:
+      return name;
+  }
+};
+
+onMounted(() => {
+  selectRandomVerse();
+  fetchSurah();
+  fetchShalatTimes();
+});
 </script>
 
 <style scoped>
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-fade-in {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
