@@ -542,6 +542,22 @@ const fetchJuzDetails = async () => {
     juzData.value = data;
     verses.value = data.verses;
 
+    // Update Title and Meta Description for SEO
+    const isEn = preferencesStore.language === "en";
+    const titleText = isEn
+      ? `Juz ${juzNumber.value} - Read & Tafsir - Al-Quran Online`
+      : `Juz ${juzNumber.value} - Baca & Tafsir Lengkap - Al-Quran Online`;
+    document.title = titleText;
+
+    const descText = isEn
+      ? `Read Juz ${juzNumber.value} of the Holy Quran, containing verses from ${data.start} to ${data.end} with translation and audio.`
+      : `Baca Al-Quran Juz ${juzNumber.value} (mulai dari ${data.start} hingga ${data.end}) lengkap dengan terjemahan dan exegesis.`;
+    
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', descText);
+    }
+
     if (verses.value.length > 0) {
       const info = getSurahInfo(verses.value[0].number.inQuran);
       if (info) {

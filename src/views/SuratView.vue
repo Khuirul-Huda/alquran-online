@@ -478,6 +478,24 @@ const fetchSurahDetails = async () => {
     surahdata.value = data;
     verses.value = data.verses;
 
+    // Update Title and Meta Description for SEO
+    const isEn = preferencesStore.language === "en";
+    const surahName = isEn ? data.name.transliteration.en : data.name.transliteration.id;
+    const translateName = isEn ? data.name.translation.en : data.name.translation.id;
+    const titleText = isEn 
+      ? `Surah ${surahName} (${translateName}) - Read & Tafsir - Al-Quran Online` 
+      : `Surat ${surahName} (${translateName}) - Baca & Tafsir Lengkap - Al-Quran Online`;
+    document.title = titleText;
+
+    const descText = isEn
+      ? `Read Surah ${surahName} (${data.numberOfVerses} verses) with English translation, tafsir (exegesis), and word-by-word audio playback.`
+      : `Baca Surat ${surahName} (${data.numberOfVerses} ayat) lengkap dengan terjemahan bahasa Indonesia, tafsir Kemenag, dan audio per ayat.`;
+    
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', descText);
+    }
+
     preferencesStore.saveProgress({
       number: surahnumber.value,
       name: data.name.transliteration.id,
